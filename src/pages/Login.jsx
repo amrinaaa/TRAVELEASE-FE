@@ -178,6 +178,7 @@ const Login = () => {
               </div>
               <div className="relative">
                 <FaLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-500" />
+                <FaEye className="absolute right-4 top-1/2 transform -translate-y-1/2 text-purple-500" />
                 <input
                   className="w-full p-2 pl-10 pr-4 py-2 rounded-lg bg-white bg-opacity-20 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#461873]"
                   type="password"
