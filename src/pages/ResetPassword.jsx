@@ -1,7 +1,7 @@
 import { FaUser, FaEnvelope, FaLock, FaEye } from "react-icons/fa6";
 import React from 'react';
 
-const Register = () => {
+const ResetPassword = () => {
   return (
     <section className='login min-h-screen flex justify-center items-center relative bg-gradient-to-b from-purple-900 to-white"'>
       <div className="relative z-10 bg-transparent sm:bg-white sm:bg-opacity-10 sm:rounded-xl sm:shadow-xl sm:p-4 max-w-2xl w-full sm:backdrop-blur-lg sm:border sm:border-white sm:border-opacity-20">
@@ -14,33 +14,15 @@ const Register = () => {
               />
           </div>
           <div className='shrink-1 mb-12 grow-0 basis-auto md:mb-0 md:w-6/12 md:shrink-0 lg:w-6/12 xl:w-6/12'>
-            <h2 className="text-center text-2xl font-bold text-[#461873] mb-4">Registration</h2>
+            <h2 className="text-center text-2xl font-bold text-[#461873] mb-4">Create New Password</h2>
             <form>
-              <div className="mb-4 relative">
-                <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-500" />
-                <input
-                  className="w-full p-2 pl-10 pr-4 py-2 rounded-lg bg-white bg-opacity-20 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#461873]"
-                  type="text"
-                  id="name"
-                  placeholder="Name"
-                />
-              </div>
-              <div className="mb-4 relative">
-                <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-500" />
-                <input
-                  className="w-full p-2 pl-10 pr-4 py-2 rounded-lg bg-white bg-opacity-20 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#461873]"
-                  type="text"
-                  id="email"
-                  placeholder="Email"
-                />
-              </div>
               <div className="mb-4 relative">
                 <FaLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-500" />
                 <input
                   className="w-full p-2 pl-10 pr-4 py-2 rounded-lg bg-white bg-opacity-20 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#461873]"
                   type="password"
                   id="password"
-                  placeholder="Password"
+                  placeholder="New Password"
                 />
               </div>
               <div className="mb-4 relative">
@@ -53,7 +35,7 @@ const Register = () => {
                 />
               </div>
               <button className="w-full mt-2 py-2 bg-[#461873] text-white rounded-3xl hover:bg-purple-800 transition duration-300">
-                  Registration
+                  Reset Password
               </button>
             </form>
           </div>
@@ -63,4 +45,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default ResetPassword
