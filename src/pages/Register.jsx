@@ -55,6 +55,12 @@ const Register = () => {
               <button className="w-full mt-2 py-2 bg-[#461873] text-white rounded-3xl hover:bg-purple-800 transition duration-300">
                   Registration
               </button>
+              <div className="mt-4 text-center">
+                <p className="text-sm text-gray-700">
+                  Already have an account?{' '}
+                  <a href="/login" className="text-purple-600">Login</a>
+                </p>
+              </div>
             </form>
           </div>
         </div>
