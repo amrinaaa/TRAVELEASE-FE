@@ -194,9 +194,11 @@ const Navbar = () => {
                 <div className="navbar-box flex items-center justify-between">
                     <div className="flex items-center space-x-3 h-16">
                         <Link to="/">
-                            <h1 className='text-3xl text-white font-bold'>
-                              TravelEase
-                            </h1>
+                            <img 
+                                src="/src/assets/img/LogoNavbar.png" 
+                                alt="logo-navbar"
+                                className='h-24 md:h-28' 
+                            />
                         </Link>
                     </div>
                     <ul className={`flex lg:gap-12 md:static md:bg-transparent md:flex-row md:shadow-none md:w-auto md:h-full 
