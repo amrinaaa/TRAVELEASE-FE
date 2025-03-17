@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -12,6 +13,7 @@ import { ImOpt } from 'react-icons/im';
 const App = () => {
   const location = useLocation();
   const showNavbarPaths = ['/', '/hotels', '/flights'];
+  const showFooterPaths = ['/', '/hotels', '/flights'];
 
   return (
     <div className="App">
@@ -24,6 +26,8 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
+
+      {showFooterPaths.includes(location.pathname) && <Footer />}
     </div>
   );
 };
