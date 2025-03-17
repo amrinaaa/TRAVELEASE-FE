@@ -1,98 +1,68 @@
-import React from 'react'
-import { Mail, Phone } from "lucide-react";
+import React from "react";
+import { Mail, Phone, Facebook, Twitter, Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className='w-full text-white'>
-      <section className='grid grid-cols md:grid-cols-3 gap-1 mx-auto px-10 md:px-20 py-10 bg-ungu5'>
-        <div className=''>
-          <img 
-              src="/src/assets/img/Logo.png" 
-              alt="logo-footer"
-              className='h-14 mb-4'
-          />
-          <p className="md:text-left text-sm text-justify">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare cursus sed nunc eget dictum  Sed ornare cursus sed nunc eget dictumd nunc eget dictum  Sed ornare cursus sed nunc eget dictum.
+    <footer className="w-full text-white bg-ungu5 shadow-lg border-t border-white/20">
+      <section className="container mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Logo & Info */}
+        <div className="space-y-4">
+          <img src="/src/assets/img/Logo.png" alt="logo-footer" className="h-14" />
+          <p className="text-sm text-gray-200">
+            Transforming travel experiences with ease. Your journey starts here!
           </p>
-          <p className="md:text-left text-sm mt-4 text-justify">
-              Want to join as a partner? <a href="#" className="font-bold text-ungu1">Contact Us.</a>
+          <p className="text-sm">
+            Want to join as a partner? <a href="#" className="font-bold text-ungu1">Contact Us.</a>
           </p>
-          <p className="flex items-center space-x-2 mt-2">
-            <Mail className="w-5 h-5 text-ungu1" />
-            <span>travelease@gmail.com</span>
-          </p>
-          <p className="flex items-center space-x-2 mt-1">
-            <Phone className="w-5 h-5 text-ungu1" />
-            <span>+1 386-688-3295</span>
-          </p>          
+          <div className="flex flex-col space-y-2">
+            <p className="flex items-center space-x-2">
+              <Mail className="w-5 h-5 text-ungu1" />
+              <span>travelease@gmail.com</span>
+            </p>
+            <p className="flex items-center space-x-2">
+              <Phone className="w-5 h-5 text-ungu1" />
+              <span>+1 386-688-3295</span>
+            </p>
+          </div>
         </div>
-        <div className='grid grid-cols-2 md:grid-cols-3 col-span-2 mt-4'>
-          <div className='flex flex-col text-left md:text-center'>
-            <h1 className='font-bold text-lg'>
-              Header Text
-            </h1>
-            <ul>
-              <li className='p-4'>
-                <a href="">Item 1</a>
-              </li>
-              <li className='p-4'>
-                <a href="">Item 2</a>
-              </li>
-              <li className='p-4'>
-                <a href="">Item 3</a>
-              </li>
-              <li className='p-4'>
-                <a href="">Item 4</a>
-              </li>
-            </ul>
-          </div>
-          <div className='flex flex-col text-left md:text-center'>
-            <h1 className='font-bold text-lg'>
-              Header Text
-            </h1>
-            <ul>
-              <li className='p-4'>
-                <a href="">Item 1</a>
-              </li>
-              <li className='p-4'>
-                <a href="">Item 2</a>
-              </li>
-              <li className='p-4'>
-                <a href="">Item 3</a>
-              </li>
-              <li className='p-4'>
-                <a href="">Item 4</a>
-              </li>
-            </ul>
-          </div>
-          <div className='flex flex-col text-left md:text-center'>
-            <h1 className='font-bold text-lg'>
-              Header Text
-            </h1>
-            <ul>
-              <li className='p-4'>
-                <a href="">Item 1</a>
-              </li>
-              <li className='p-4'>
-                <a href="">Item 2</a>
-              </li>
-              <li className='p-4'>
-                <a href="">Item 3</a>
-              </li>
-              <li className='p-4'>
-                <a href="">Item 4</a>
-              </li>
-            </ul>
+
+        {/* Navigation */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          {[
+            { header: "About Us", links: ["Company", "Team", "Careers", "Contact"] },
+            { header: "Services", links: ["Hotels", "Flights", "Car Rentals", "Tours"] },
+            { header: "Destinations", links: ["Asia", "Europe", "America", "Africa"] },
+          ].map((section, index) => (
+            <div key={index} className="text-left md:text-center">
+              <h1 className="font-bold text-lg text-white/80">{section.header}</h1>
+              <ul className="mt-3 space-y-2 text-sm text-gray-300">
+                {section.links.map((link, idx) => (
+                  <li key={idx}><a href="#" className="hover:text-white">{link}</a></li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Social Media */}
+        <div className="flex flex-col md:items-end space-y-4">
+          <h1 className="font-bold text-lg text-white/80">Follow Us</h1>
+          <div className="flex space-x-4">
+            {[Facebook, Twitter, Instagram].map((Icon, index) => (
+              <a key={index} href="#" className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition">
+                <Icon className="w-5 h-5 text-white" />
+              </a>
+            ))}
           </div>
         </div>
       </section>
-      <section className='bg-ungu9'>
-        <p className='text-center text-sm text-black p-2'>
-          Copyright © 2025 - TravelEase
-        </p>
+      
+      {/* Copyright Section */}
+      <section className="bg-ungu9 py-3 text-center text-sm text-gray-300">
+        <p>Copyright © 2025 - TravelEase. All rights reserved.</p>
       </section>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;
