@@ -87,6 +87,8 @@ export const FORGOT_PASSWORD_REQUEST = "FORGOT_PASSWORD_REQUEST";
 export const FORGOT_PASSWORD_SUCCESS = "FORGOT_PASSWORD_SUCCESS";
 export const FORGOT_PASSWORD_FAIL = "FORGOT_PASSWORD_FAIL";
 
+const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
+
 // Action creators for Login
 export const login = (email, password) => async (dispatch) => {
   try {
@@ -99,7 +101,7 @@ export const login = (email, password) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "http://localhost:3000/api/login",
+      `${api_url}/login`,
       { email, password },
       config
     );
@@ -129,7 +131,7 @@ export const register = (name, email, password, confirmationPassword) => async (
     };
 
     const { data } = await axios.post(
-      "http://localhost:3000/api/register",
+      `${api_url}/register`,
       { name, email, password, confirmation_password: confirmationPassword },
       config
     );
@@ -158,7 +160,7 @@ export const forgotPassword = (email) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "http://localhost:3000/api/forgot-password",
+      `${api_url}/forgot-password`,
       { email },
       config
     );
