@@ -39,9 +39,9 @@ const Navbar = () => {
                     <div className="flex items-center space-x-3 h-16">
                         <Link to="/">
                             <img 
-                                src="/src/assets/img/Logo.png" 
+                                src="/src/assets/img/Logo-w.png" 
                                 alt="logo-navbar"
-                                className='h-8 md:h-10' 
+                                className='h-7 md:h-9' 
                             />
                         </Link>
                     </div>
@@ -50,7 +50,9 @@ const Navbar = () => {
                     flex-col px-8 py-6 rounded-bl-lg shadow-lg shadow-slate-300 bg-ungu3 font-bold transition-all`}>
                         <li className='flex items-center justify-center gap-3'>
                             <i className="ri-home-line md:hidden block"></i>
-                            <Link to="/" className={`font-medium ${isActiveLink('/')}`}>Home</Link>
+                            <Link to="/" className={`font-medium ${isActiveLink('/')}`}>
+                                <span>Home</span>
+                            </Link>
                         </li>
                         <li className='flex items-center justify-center gap-3'>
                             <i className="ri-hotel-line md:hidden block"></i>

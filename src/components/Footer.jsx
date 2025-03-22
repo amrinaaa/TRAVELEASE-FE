@@ -7,9 +7,9 @@ const Footer = () => {
       <section className='grid grid-cols md:grid-cols-3 gap-1 mx-auto px-10 md:px-20 py-10 bg-ungu5'>
         <div className=''>
           <img 
-              src="/src/assets/img/Logo.png" 
+              src="/src/assets/img/Logo-w.png" 
               alt="logo-footer"
-              className='h-14 mb-4'
+              className='h-12 mb-4'
           />
           <p className="md:text-left text-sm text-justify">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare cursus sed nunc eget dictum  Sed ornare cursus sed nunc eget dictumd nunc eget dictum  Sed ornare cursus sed nunc eget dictum.

@@ -1,0 +1,14 @@
+import React from 'react';
+
+const DashboardMitraPesawat = ({ isSidebarOpen }) => {
+  return (
+    <div className={`bg-ungu10 pt-14 w-full h-full transition-all duration-300 ${isSidebarOpen ? 'ml-16 md:ml-64' : 'ml-0'}`}>
+        <h1 className='p-6 text-left text-2xl'>Welcome, Mitra!</h1>
+        <p className='px-6 text-justify'>
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Possimus exercitationem illum aspernatur explicabo deleniti debitis ullam aliquid ab eum aut, reiciendis cupiditate! Aspernatur, officia nobis deleniti laudantium dolorum voluptas dicta praesentium sed harum placeat aut temporibus molestiae? Veniam inventore laboriosam earum nemo dolores consequatur dicta, laborum quo? Perspiciatis incidunt tenetur veritatis sapiente maiores dolorem vel voluptatibus, consequatur impedit explicabo nobis distinctio aspernatur a! Veritatis consectetur totam distinctio beatae vero adipisci quasi eos, consequuntur temporibus itaque nulla sequi porro dignissimos quisquam expedita, facere alias ipsum libero perspiciatis odio officiis quae sed ducimus tempore. Quis earum explicabo nisi sed neque delectus inventore vel necessitatibus optio odio repellendus, soluta temporibus cupiditate consequatur sunt quam pariatur corporis impedit iusto velit eos quibusdam? Deleniti, exercitationem assumenda corrupti quasi enim natus id provident consequuntur. Minima perspiciatis velit rerum! Incidunt quo exercitationem tempora inventore placeat magnam amet numquam qui aperiam repellat facilis consequuntur hic accusamus aliquid labore magni odio omnis, pariatur, corrupti doloremque eaque! Perferendis consequuntur saepe ipsum tenetur. Accusamus, a vero accusantium asperiores numquam amet. Quasi pariatur ipsa eos, iusto neque dolore omnis illum a libero explicabo, asperiores dolores temporibus minus laudantium earum odio soluta placeat sequi ducimus obcaecati consequatur voluptas nulla est. Deleniti dolores nulla, cupiditate dolorum non tenetur doloribus. Odio quo molestiae officiis consequatur libero temporibus dolorem nesciunt ex, quidem ab saepe nam dolorum, nemo eaque sint accusamus impedit. Nulla magni aspernatur nisi rerum similique earum laudantium laboriosam. Ut reiciendis obcaecati sed error quaerat asperiores est voluptatibus iusto iste quis, veniam officiis, dolorem ullam odit iure rerum, fugiat nihil laborum impedit! Qui nisi cumque nesciunt sequi deleniti quasi cupiditate perferendis nostrum quo eos soluta suscipit placeat accusamus voluptate nam nemo, corrupti tempora repellat est veniam facilis! Minima placeat nam veniam odio illum, beatae earum iusto dicta distinctio ut consectetur delectus est id cumque voluptate!
+        </p>
+    </div>
+  );
+};
+
+export default DashboardMitraPesawat
