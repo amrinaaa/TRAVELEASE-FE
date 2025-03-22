@@ -13,16 +13,21 @@ module.exports = {
         'ungu1' :'#461873' ,
         'ungu2' :'#58148E',
         'ungu3' :'#6910A8',
-        'ungu4' :'#8C07DD',
-        'ungu5' :'#9F21E3',
+        'ungu4' :'#8C52FF', // Primary 1
+        'ungu5' :'#9F21E3', // Primary 2
         'ungu6' :'#B333E9' ,
-        'ungu7' :'#CB5DF1',
+        'ungu7' :'#CB5DF1', // Primary 3
         'ungu8' :'#DC93F6',
-        'ungu9' :'#EABFFA',
-        'ungu10' :'#F7EBFD',
+        'ungu9' :'#EABFFA', // Secondary 1
+        'ungu10' :'#F7EBFD', // Secondary 2
       }
     },
   },
   darkMode: "class",
-  plugins: [heroui()]
+  plugins: [heroui()],
+  variants:{
+    extend : {
+      display : ["focus-group"]
+    }
+  }
 }

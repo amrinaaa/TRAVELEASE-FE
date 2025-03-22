@@ -16,6 +16,7 @@
     "@heroui/react": "^2.7.5",
     "@reduxjs/toolkit": "^2.6.1",
     "axios": "^1.8.3",
+    "dotenv": "^16.4.7",
     "framer-motion": "^12.4.11",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.482.0",
