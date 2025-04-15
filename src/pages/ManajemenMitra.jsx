@@ -1,13 +1,51 @@
-import React from 'react'
+import React, { useState } from "react";
+import { Link } from 'react-router-dom';
+import Searchbar from "../components/Searchbar";
+import Table from "../components/Table";
 
 const ManajemenMitra = ({ isSidebarOpen }) => {
-    return (
-      <div className={`bg-ungu10 pt-14 w-full h-full transition-all duration-300 ${isSidebarOpen ? 'ml-16 md:ml-64' : 'ml-0'}`}>
-          <p className="px-6">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum nobis voluptatibus corporis recusandae aliquam, eum non voluptate iusto magni cupiditate enim sit quis laudantium consequuntur voluptatum repudiandae nisi! Facilis illo praesentium libero voluptatum, dignissimos iure veritatis quis provident quibusdam hic dolorum ad dicta consequuntur temporibus optio minima doloribus esse cupiditate dolor tempore? Reiciendis, fuga. Modi facere consequatur dignissimos expedita adipisci, voluptatibus, harum quia laborum ratione in quae, dolorum earum deleniti qui vero odio. Est voluptate tempora cupiditate ipsa reprehenderit ipsam, hic dignissimos, accusamus harum magni excepturi praesentium, distinctio libero doloremque. Sapiente deserunt omnis soluta officia, eius magni eveniet dolorum illo. Odit reprehenderit fuga blanditiis ab repellat fugit ut officia odio, tenetur deserunt dolor explicabo sapiente quibusdam nisi, adipisci eligendi. Earum temporibus facilis, ullam eveniet quia animi? Minus voluptatem omnis provident illo eaque optio, iure soluta, nisi dolores inventore unde nam. Minus nisi, recusandae natus dolor iusto, voluptatem sit ut atque temporibus officia, iste autem architecto quam modi porro earum. Est animi nulla laborum repellendus magni natus recusandae amet minus placeat molestiae? Consectetur, alias molestiae sunt fuga, obcaecati adipisci beatae possimus quasi expedita cum aperiam aliquid? Nulla deserunt corporis placeat inventore minus adipisci eum est, maiores numquam neque rem deleniti necessitatibus asperiores vel, ad ratione dolorum animi voluptate dolores repellat, nostrum magnam? Ut, corrupti assumenda accusantium eligendi a aliquid consequuntur inventore illo cum doloremque quas fugit saepe mollitia fugiat dolorem ipsa neque praesentium consectetur voluptatibus alias. In, nemo ipsa! Deleniti voluptatem officiis culpa placeat est perspiciatis eos, quasi ut maiores perferendis consectetur quo modi ducimus harum, totam non mollitia, fugiat ratione ab nostrum laboriosam! Nulla veritatis tempore laudantium saepe sunt aspernatur, alias, voluptatem fuga sed earum, vitae inventore iste totam neque voluptate repellat nam. Excepturi magnam ex explicabo distinctio officiis dolore animi voluptate. Iusto, similique magni omnis fugit aperiam error recusandae.
-          </p>
+  const [searchQuery, setSearchQuery] = useState(""); // ⬅️ State untuk pencarian
+
+  return (
+    <div className="flex transition-all duration-300">
+      <div className={`bg-ungu10 pt-20 h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
+        <div className="grid grid-cols-2 px-4">
+          <div className="flex flex-col md:flex-row text-left md:gap-1">
+            <p className="text-xl">Partner Management</p>
+            <p className="text-xs pt-2  text-gray-600">Daftar Mitra</p>
+          </div>
+          <div className="flex flex-row justify-end">
+            <Link to="/manajemen-mitra" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+              <i class="fa-solid fa-house-chimney text-xs"></i>
+              <p className="text-xs md:text-sm">Home</p>
+            </Link>
+          </div>
+        </div>
+        <div className="bg-white m-4 py-4 rounded-lg shadow-md">
+          <div className="grid grid-cols-2 px-4 items-center">
+            <div className="text-left md:text-xl">
+              <p>Daftar Mitra</p>
+            </div>
+            <div className="flex gap-3 items-center">
+              <Searchbar forWhat="Mitra" onSearch={setSearchQuery} />
+              <Link to="/tambah-mitra">
+                <button className="bg-ungu7 text-white rounded-xl px-2 py-1 hidden md:inline">
+                  <i className="ri-add-line mr-1"></i>
+                  <span>Mitra</span>
+                </button>
+                <button className="bg-ungu7 text-white rounded-3xl md:rounded-xl px-2 py-1 items-center md:hidden">
+                  <i className="ri-user-add-line text-xl"></i>
+                </button>
+              </Link>
+            </div>
+          </div>
+          <div>
+            <Table searchQuery={searchQuery} />
+          </div>
+        </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 export default ManajemenMitra

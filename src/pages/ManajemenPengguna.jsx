@@ -1,14 +1,51 @@
-import React from 'react'
-import NavSidebar from '../components/NavSidebar'
+import React, { useState } from "react";
+import { Link } from 'react-router-dom';
+import Searchbar from "../components/Searchbar";
+import Table from "../components/Table";
 
 const ManajemenPengguna = ({ isSidebarOpen }) => {
-    return (
-      <div className={`bg-ungu10 pt-14 w-full h-full transition-all duration-300 ${isSidebarOpen ? 'ml-16 md:ml-64' : 'ml-0'}`}>
-          <p className="px-6">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Error rerum asperiores eius fugit dignissimos. Iusto doloribus porro, aliquid, et error distinctio corporis sint perferendis praesentium mollitia quas in animi quae? Fugit adipisci optio voluptas. Modi nostrum qui repudiandae ea voluptas harum exercitationem ab nihil esse debitis blanditiis reprehenderit earum laboriosam labore voluptate placeat, eveniet consectetur ducimus autem voluptatum totam. Consectetur aperiam itaque aspernatur expedita, laudantium consequatur placeat voluptatem facere iure, numquam praesentium veritatis. Sunt unde delectus mollitia odio provident temporibus totam iste laborum, a perferendis ipsum atque, quidem sapiente est. A aperiam provident officia corrupti natus praesentium sed, eligendi sit dolore deserunt commodi tempore molestias distinctio, expedita perferendis quisquam enim cumque, laudantium iure exercitationem ratione eum repudiandae perspiciatis! Placeat quis excepturi qui facilis. Nihil quam vel odit repellat? Libero repudiandae, eos eaque molestiae expedita ab dolores suscipit, natus temporibus quaerat est perspiciatis recusandae, quis quidem voluptatem aliquam et eveniet aperiam sapiente tempore quod voluptates voluptatum nam. Ratione, officia vitae minus perspiciatis architecto dolorum suscipit quod dolorem consequuntur quis. Placeat beatae voluptatem esse quia at laboriosam praesentium nobis eligendi. Facere fuga sint qui dicta deleniti ullam, quam accusamus, atque commodi in iste dolorem veniam fugit voluptatibus. Necessitatibus explicabo molestiae, quod inventore doloribus eaque tenetur voluptates doloremque omnis, reiciendis, quia quos maxime? Odio, hic fuga reiciendis alias rem vel pariatur deserunt nulla natus recusandae neque iste asperiores explicabo veniam inventore expedita officiis, aut aliquid voluptates architecto suscipit ducimus! Sint tempore vel quo consectetur hic maxime beatae culpa iure animi possimus enim eaque omnis incidunt illo repellendus, nobis quisquam consequuntur sit voluptatum praesentium blanditiis. Eveniet, quos repellat soluta libero, iusto excepturi assumenda officia quisquam, veritatis porro atque! Nihil eos dolorem nostrum amet officiis, distinctio culpa perferendis sunt quisquam quam itaque assumenda illo obcaecati explicabo inventore reiciendis perspiciatis sed velit hic ipsa! Blanditiis, a.
-          </p>
+  const [searchQuery, setSearchQuery] = useState(""); // ⬅️ State untuk pencarian
+
+  return (
+    <div className="flex transition-all duration-300">
+      <div className={`bg-ungu10 pt-20 h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
+        <div className="grid grid-cols-2 px-4">
+          <div className="flex flex-col md:flex-row text-left md:gap-1">
+            <p className="text-xl">User Management</p>
+            <p className="text-xs pt-2  text-gray-600">Daftar pengguna</p>
+          </div>
+          <div className="flex flex-row justify-end">
+            <Link to="/manajemen-pengguna" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+              <i class="fa-solid fa-house-chimney text-xs"></i>
+              <p className="text-xs md:text-sm">Home</p>
+            </Link>
+          </div>
+        </div>
+        <div className="bg-white m-4 py-4 rounded-lg shadow-md">
+          <div className="grid grid-cols-2 px-4 items-center">
+            <div className="text-left md:text-xl">
+              <p>Daftar Pengguna</p>
+            </div>
+            <div className="flex gap-3 items-center">
+              <Searchbar forWhat="Pengguna" onSearch={setSearchQuery} />
+              <Link to="/tambah-pengguna">
+                <button className="bg-ungu7 text-white rounded-xl px-2 py-1 hidden md:inline">
+                  <i className="ri-add-line mr-1"></i>
+                  <span>Pengguna</span>
+                </button>
+                <button className="bg-ungu7 text-white rounded-3xl md:rounded-xl px-2 py-1 items-center md:hidden">
+                  <i className="ri-user-add-line text-xl"></i>
+                </button>
+              </Link>
+            </div>
+          </div>
+          <div>
+            <Table searchQuery={searchQuery} />
+          </div>
+        </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 export default ManajemenPengguna

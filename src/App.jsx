@@ -8,7 +8,10 @@ import Sidebar from './components/Sidebar';
 import NavSidebar from './components/NavSidebar';
 import DashboardAdmin from './pages/DashboardAdmin';
 import ManajemenPengguna from './pages/ManajemenPengguna';
+import TambahPengguna from './pages/TambahPengguna';
+import EditPengguna from './pages/EditPengguna';
 import ManajemenMitra from './pages/ManajemenMitra';
+import TambahMitra from './pages/TambahMitra';
 import DashboardMitraHotel from './pages/DashboardMitraHotel';
 import ManajemenHotel from './pages/ManajemenHotel';
 import DashboardMitraPesawat from './pages/DashboardMitraPesawat';
@@ -39,7 +42,7 @@ const App = () => {
   const showFooter = ['/', '/hotels', '/flights'].includes(location.pathname);
 
   let role = null;
-  if (['/admin', '/manajemen-pengguna', '/manajemen-mitra'].includes(location.pathname)) {
+  if (['/admin', '/manajemen-pengguna', '/tambah-pengguna', '/edit-pengguna','/manajemen-mitra', '/tambah-mitra'].includes(location.pathname)) {
     role = 'admin';
   } else if (['/mitra-hotel', '/manajemen-hotel'].includes(location.pathname)) {
     role = 'mitra-hotel';
@@ -67,7 +70,10 @@ const App = () => {
         {/* Admin Routes */}
         <Route path="/admin" element={<DashboardAdmin isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-pengguna" element={<ManajemenPengguna isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/tambah-pengguna" element={<TambahPengguna isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-pengguna" element={<EditPengguna isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-mitra" element={<ManajemenMitra isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/tambah-mitra" element={<TambahMitra isSidebarOpen={isSidebarOpen} />} />
 
         {/* Mitra Routes */}
         <Route path="/mitra-hotel" element={<DashboardMitraHotel isSidebarOpen={isSidebarOpen} />} />
