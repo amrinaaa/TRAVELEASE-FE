@@ -4,7 +4,7 @@ import { Mail, Phone } from "lucide-react";
 const Footer = () => {
   return (
     <footer className='w-full text-white'>
-      <section className='grid grid-cols md:grid-cols-3 gap-1 mx-auto px-10 md:px-20 py-10 bg-ungu5'>
+      <section className='grid grid-cols md:grid-cols-3 gap-1 mx-auto px-10 md:px-20 py-10 bg-gradient-to-b from-ungu4 to-ungu5'>
         <div className=''>
           <img 
               src="/src/assets/img/Logo-w.png" 
