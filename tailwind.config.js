@@ -20,6 +20,8 @@ module.exports = {
         'ungu8' :'#DC93F6',
         'ungu9' :'#EABFFA', // Secondary 1
         'ungu10' :'#F7EBFD', // Secondary 2
+        'yellow1' : '#FFDB33',
+        'blue1' : '#0A4C70'
       }
     },
   },

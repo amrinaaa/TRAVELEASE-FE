@@ -1,0 +1,47 @@
+[
+    { 
+    "id": "PA001", 
+    "nama": "Garuda Indonesia", 
+    "email": "garudaidn1@gmail.com",
+    "password" : "garuda123",
+    "tanggalDaftar": "2024-03-20", 
+    "saldo": 1000000,
+    "status" : "available"
+    },
+    { 
+    "id": "PA002", 
+    "nama": "Lion Air", 
+    "email": "lionair1@gmail.com",
+    "password" : "lion123",
+    "tanggalDaftar": "2024-03-21", 
+    "saldo": 50000,
+    "status" : "available"
+    },
+    { 
+    "id": "PA003", 
+    "nama": "Super Air Jet", 
+    "email": "superairjet1@gmail.com",
+    "password" : "super123",
+    "tanggalDaftar": "2024-03-22", 
+    "saldo": 750000,
+    "status" : "unavailable"
+    },
+        { 
+    "id": "PA004", 
+    "nama": "Citilink ID",
+    "email": "citilink1@gmail.com",
+    "password" : "citilink123",
+    "tanggalDaftar": "2024-03-23", 
+    "saldo": 300000,
+    "status" : "available"
+    },
+    { 
+    "id": "PA005", 
+    "nama": "Garuda Indonesia", 
+    "email": "garudaidn2@gmail.com",
+    "password" : "garuda123",
+    "tanggalDaftar": "2024-03-24", 
+    "saldo": 200000,
+    "status" : "unavailable"
+    }
+]

@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import dataPengguna from "../utils/dataPengguna.json";
+import dataMitraHotel from "../utils/dataMitraHotel.json";
+import dataMitraPesawat from "../utils/dataMitraPesawat.json";
 
-const Table = ({ searchQuery }) => {
+const TableMitra = ({ searchQuery, dataType }) => {
   const [data, setData] = useState([]);
-  const [editableRow, setEditableRow] = useState(null); // Track which row is editable
+  const [editableRow, setEditableRow] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setData(dataPengguna);
-  }, []);
+    if (dataType === "hotel") {
+      setData(dataMitraHotel);  // Set data as hotel data
+    } else if (dataType === "pesawat") {
+      setData(dataMitraPesawat);  // Set data as airline data
+    }
+  }, [dataType]);  // Re-run when `dataType` changes
 
   const handleEditClick = (id) => {
     // Toggle editable row
@@ -37,8 +42,8 @@ const Table = ({ searchQuery }) => {
     return 0;
   });
 
-  const filteredData = sortedData.filter((user) =>
-    user.nama.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = sortedData.filter((mitra) =>
+    mitra.nama.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const confirmDelete = (id) => {
@@ -47,9 +52,29 @@ const Table = ({ searchQuery }) => {
   };
 
   const handleDelete = () => {
-    setData((prevData) => prevData.filter((user) => user.id !== deleteId));
+    setData((prevData) => prevData.filter((mitra) => mitra.id !== deleteId));
     setModalOpen(false);
     setDeleteId(null);
+  };
+
+  const handleEditNavigation = (mitra) => {
+    if (editableRow === mitra.id) {
+      if (dataType === "hotel") {
+        navigate(`/edit-mitra-hotel/${mitra.id}`);
+      } else if (dataType === "pesawat") {
+        navigate(`/edit-mitra-pesawat/${mitra.id}`);
+      }
+    }
+  };
+
+  const handleSaldoNavigation = (mitra) => {
+    if (editableRow === mitra.id) {
+      if (dataType === "hotel") {
+        navigate(`/edit-saldo-mitra-hotel/${mitra.id}`);
+      } else if (dataType === "pesawat") {
+        navigate(`/edit-saldo-mitra-pesawat/${mitra.id}`);
+      }
+    }
   };
 
   return (
@@ -58,9 +83,9 @@ const Table = ({ searchQuery }) => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {["id", "name", "email", "Sign-up date", "saldo"].map((col) => (
+              {["id", "name", "email", "Sign-up date", "saldo", "status"].map((col) => (
                 <th key={col} className="py-2 px-1 border cursor-pointer" onClick={() => handleSort(col)}>
-                  {col.charAt(0).toUpperCase() + col.slice(1)}{""}
+                  {col.charAt(0).toUpperCase() + col.slice(1)}
                   <i className="ml-1 ri-arrow-up-down-line"></i>
                 </th>
               ))}
@@ -69,44 +94,29 @@ const Table = ({ searchQuery }) => {
           </thead>
           <tbody className="text-gray-700">
             {filteredData.length > 0 ? (
-              filteredData.map((user) => (
-                <tr key={user.id} className="border-b hover:bg-gray-100">
-                  <td className="py-2 px-3 border text-center">{user.id}</td>
-
-                  <td 
-                    className={`py-2 px-3 border ${editableRow === user.id ? "text-blue-500 cursor-pointer underline" : ""}`}
-                    onClick={() => {
-                      if (editableRow === user.id) {
-                        navigate(`/edit-pengguna/${user.id}`);
-                      }
-                    }}
+              filteredData.map((mitra) => (
+                <tr key={mitra.id} className="border-b hover:bg-gray-100">
+                  <td className="py-2 px-3 border text-center">{mitra.id}</td>
+                  <td
+                    className={`py-2 px-3 border ${editableRow === mitra.id ? "text-blue-500 cursor-pointer underline" : ""}`}
+                    onClick={() => handleEditNavigation(mitra)}
                   >
-                    {user.nama}
+                    {mitra.nama}
                   </td>
-
-                  <td className="py-2 px-3 border">{user.email}</td>
-
-                  <td className="py-2 px-3 border">{user.tanggalDaftar}</td>
-
-                  <td 
-                    className={`py-2 px-3 border ${editableRow === user.id ? "text-blue-500 cursor-pointer underline" : ""}`}
-                    onClick={() => {
-                      if (editableRow === user.id) {
-                        navigate(`/edit-saldo-pengguna/${user.id}`);
-                      }
-                    }}
+                  <td className="py-2 px-3 border">{mitra.email}</td>
+                  <td className="py-2 px-3 border">{mitra.tanggalDaftar}</td>
+                  <td
+                    className={`py-2 px-3 border ${editableRow === mitra.id ? "text-blue-500 cursor-pointer underline" : ""}`}
+                    onClick={() => handleSaldoNavigation(mitra)}
                   >
-                    Rp.{user.saldo}
+                    Rp.{mitra.saldo}
                   </td>
-
+                  <td className="py-2 px-3 border">{mitra.status}</td>
                   <td className="flex py-2 px-3 text-center justify-center">
-                    <button 
-                      onClick={() => handleEditClick(user.id)}>
+                    <button onClick={() => handleEditClick(mitra.id)}>
                       <i className="ri-edit-2-line text-2xl"></i>
                     </button>
-                    <button 
-                      className="text-red-500 mx-1" 
-                      onClick={() => confirmDelete(user.id)}>
+                    <button className="text-red-500 mx-1" onClick={() => confirmDelete(mitra.id)}>
                       <i className="ri-delete-bin-5-line text-2xl"></i>
                     </button>
                   </td>
@@ -150,4 +160,4 @@ const Table = ({ searchQuery }) => {
   );
 };
 
-export default Table
+export default TableMitra

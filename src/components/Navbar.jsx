@@ -33,7 +33,7 @@ const Navbar = () => {
     const isActiveLink = (path) => location.pathname === path ? "text-ungu8 font-bold underline underline-offset-4" : "hover:text-ungu8 hover:underline-offset-4 transition-all";
 
     return (
-        <div className={`navbar fixed w-full transition-all z-50 bg-ungu1`}>
+        <div className={`navbar fixed w-full transition-all z-50 bg-ungu4`}>
             <div className="container mx-auto px-4 text-white">
                 <div className="navbar-box flex items-center justify-between">
                     <div className="flex items-center space-x-3 h-16">
@@ -47,7 +47,7 @@ const Navbar = () => {
                     </div>
                     <ul className={`flex lg:gap-12 md:static md:bg-transparent md:flex-row md:shadow-none md:w-auto md:h-full 
                     md:translate-y-0 md:p-0 md:m-0 md:transition-none gap-6 fixed ${menuActive} top-[208px] -translate-y-1/2 
-                    flex-col px-8 py-6 rounded-bl-lg shadow-lg shadow-slate-300 bg-ungu3 font-bold transition-all`}>
+                    flex-col px-8 py-6 rounded-bl-lg shadow-lg shadow-slate-300 bg-ungu4 font-bold transition-all`}>
                         <li className='flex items-center justify-center gap-3'>
                             <i className="ri-home-line md:hidden block"></i>
                             <Link to="/" className={`font-medium ${isActiveLink('/')}`}>
@@ -65,7 +65,7 @@ const Navbar = () => {
                         <div className='flex md:flex-row md:gap-2 flex-col gap-4'>
                           <li className='flex items-center justify-center gap-3'>
                             <Link to="/login">
-                              <Button className='text-white border-white bg-ungu1' variant="bordered">Log In</Button>
+                              <Button className='text-white border-white bg-ungu4' variant="bordered">Log In</Button>
                             </Link>
                           </li>
                           <li className='flex items-center justify-center gap-3'>
