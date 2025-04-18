@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import Searchbar from "../components/Searchbar";
-import Table from "../components/Table";
+import TableMitra from "../components/TableMitra";
 
-const ManajemenMitra = ({ isSidebarOpen }) => {
+const ManajemenMitraPesawat = ({ isSidebarOpen }) => {
   const [searchQuery, setSearchQuery] = useState(""); // ⬅️ State untuk pencarian
 
   return (
@@ -12,7 +12,7 @@ const ManajemenMitra = ({ isSidebarOpen }) => {
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
             <p className="text-xl">Partner Management</p>
-            <p className="text-xs pt-2  text-gray-600">Daftar Mitra</p>
+            <p className="text-xs pt-2  text-gray-600">Airplane Partner List</p>
           </div>
           <div className="flex flex-row justify-end">
             <Link to="/manajemen-mitra" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
@@ -24,14 +24,14 @@ const ManajemenMitra = ({ isSidebarOpen }) => {
         <div className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="grid grid-cols-2 px-4 items-center">
             <div className="text-left md:text-xl">
-              <p>Daftar Mitra</p>
+              <p>Airplane Partner List</p>
             </div>
             <div className="flex gap-3 items-center">
-              <Searchbar forWhat="Mitra" onSearch={setSearchQuery} />
-              <Link to="/tambah-mitra">
+              <Searchbar forWhat="partner" onSearch={setSearchQuery} />
+              <Link to="/tambah-mitra-pesawat">
                 <button className="bg-ungu7 text-white rounded-xl px-2 py-1 hidden md:inline">
                   <i className="ri-add-line mr-1"></i>
-                  <span>Mitra</span>
+                  <span>Partner</span>
                 </button>
                 <button className="bg-ungu7 text-white rounded-3xl md:rounded-xl px-2 py-1 items-center md:hidden">
                   <i className="ri-user-add-line text-xl"></i>
@@ -40,7 +40,7 @@ const ManajemenMitra = ({ isSidebarOpen }) => {
             </div>
           </div>
           <div>
-            <Table searchQuery={searchQuery} />
+            <TableMitra searchQuery={searchQuery} dataType="pesawat" />
           </div>
         </div>
       </div>
@@ -48,4 +48,4 @@ const ManajemenMitra = ({ isSidebarOpen }) => {
   );
 };
 
-export default ManajemenMitra
+export default ManajemenMitraPesawat

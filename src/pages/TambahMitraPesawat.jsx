@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import Button from "../components/Button";
-import dataPengguna from "../utils/dataPengguna.json"; // Assuming you have the user data
+import dataMitraPesawat from "../utils/dataMitraPesawat.json"; // Assuming you have the airline partner data
 
-const TambahPengguna = ({ isSidebarOpen }) => {
-  // State to store the input values
+const TambahMitraPesawat = ({ isSidebarOpen }) => {
+  // State to store the input values for the new partner
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,29 +32,27 @@ const TambahPengguna = ({ isSidebarOpen }) => {
     setConfirmPassword('');
   };
 
-  // Handle Submit button click - add new user to data
+  // Handle Submit button click - add new partner to data
   const handleSubmit = () => {
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
 
-    // Create new user object
-    const newUser = {
-      id: `U${(dataPengguna.length + 1).toString().padStart(3, '0')}`, // Generating a new user ID
+    // Create new partner object
+    const newMitra = {
+      id: `AP${(dataMitraPesawat.length + 1).toString().padStart(3, '0')}`, // Generating a new partner ID
       nama: name,
       email: email,
-      password: password,
-      saldo: 0, // Assuming default saldo is 0
     };
 
-    // Add the new user to the existing data (For now, we'll just log it to console)
-    console.log("New user added:", newUser);
-    dataPengguna.push(newUser);
+    // Add the new partner to the existing data (For now, we'll just log it to console)
+    console.log("New airline partner added:", newMitra);
+    dataMitraPesawat.push(newMitra);  // This will add the new partner to the array
 
     // Reset fields after submitting
     handleReset();
-    alert("User added successfully!");
+    alert("Airline partner added successfully!");
   };
 
   return (
@@ -62,24 +60,24 @@ const TambahPengguna = ({ isSidebarOpen }) => {
       <div className={`bg-ungu10 pt-20 h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
-            <p className="text-xl">User Management</p>
-            <p className="text-xs pt-2 text-gray-600">Add User</p>
+            <p className="text-xl">Partner Management</p>
+            <p className="text-xs pt-2  text-gray-600">Add Airline Partner</p>
           </div>
           <div className="flex flex-row justify-end">
-            <Link to="/manajemen-pengguna" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link to="/manajemen-mitra-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
-            <Link to="/tambah-pengguna" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+            <Link to="/tambah-mitra-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
               <p>/</p>
-              <p className="text-xs md:text-sm">Add User</p>
+              <p className="text-xs md:text-sm">Add Airline Partner</p>
             </Link>
           </div>
         </div>
         <div className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="flex-col px-4 items-center">
             <div className="text-left md:text-xl mb-6 md:mb-12">
-              <p>Add User</p>
+              <p>Add Airline Partner</p>
             </div>
             <div className="flex flex-col mb-2 md:mb-4 items-center">
               <div className="text-left">
@@ -172,4 +170,4 @@ const TambahPengguna = ({ isSidebarOpen }) => {
   );
 };
 
-export default TambahPengguna
+export default TambahMitraPesawat

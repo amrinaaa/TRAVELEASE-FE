@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from 'react-router-dom';
 import { Pencil } from "lucide-react";
 import Button from "../components/Button";
-import dataPengguna from "../utils/dataPengguna.json"; 
+import dataMitraPesawat from "../utils/dataMitraPesawat.json"; 
 
-const EditPengguna = ({ isSidebarOpen }) => {
+const EditMitraPesawat = ({ isSidebarOpen }) => {
   const [user, setUser] = useState({
     id: '',
     nama: '',
@@ -12,7 +12,7 @@ const EditPengguna = ({ isSidebarOpen }) => {
     password: '',
   });
   const [image, setImage] = useState("https://via.placeholder.com/100");
-  const [data, setData] = useState(dataPengguna); // Untuk menyimpan data pengguna
+  const [data, setData] = useState(dataMitraPesawat); // Untuk menyimpan data pengguna
   const [showPassword, setShowPassword] = useState(false); // State untuk toggle password visibility
   const { userId } = useParams(); 
 
@@ -71,15 +71,15 @@ const EditPengguna = ({ isSidebarOpen }) => {
       <div className={`bg-ungu10 pt-20 h-full transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
-            <p className="text-xl">User Management</p>
+            <p className="text-xl">Partner Management</p>
             <p className="text-xs pt-2 text-gray-600">Edit Profile</p>
           </div>
           <div className="flex flex-row justify-end">
-            <Link to="/manajemen-pengguna" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link to="/manajemen-mitra-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
-            <Link to={`/edit-pengguna/${user.id}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+            <Link to={`/edit-mitra-pesawat/${user.id}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Edit Profile</p>
             </Link>
@@ -180,4 +180,4 @@ const EditPengguna = ({ isSidebarOpen }) => {
   );
 };
 
-export default EditPengguna
+export default EditMitraPesawat
