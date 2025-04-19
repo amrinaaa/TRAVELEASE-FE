@@ -37,7 +37,7 @@ export const login = (email, password) => async (dispatch) => {
       config
     );
 
-    Cookies.set("userToken", data.data, { expires: 7 });  // Set token for 7 days
+    Cookies.set("token", data.data, { expires: 7 });  // Set token for 7 days
 
     dispatch({ type: LOGIN_SUCCESS, payload: data });
   } catch (error) {
