@@ -21,7 +21,7 @@ export const getUsers = () => async (dispatch) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `token=${token}`,
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest'
       },
