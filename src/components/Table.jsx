@@ -1,23 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import dataPengguna from "../utils/dataPengguna.json";
 
-const Table = ({ searchQuery }) => {
-  const [data, setData] = useState([]);
-  const [editableRow, setEditableRow] = useState(null); // Track which row is editable
+const Table = ({ searchQuery, users = [] }) => {
+  const [editableRow, setEditableRow] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const navigate = useNavigate(); 
-
-  useEffect(() => {
-    setData(dataPengguna);
-  }, []);
-
-  const handleEditClick = (id) => {
-    // Toggle editable row
-    setEditableRow((prev) => (prev === id ? null : id)); 
-  };
+  const navigate = useNavigate();
 
   const handleSort = (key) => {
     setSortConfig((prev) => {
@@ -26,28 +15,35 @@ const Table = ({ searchQuery }) => {
         if (prev.direction === "asc") return { key, direction: "desc" };
         return { key: null, direction: "default" };
       }
-      return { key, direction: "asc" }; 
+      return { key, direction: "asc" };
     });
   };
 
-  const sortedData = [...data].sort((a, b) => {
-    if (sortConfig.direction === "default" || sortConfig.key === null) return 0;
-    if (sortConfig.direction === "asc") return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
-    if (sortConfig.direction === "desc") return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
-    return 0;
+  const sortedData = [...users].sort((a, b) => {
+    if (!sortConfig.key || sortConfig.direction === "default") return 0;
+    
+    const aValue = a[sortConfig.key];
+    const bValue = b[sortConfig.key];
+    
+    if (sortConfig.direction === "asc") {
+      return aValue.localeCompare?.(bValue) ?? aValue - bValue;
+    }
+    return bValue.localeCompare?.(aValue) ?? bValue - aValue;
   });
 
   const filteredData = sortedData.filter((user) =>
-    user.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // These would be connected to Redux actions in a real implementation
   const confirmDelete = (id) => {
     setDeleteId(id);
     setModalOpen(true);
   };
 
   const handleDelete = () => {
-    setData((prevData) => prevData.filter((user) => user.id !== deleteId));
+    // Dispatch delete action here
     setModalOpen(false);
     setDeleteId(null);
   };
@@ -58,9 +54,13 @@ const Table = ({ searchQuery }) => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {["id", "name", "email", "Sign-up date", "saldo"].map((col) => (
-                <th key={col} className="py-2 px-1 border cursor-pointer" onClick={() => handleSort(col)}>
-                  {col.charAt(0).toUpperCase() + col.slice(1)}{""}
+              {["name", "email", "createdAt", "currentAmount"].map((col) => (
+                <th 
+                  key={col} 
+                  className="py-2 px-1 border cursor-pointer"
+                  onClick={() => handleSort(col)}
+                >
+                  {col.charAt(0).toUpperCase() + col.slice(1).replace(/([A-Z])/g, ' $1')}
                   <i className="ml-1 ri-arrow-up-down-line"></i>
                 </th>
               ))}
@@ -71,8 +71,6 @@ const Table = ({ searchQuery }) => {
             {filteredData.length > 0 ? (
               filteredData.map((user) => (
                 <tr key={user.id} className="border-b hover:bg-gray-100">
-                  <td className="py-2 px-3 border text-center">{user.id}</td>
-
                   <td 
                     className={`py-2 px-3 border ${editableRow === user.id ? "text-blue-500 cursor-pointer underline" : ""}`}
                     onClick={() => {
@@ -81,12 +79,14 @@ const Table = ({ searchQuery }) => {
                       }
                     }}
                   >
-                    {user.nama}
+                    {user.name}
                   </td>
 
                   <td className="py-2 px-3 border">{user.email}</td>
 
-                  <td className="py-2 px-3 border">{user.tanggalDaftar}</td>
+                  <td className="py-2 px-3 border">
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </td>
 
                   <td 
                     className={`py-2 px-3 border ${editableRow === user.id ? "text-blue-500 cursor-pointer underline" : ""}`}
@@ -96,17 +96,17 @@ const Table = ({ searchQuery }) => {
                       }
                     }}
                   >
-                    Rp.{user.saldo}
+                    Rp.{user.currentAmount.toLocaleString()}
                   </td>
 
                   <td className="flex py-2 px-3 text-center justify-center">
-                    <button 
-                      onClick={() => handleEditClick(user.id)}>
+                    <button onClick={() => setEditableRow(user.id)}>
                       <i className="ri-edit-2-line text-2xl"></i>
                     </button>
                     <button 
                       className="text-red-500 mx-1" 
-                      onClick={() => confirmDelete(user.id)}>
+                      onClick={() => confirmDelete(user.id)}
+                    >
                       <i className="ri-delete-bin-5-line text-2xl"></i>
                     </button>
                   </td>
@@ -114,8 +114,8 @@ const Table = ({ searchQuery }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
-                  Tidak ada hasil ditemukan.
+                <td colSpan="5" className="text-center py-4 text-gray-500">
+                  {searchQuery ? `Tidak ada hasil untuk "${searchQuery}"` : "Tidak ada pengguna"}
                 </td>
               </tr>
             )}
@@ -127,20 +127,20 @@ const Table = ({ searchQuery }) => {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-gray-200 p-6 rounded-md shadow-md">
             <p className="text-xs md:text-lg font-semibold mb-4">
-              Anda yakin ingin menghapus {deleteId}?
+              Anda yakin ingin menghapus pengguna ini?
             </p>
             <div className="flex justify-center text-xs md:text-base">
               <button
                 className="bg-gray-400 text-white px-4 py-2 rounded-md mr-2"
                 onClick={() => setModalOpen(false)}
               >
-                No
+                Batal
               </button>
               <button
                 className="bg-red-500 text-white px-4 py-2 rounded-md"
                 onClick={handleDelete}
               >
-                Yes
+                Hapus
               </button>
             </div>
           </div>
@@ -150,4 +150,4 @@ const Table = ({ searchQuery }) => {
   );
 };
 
-export default Table
+export default Table;

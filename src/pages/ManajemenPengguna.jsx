@@ -1,10 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { getUsers } from "../redux/actions/adminActions";
 import Searchbar from "../components/Searchbar";
 import Table from "../components/Table";
 
 const ManajemenPengguna = ({ isSidebarOpen }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const dispatch = useDispatch();
+  
+  // Get users from Redux store
+  const { loading, error, users } = useSelector((state) => state.admin);
+
+  useEffect(() => {
+    dispatch(getUsers());
+  }, [dispatch]);
+
+  // Filter users based on search query
+  const filteredUsers = users?.filter(user =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="flex transition-all duration-300">
@@ -12,11 +28,11 @@ const ManajemenPengguna = ({ isSidebarOpen }) => {
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
             <p className="text-xl">User Management</p>
-            <p className="text-xs pt-2  text-gray-600">User List</p>
+            <p className="text-xs pt-2 text-gray-600">User List</p>
           </div>
           <div className="flex flex-row justify-end">
             <Link to="/manajemen-pengguna" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
-              <i class="fa-solid fa-house-chimney text-xs"></i>
+              <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
           </div>
@@ -39,13 +55,22 @@ const ManajemenPengguna = ({ isSidebarOpen }) => {
               </Link>
             </div>
           </div>
-          <div>
-            <Table searchQuery={searchQuery} />
-          </div>
+          
+          {/* Status messages */}
+          {loading && <div className="text-center py-4 text-gray-500">Loading users...</div>}
+          {error && <div className="text-red-500 text-center py-4">{error}</div>}
+          
+          {/* Table with real data */}
+          {!loading && !error && (
+            <Table 
+              searchQuery={searchQuery}
+              users={filteredUsers || []}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default ManajemenPengguna
+export default ManajemenPengguna;
