@@ -1,13 +1,30 @@
+// import React from 'react';
+
+// const Button = ({ text, bgColor, onClick }) => {
+//   return (
+//     <div className={`rounded-3xl ${bgColor} border p-2 w-20 md:w-24`}>
+//       <button className="w-full text-white font-bold text-sm md:text-base" onClick={onClick}>
+//         {text}
+//       </button>
+//     </div>
+//   );
+// };
+
+// export default Button
 import React from 'react';
 
-const Button = ({ text, bgColor, onClick }) => {
+const Button = ({ text, bgColor, onClick, disabled = false }) => {
   return (
-    <div className={`rounded-3xl ${bgColor} border p-2 w-20 md:w-24`}>
-      <button className="w-full text-white font-bold text-sm md:text-base" onClick={onClick}>
+    <div className={`rounded-3xl ${bgColor} border p-2 w-20 md:w-24 ${disabled ? 'opacity-50' : ''}`}>
+      <button 
+        className="w-full text-white font-bold text-sm md:text-base" 
+        onClick={onClick}
+        disabled={disabled}
+      >
         {text}
       </button>
     </div>
   );
 };
 
-export default Button
+export default Button;
