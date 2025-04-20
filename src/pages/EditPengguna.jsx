@@ -262,13 +262,12 @@ const EditPengguna = ({ isSidebarOpen }) => {
 
   const handleSubmit = () => {
     dispatch(updateUser(currentUser.id, name, currentUser.email))
-      .unwrap()
-      .then(() => {
+      .then((updatedUser) => {
         alert("Profile updated successfully!");
         navigate('/manajemen-pengguna');
       })
       .catch((error) => {
-        alert(`Update failed: ${error}`);
+        alert(`Update failed: ${error.message}`);
       });
   };
 
