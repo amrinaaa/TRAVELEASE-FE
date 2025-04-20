@@ -9,6 +9,10 @@ const initialState = {
   errorFetch: null,
   errorFetchSingle: null,
   errorUpdate: null,
+  loadingUpdateAmount: false,
+  errorUpdateAmount: null,
+  loadingFetchById: false,
+  errorFetchById: null,
 };
 
 const adminSlice = createSlice({
@@ -68,6 +72,34 @@ const adminSlice = createSlice({
           Object.assign(state, initialState);
         }
       },
+      GET_USER_BY_ID_REQUEST: (state) => {
+        state.loadingFetchById = true;
+        state.errorFetchById = null;
+      },
+      GET_USER_BY_ID_SUCCESS: (state, action) => {
+        state.loadingFetchById = false;
+        state.currentUser = action.payload;
+        state.errorFetchById = null;
+      },
+      GET_USER_BY_ID_FAILURE: (state, action) => {
+        state.loadingFetchById = false;
+        state.errorFetchById = action.payload;
+      },
+      UPDATE_AMOUNT_REQUEST: (state) => {
+        state.loadingUpdateAmount = true;
+        state.errorUpdateAmount = null;
+      },
+      UPDATE_AMOUNT_SUCCESS: (state, action) => {
+        state.loadingUpdateAmount = false;
+        if (state.currentUser) {
+          state.currentUser.currentAmount += action.payload.amount;
+        }
+        state.errorUpdateAmount = null;
+      },
+      UPDATE_AMOUNT_FAILURE: (state, action) => {
+        state.loadingUpdateAmount = false;
+        state.errorUpdateAmount = action.payload;
+      },
     });
     
     // Export all actions
@@ -81,7 +113,13 @@ const adminSlice = createSlice({
       UPDATE_USER_REQUEST,
       UPDATE_USER_SUCCESS,
       UPDATE_USER_FAILURE,
-      resetAdminState
+      resetAdminState,
+      GET_USER_BY_ID_REQUEST,
+      GET_USER_BY_ID_SUCCESS,
+      GET_USER_BY_ID_FAILURE,
+      UPDATE_AMOUNT_REQUEST,
+      UPDATE_AMOUNT_SUCCESS,
+      UPDATE_AMOUNT_FAILURE
     } = adminSlice.actions;
     
     export default adminSlice.reducer;
