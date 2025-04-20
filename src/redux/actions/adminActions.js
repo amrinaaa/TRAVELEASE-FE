@@ -97,3 +97,64 @@ export const updateUser = (uid, name, email) => async (dispatch) => {
     throw error;
   }
 };
+
+export const getUserById = (userId) => async (dispatch) => {
+  try {
+    dispatch({ type: "admin/GET_USER_BY_ID_REQUEST" });
+    
+    const { data } = await axios.get(`${api_url}/user/${userId}`, {
+      headers: { 
+        Authorization: `Bearer ${Cookies.get("token")}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (data?.data) {
+      dispatch({ 
+        type: "admin/GET_USER_BY_ID_SUCCESS", 
+        payload: data.data
+      });
+    } else {
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    dispatch({
+      type: "admin/GET_USER_BY_ID_FAILURE",
+      payload: error.response?.data?.message || error.message
+    });
+  }
+};
+
+export const updateUserAmount = (uid, amount) => async (dispatch) => {
+  try {
+    dispatch({ type: "admin/UPDATE_AMOUNT_REQUEST" });
+
+    const token = Cookies.get("token");
+    const { data } = await axios.put(`${api_url}/amount`, 
+      {
+        uid,
+        amount: Number(amount),
+        type: "adding"
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    dispatch({ 
+      type: "admin/UPDATE_AMOUNT_SUCCESS",
+      payload: { uid, amount }
+    });
+
+    return data;
+  } catch (error) {
+    dispatch({
+      type: "admin/UPDATE_AMOUNT_FAILURE",
+      payload: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+};

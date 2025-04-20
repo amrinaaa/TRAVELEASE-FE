@@ -42,14 +42,21 @@ const Table = ({ searchQuery, users = [] }) => {
   const handleNameClick = (email) => {
     if (editingRow === email) {
       navigate(`/edit-pengguna/${encodeURIComponent(email)}`);
-      setEditingRow(null); // Reset edit mode after navigation
+      setEditingRow(null);
     }
   };
 
+  // const handleAmountClick = (id, email) => {
+  //   if (editingRow === email) {
+  //     navigate(`/edit-saldo-pengguna/${id}`);
+  //   }
+  // };
 
-  const handleAmountClick = (email) => {
+  const handleAmountClick = (id, email, currentAmount) => {
     if (editingRow === email) {
-      navigate(`/edit-saldo-pengguna/${encodeURIComponent(email)}`);
+      navigate(`/edit-saldo-pengguna/${id}`, {
+        state: { currentAmount } // Pass current amount via navigation state
+      });
     }
   };
 
@@ -109,11 +116,11 @@ const Table = ({ searchQuery, users = [] }) => {
                       className={`py-2 px-3 border ${
                         isEditing ? "text-blue-500 cursor-pointer underline" : ""
                       }`}
-                      onClick={() => handleAmountClick(user.email)}
+                      onClick={() => handleAmountClick(user.id, user.email, user.currentAmount)}
                     >
                       Rp.{user.currentAmount.toLocaleString()}
                     </td>
-
+                    
                     <td className="flex py-2 px-3 text-center justify-center">
                       <button 
                         onClick={() => handleEditToggle(user.email)}
