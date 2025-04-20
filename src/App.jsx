@@ -76,7 +76,7 @@ const App = () => {
         <Route path="/admin" element={<DashboardAdmin isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-pengguna" element={<ManajemenPengguna isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-pengguna" element={<TambahPengguna isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-pengguna/:userId" element={<EditPengguna isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-pengguna/:email" element={<EditPengguna isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-saldo-pengguna/:userId" element={<EditSaldoPengguna isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-mitra-hotel" element={<ManajemenMitraHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-mitra-hotel" element={<TambahMitraHotel isSidebarOpen={isSidebarOpen} />} />
