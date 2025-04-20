@@ -190,47 +190,30 @@ import { getUserByEmail, updateUser } from '../redux/actions/adminActions';
 import Button from "../components/Button";
 
 const EditPengguna = ({ isSidebarOpen }) => {
+  // Hooks called unconditionally first
   const { email } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  
-
   const { 
     currentUser,
     loadingFetchSingle,
     errorFetchSingle,
     loadingUpdate,
-    errorUpdate // Now properly defined
+    errorUpdate
   } = useSelector((state) => state.admin);
 
+  // State hooks
   const [name, setName] = useState('');
-  const [image, setImage] = useState("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZWVlZSIvPgo8L3N2Zz4="); // Base64 SV
+  const [image, setImage] = useState("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZWVlZSIvPgo8L3N2Zz4=");
 
-  console.log('Email param:', email);
-console.log('Current user:', currentUser);
-console.log('Loading state:', loadingFetchSingle);
-
-
+  // Effect hooks
   useEffect(() => {
-    if (!email) return;
-    
-    // Use encodeURIComponent instead of decodeURIComponent
-    const encodedEmail = encodeURIComponent(email);
-    dispatch(getUserByEmail(encodedEmail));
+    if (email) {
+      const encodedEmail = encodeURIComponent(email);
+      dispatch(getUserByEmail(encodedEmail));
+    }
   }, [dispatch, email]);
-
-  // Add proper null checks
-  if (!currentUser && !loadingFetchSingle) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-500">User not found</p>
-        <p className="text-sm text-gray-600 mt-2">
-          Email: {decodeURIComponent(email)}
-        </p>
-      </div>
-    );
-  }
 
   useEffect(() => {
     if (currentUser) {
@@ -239,49 +222,11 @@ console.log('Loading state:', loadingFetchSingle);
     }
   }, [currentUser]);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-    }
-  };
-
-  const handleSubmit = () => {
-    if (currentUser) {
-      dispatch(updateUser(currentUser.id, name, currentUser.email))
-        .unwrap()
-        .then(() => {
-          alert("Profile updated successfully!");
-          navigate('/manajemen-pengguna');
-        })
-        .catch((error) => {
-          alert(`Update failed: ${error}`);
-        });
-    }
-  };
-
-  const handleReset = () => {
-    setName(currentUser?.name || '');
-  };
-
+  // Conditional returns moved after all hooks
   if (loadingFetchSingle) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="text-ungu1">Loading user data...</div>
-      </div>
-    );
-  }
-  
-  // Move this check AFTER loading check
-  if (!currentUser && !loadingFetchSingle) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-500">User not found</p>
-        {email && (
-          <p className="text-sm text-gray-600 mt-2">
-            Email: {email}
-          </p>
-        )}
       </div>
     );
   }
@@ -294,6 +239,44 @@ console.log('Loading state:', loadingFetchSingle);
     );
   }
 
+  if (!currentUser) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-500">User not found</p>
+        {email && (
+          <p className="text-sm text-gray-600 mt-2">
+            Email: {email}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // Event handlers
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = () => {
+    dispatch(updateUser(currentUser.id, name, currentUser.email))
+      .unwrap()
+      .then(() => {
+        alert("Profile updated successfully!");
+        navigate('/manajemen-pengguna');
+      })
+      .catch((error) => {
+        alert(`Update failed: ${error}`);
+      });
+  };
+
+  const handleReset = () => {
+    setName(currentUser.name);
+  };
+
+  // Main component return
   return (
     <div className="flex transition-all duration-300">
       <div className={`bg-ungu10 pt-20 h-full transition-all duration-300 ${

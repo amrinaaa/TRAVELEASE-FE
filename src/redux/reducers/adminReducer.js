@@ -9,9 +9,6 @@ const initialState = {
   errorFetch: null,
   errorFetchSingle: null,
   errorUpdate: null,
-  currentUser: null, // Ensure this is null initially
-  loadingFetchSingle: false,
-  errorFetchSingle: null,
 };
 
 const adminSlice = createSlice({
