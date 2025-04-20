@@ -183,3 +183,33 @@ export const deleteUser = (uid) => async (dispatch) => {
     throw error;
   }
 };
+
+export const createUser = (name, email, password) => async (dispatch) => {
+  try {
+    dispatch({ type: "CREATE_USER_REQUEST" });
+
+    const token = Cookies.get("token");
+    const { data } = await axios.post(`${api_url}/user`, 
+      { name, email, password },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    dispatch({ 
+      type: "CREATE_USER_SUCCESS",
+      payload: data.data.user
+    });
+
+    return data;
+  } catch (error) {
+    dispatch({
+      type: "CREATE_USER_FAILURE",
+      payload: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+};
