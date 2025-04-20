@@ -13,6 +13,8 @@ const initialState = {
   errorUpdateAmount: null,
   loadingFetchById: false,
   errorFetchById: null,
+  loadingCreate: false,
+  errorCreate: null,
 };
 
 const adminSlice = createSlice({
@@ -100,6 +102,38 @@ const adminSlice = createSlice({
         state.loadingUpdateAmount = false;
         state.errorUpdateAmount = action.payload;
       },
+      DELETE_USER_REQUEST: (state) => {
+        state.loadingDelete = true;
+        state.errorDelete = null;
+      },
+      DELETE_USER_SUCCESS: (state) => {
+        state.loadingDelete = false;
+        state.errorDelete = null;
+      },
+      DELETE_USER_FAILURE: (state, action) => {
+        state.loadingDelete = false;
+        state.errorDelete = action.payload;
+      },
+      CREATE_USER_REQUEST: (state) => {
+        state.loadingCreate = true;
+        state.errorCreate = null;
+        state.successCreate = false;
+      },
+      CREATE_USER_SUCCESS: (state, action) => {
+        state.loadingCreate = false;
+        state.users.push(action.payload);
+        state.errorCreate = null;
+        state.successCreate = true;
+      },
+      CREATE_USER_FAILURE: (state, action) => {
+        state.loadingCreate = false;
+        state.errorCreate = action.payload;
+      },
+      RESET_CREATE_STATE: (state) => {
+        state.loadingCreate = false;
+        state.errorCreate = null;
+        state.successCreate = false;
+      }
     });
     
     // Export all actions
@@ -119,7 +153,13 @@ const adminSlice = createSlice({
       GET_USER_BY_ID_FAILURE,
       UPDATE_AMOUNT_REQUEST,
       UPDATE_AMOUNT_SUCCESS,
-      UPDATE_AMOUNT_FAILURE
+      UPDATE_AMOUNT_FAILURE,
+      DELETE_USER_REQUEST,
+      DELETE_USER_SUCCESS,
+      DELETE_USER_FAILURE,
+      CREATE_USER_REQUEST,
+      CREATE_USER_SUCCESS,
+      CREATE_USER_FAILURE
     } = adminSlice.actions;
     
     export default adminSlice.reducer;

@@ -1,65 +1,95 @@
-import React, { useState } from "react";
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../components/Button";
-import dataPengguna from "../utils/dataPengguna.json"; // Assuming you have the user data
+import { createUser } from "../redux/actions/adminActions";
 
 const TambahPengguna = ({ isSidebarOpen }) => {
-  // State to store the input values
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { 
+    loadingCreate, 
+    errorCreate,
+    successCreate  // Add success state from Redux
+  } = useSelector((state) => state.admin);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  // Handle input changes
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "name") {
-      setName(value);
-    } else if (name === "email") {
-      setEmail(value);
-    } else if (name === "password") {
-      setPassword(value);
-    } else if (name === "confirmPassword") {
-      setConfirmPassword(value);
-    }
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
-  // Handle Reset button click - clear all inputs
   const handleReset = () => {
-    setName('');
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    });
+    setShowSuccess(false);
   };
 
-  // Handle Submit button click - add new user to data
-  const handleSubmit = () => {
-    if (password !== confirmPassword) {
+  useEffect(() => {
+    if (successCreate) {
+      const timer = setTimeout(() => {
+        dispatch({ type: "RESET_CREATE_STATE" });
+        navigate("/manajemen-pengguna");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [successCreate, navigate, dispatch]);
+
+
+  const handleSubmit = async () => {
+    if (!formData.name || !formData.email || !formData.password) {
+      alert("Please fill all required fields!");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
 
-    // Create new user object
-    const newUser = {
-      id: `U${(dataPengguna.length + 1).toString().padStart(3, '0')}`, // Generating a new user ID
-      nama: name,
-      email: email,
-      password: password,
-      saldo: 0, // Assuming default saldo is 0
-    };
+    try {
+      await dispatch(createUser(
+        formData.name,
+        formData.email,
+        formData.password
+      ));
+      
 
-    // Add the new user to the existing data (For now, we'll just log it to console)
-    console.log("New user added:", newUser);
-    dataPengguna.push(newUser);
+      setShowSuccess(true);
+      
+      setTimeout(() => {
+        setShowSuccess(false);
+        navigate("/manajemen-pengguna");
+      }, 3000);
 
-    // Reset fields after submitting
-    handleReset();
-    alert("User added successfully!");
+      handleReset();
+
+    } catch (error) {
+      // Error handled by reducer
+    }
   };
 
   return (
     <div className="flex transition-all duration-300">
-      <div className={`bg-ungu10 pt-20 h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
+      <div className={`bg-ungu10 pt-20 h-screen transition-all duration-300 ${
+        isSidebarOpen 
+          ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" 
+          : "ml-0 w-full"
+      }`}>
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
             <p className="text-xl">User Management</p>
@@ -76,94 +106,111 @@ const TambahPengguna = ({ isSidebarOpen }) => {
             </Link>
           </div>
         </div>
+
         <div className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="flex-col px-4 items-center">
+          {successCreate && (
+            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
+              ✓ User created successfully! Redirecting...
+            </div>
+          )}
+            {errorCreate && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+                ⚠️ Error: {errorCreate}
+              </div>
+            )}
+
             <div className="text-left md:text-xl mb-6 md:mb-12">
-              <p>Add User</p>
+              <p>Add New User</p>
             </div>
-            <div className="flex flex-col mb-2 md:mb-4 items-center">
-              <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-700">
-                  <label className="text-red-700 mr-1">*</label>Name
+
+            <div className="space-y-4 max-w-md mx-auto">
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <span className="text-red-600">*</span> Full Name
                 </label>
-                <div className="md:w-96 w-64">
-                  <div className="flex w-full items-center border rounded-lg p-2 bg-gray-100">
-                    <i className="ri-pencil-fill text-gray-500 mr-2"></i>
-                    <input
-                      type="text"
-                      name="name"
-                      value={name}
-                      onChange={handleInputChange}
-                      placeholder="Partner's name"
-                      className="w-full bg-transparent focus:outline-none"
-                    />
-                  </div>
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                  <i className="ri-user-3-line text-gray-500 mr-2"></i>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter full name"
+                    className="w-full bg-transparent focus:outline-none"
+                    required
+                  />
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col mb-2 md:mb-4 items-center">
-              <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-700">
-                  <label className="text-red-700 mr-1">*</label>Email
+
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <span className="text-red-600">*</span> Email Address
                 </label>
-                <div className="md:w-96 w-64">
-                  <div className="flex w-full items-center border rounded-lg p-2 bg-gray-100">
-                    <i className="ri-pencil-fill text-gray-500 mr-2"></i>
-                    <input
-                      type="email"
-                      name="email"
-                      value={email}
-                      onChange={handleInputChange}
-                      placeholder="Partner's email"
-                      className="w-full bg-transparent focus:outline-none"
-                    />
-                  </div>
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                  <i className="ri-mail-line text-gray-500 mr-2"></i>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Enter email address"
+                    className="w-full bg-transparent focus:outline-none"
+                    required
+                  />
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col mb-2 md:mb-4 items-center">
-              <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-700">
-                  <label className="text-red-700 mr-1">*</label>Password
+
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <span className="text-red-600">*</span> Password
                 </label>
-                <div className="md:w-96 w-64">
-                  <div className="flex w-full items-center border rounded-lg p-2 bg-gray-100">
-                    <i className="ri-lock-2-line text-gray-500 mr-2"></i>
-                    <input
-                      type="password"
-                      name="password"
-                      value={password}
-                      onChange={handleInputChange}
-                      placeholder="Password"
-                      className="w-full bg-transparent focus:outline-none"
-                    />
-                  </div>
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                  <i className="ri-lock-password-line text-gray-500 mr-2"></i>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Enter password"
+                    className="w-full bg-transparent focus:outline-none"
+                    required
+                  />
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col mb-2 md:mb-4 items-center">
-              <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-700">
-                  <label className="text-red-700 mr-1">*</label>Confirm Password
+
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <span className="text-red-600">*</span> Confirm Password
                 </label>
-                <div className="md:w-96 w-64">
-                  <div className="flex w-full items-center border rounded-lg p-2 bg-gray-100">
-                    <i className="ri-lock-2-line text-gray-500 mr-2"></i>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={confirmPassword}
-                      onChange={handleInputChange}
-                      placeholder="Confirm Password"
-                      className="w-full bg-transparent focus:outline-none"
-                    />
-                  </div>
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                  <i className="ri-lock-password-line text-gray-500 mr-2"></i>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    placeholder="Confirm password"
+                    className="w-full bg-transparent focus:outline-none"
+                    required
+                  />
                 </div>
               </div>
-            </div>
-            <div className="flex flex-row justify-center gap-6 text-white font-bold mt-12 mb-10">
-              <Button text="Reset" bgColor="bg-yellow1" onClick={handleReset} />
-              <Button text="Submit" bgColor="bg-blue1" onClick={handleSubmit} />
+
+              <div className="flex justify-center gap-4 mt-8">
+                <Button
+                  text="Reset Form"
+                  bgColor="bg-yellow-500 hover:bg-yellow-600"
+                  onClick={handleReset}
+                  disabled={loadingCreate}
+                />
+                <Button
+                  text={loadingCreate ? "Creating User..." : "Submit"}
+                  bgColor="bg-blue-600 hover:bg-blue-700"
+                  onClick={handleSubmit}
+                  disabled={loadingCreate}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -172,4 +219,4 @@ const TambahPengguna = ({ isSidebarOpen }) => {
   );
 };
 
-export default TambahPengguna
+export default TambahPengguna;

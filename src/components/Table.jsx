@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getUsers, deleteUser } from "../redux/actions/adminActions";
+import { useDispatch, useSelector } from "react-redux"
 
 const Table = ({ searchQuery, users = [] }) => {
+  const dispatch = useDispatch();
+  const { loadingDelete, errorDelete } = useSelector((state) => state.auth);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [editingRow, setEditingRow] = useState(null);
-  const navigate = useNavigate();
-
+  const navigate = useNavigate()
   // Sorting logic
   const handleSort = (key) => {
     setSortConfig(prev => ({
@@ -66,10 +69,15 @@ const Table = ({ searchQuery, users = [] }) => {
     setModalOpen(true);
   };
 
-  const handleDelete = () => {
-    // Add actual delete implementation
-    setModalOpen(false);
-    setDeleteId(null);
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteUser(deleteId));
+      setModalOpen(false);
+      setDeleteId(null);
+      dispatch(getUsers()); // Refresh the user list
+    } catch (error) {
+      // Error handled by reducer
+    }
   };
 
   return (
@@ -160,18 +168,27 @@ const Table = ({ searchQuery, users = [] }) => {
             <p className="text-xs md:text-lg font-semibold mb-4">
               Anda yakin ingin menghapus pengguna ini?
             </p>
+            
+            {errorDelete && (
+              <div className="text-red-500 text-sm mb-4 text-center">
+                {errorDelete}
+              </div>
+            )}
+
             <div className="flex justify-center text-xs md:text-base">
               <button
                 className="bg-gray-400 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-500 transition-colors"
                 onClick={() => setModalOpen(false)}
+                disabled={loadingDelete}
               >
                 Batal
               </button>
               <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors disabled:bg-red-300"
                 onClick={handleDelete}
+                disabled={loadingDelete}
               >
-                Hapus
+                {loadingDelete ? "Menghapus..." : "Hapus"}
               </button>
             </div>
           </div>

@@ -158,3 +158,59 @@ export const updateUserAmount = (uid, amount) => async (dispatch) => {
     throw error;
   }
 };
+
+export const deleteUser = (uid) => async (dispatch) => {
+  try {
+    dispatch({ type: "DELETE_USER_REQUEST" });
+
+    const token = Cookies.get("token");
+    await axios.delete(`${api_url}/user`, {
+      data: { uid },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    dispatch({ type: "DELETE_USER_SUCCESS" });
+    // Refresh users list after deletion
+    dispatch(getUsers());
+  } catch (error) {
+    dispatch({
+      type: "DELETE_USER_FAILURE",
+      payload: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+};
+
+export const createUser = (name, email, password) => async (dispatch) => {
+  try {
+    dispatch({ type: "CREATE_USER_REQUEST" });
+
+    const token = Cookies.get("token");
+    const { data } = await axios.post(`${api_url}/user`, 
+      { name, email, password },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    dispatch({ 
+      type: "CREATE_USER_SUCCESS",
+      payload: data.data.user
+    });
+
+    return data; // Return the response data
+
+  } catch (error) {
+    dispatch({
+      type: "CREATE_USER_FAILURE",
+      payload: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+};
