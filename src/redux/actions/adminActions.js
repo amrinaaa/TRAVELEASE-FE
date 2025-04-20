@@ -65,40 +65,6 @@ export const getUserByEmail = (email) => async (dispatch) => {
   }
 };
 
-
-// Update user action
-// export const updateUser = (uid, name, email) => async (dispatch) => {
-//   try {
-//     dispatch({ type: "UPDATE_USER_REQUEST" });
-
-//     const token = Cookies.get("token");
-//     const { data } = await axios.patch(`${api_url}/user`, 
-//       { uid, name, email },
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//           'Content-Type': 'application/json'
-//         }
-//       }
-//     );
-
-//     dispatch({ 
-//       type: "UPDATE_USER_SUCCESS",
-//       payload: data.data
-//     });
-    
-//     // Refresh users list
-//     dispatch(getUsers());
-    
-//   } catch (error) {
-//     dispatch({
-//       type: "UPDATE_USER_FAILURE",
-//       payload: error.response?.data?.message || error.message
-//     });
-//   }
-// };
-
-
 export const updateUser = (uid, name, email) => async (dispatch) => {
   try {
     dispatch({ type: "UPDATE_USER_REQUEST" });
