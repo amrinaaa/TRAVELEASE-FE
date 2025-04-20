@@ -158,3 +158,28 @@ export const updateUserAmount = (uid, amount) => async (dispatch) => {
     throw error;
   }
 };
+
+export const deleteUser = (uid) => async (dispatch) => {
+  try {
+    dispatch({ type: "DELETE_USER_REQUEST" });
+
+    const token = Cookies.get("token");
+    await axios.delete(`${api_url}/user`, {
+      data: { uid },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    dispatch({ type: "DELETE_USER_SUCCESS" });
+    // Refresh users list after deletion
+    dispatch(getUsers());
+  } catch (error) {
+    dispatch({
+      type: "DELETE_USER_FAILURE",
+      payload: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+};
