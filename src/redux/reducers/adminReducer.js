@@ -117,16 +117,23 @@ const adminSlice = createSlice({
       CREATE_USER_REQUEST: (state) => {
         state.loadingCreate = true;
         state.errorCreate = null;
+        state.successCreate = false;
       },
       CREATE_USER_SUCCESS: (state, action) => {
         state.loadingCreate = false;
         state.users.push(action.payload);
         state.errorCreate = null;
+        state.successCreate = true;
       },
       CREATE_USER_FAILURE: (state, action) => {
         state.loadingCreate = false;
         state.errorCreate = action.payload;
       },
+      RESET_CREATE_STATE: (state) => {
+        state.loadingCreate = false;
+        state.errorCreate = null;
+        state.successCreate = false;
+      }
     });
     
     // Export all actions

@@ -204,7 +204,8 @@ export const createUser = (name, email, password) => async (dispatch) => {
       payload: data.data.user
     });
 
-    return data;
+    return data; // Return the response data
+
   } catch (error) {
     dispatch({
       type: "CREATE_USER_FAILURE",
