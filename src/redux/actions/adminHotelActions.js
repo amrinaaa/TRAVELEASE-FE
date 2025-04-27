@@ -160,3 +160,37 @@ export const getHotelDetail = (name) => async (dispatch) => {
       dispatch(getHotelDetailFailure(error.response?.data?.message || error.message));
     }
   };
+
+  export const updateUserAmount = (uid, amount) => async (dispatch) => {
+    try {
+      dispatch({ type: "admin/UPDATE_AMOUNT_REQUEST" });
+  
+      const token = Cookies.get("token");
+      const { data } = await axios.put(`${api_url}/amount`, 
+        {
+          uid,
+          amount: Number(amount),
+          type: "adding"
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+  
+      dispatch({ 
+        type: "admin/UPDATE_AMOUNT_SUCCESS",
+        payload: { uid, amount }
+      });
+  
+      return data;
+    } catch (error) {
+      dispatch({
+        type: "admin/UPDATE_AMOUNT_FAILURE",
+        payload: error.response?.data?.message || error.message
+      });
+      throw error;
+    }
+  };
