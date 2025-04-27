@@ -197,6 +197,7 @@ const EditMitraHotel = () => {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [image, setImage] = useState(""); // Untuk menyimpan image jika diubah
 
   useEffect(() => {
     if (mitraName) {
@@ -208,6 +209,7 @@ const EditMitraHotel = () => {
     if (hotelDetail) {
       setName(hotelDetail.name);
       setEmail(hotelDetail.email);
+      setImage(hotelDetail.profilePicture || "https://via.placeholder.com/100"); // Set default image jika tidak ada
     }
   }, [hotelDetail]);
 
@@ -232,7 +234,14 @@ const EditMitraHotel = () => {
     }
 
     const uid = hotelDetail.id; // Ambil id hotel untuk update
-    dispatch(editHotelPartner(uid, name, email));
+    dispatch(editHotelPartner(uid, name, email, image)); // Mengirim data untuk diedit
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(URL.createObjectURL(file)); // Menampilkan image yang dipilih
+    }
   };
 
   if (loadingFetch) {
@@ -264,6 +273,15 @@ const EditMitraHotel = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter hotel email"
           />
+        </div>
+        <div>
+          <label>Profile Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          {image && <img src={image} alt="Profile" width="100" />}
         </div>
         <button type="submit" disabled={loadingEdit}>
           {loadingEdit ? "Saving..." : "Save Changes"}
