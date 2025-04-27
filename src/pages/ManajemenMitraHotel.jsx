@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import { getHotels } from "../redux/actions/adminHotelActions"; // Import action
 import Searchbar from "../components/Searchbar";
-import TableMitra from "../components/TableMitra"; // Use the specific table for mitra hotel
+import TableMitra from "../components/TableMitra";
 
 const ManajemenMitraHotel = ({ isSidebarOpen }) => {
-  const [searchQuery, setSearchQuery] = useState(""); // State untuk pencarian mitra hotel
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getHotels()); // Fetch hotel data on mount
+  }, [dispatch]);
 
   return (
     <div className="flex transition-all duration-300">
@@ -48,4 +55,4 @@ const ManajemenMitraHotel = ({ isSidebarOpen }) => {
   );
 };
 
-export default ManajemenMitraHotel
+export default ManajemenMitraHotel;

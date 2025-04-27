@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import dataMitraHotel from "../utils/dataMitraHotel.json";
-import dataMitraPesawat from "../utils/dataMitraPesawat.json";
+import { deleteHotelPartner } from "../redux/actions/adminHotelActions"; // Import delete action
 
 const TableMitra = ({ searchQuery, dataType }) => {
-  const [data, setData] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { hotels, loadingFetch, errorFetch, loadingDelete, errorDelete } = useSelector((state) => state.adminHotel);
+
   const [editableRow, setEditableRow] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (dataType === "hotel") {
-      setData(dataMitraHotel);  // Set data as hotel data
-    } else if (dataType === "pesawat") {
-      setData(dataMitraPesawat);  // Set data as airline data
-    }
-  }, [dataType]);  // Re-run when `dataType` changes
 
   const handleEditClick = (id) => {
-    // Toggle editable row
     setEditableRow((prev) => (prev === id ? null : id)); 
   };
 
@@ -31,11 +24,11 @@ const TableMitra = ({ searchQuery, dataType }) => {
         if (prev.direction === "asc") return { key, direction: "desc" };
         return { key: null, direction: "default" };
       }
-      return { key, direction: "asc" }; 
+      return { key, direction: "asc" };
     });
   };
 
-  const sortedData = [...data].sort((a, b) => {
+  const sortedData = [...hotels].sort((a, b) => {
     if (sortConfig.direction === "default" || sortConfig.key === null) return 0;
     if (sortConfig.direction === "asc") return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
     if (sortConfig.direction === "desc") return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
@@ -43,7 +36,8 @@ const TableMitra = ({ searchQuery, dataType }) => {
   });
 
   const filteredData = sortedData.filter((mitra) =>
-    mitra.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    mitra.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    mitra.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const confirmDelete = (id) => {
@@ -52,30 +46,32 @@ const TableMitra = ({ searchQuery, dataType }) => {
   };
 
   const handleDelete = () => {
-    setData((prevData) => prevData.filter((mitra) => mitra.id !== deleteId));
-    setModalOpen(false);
-    setDeleteId(null);
+    if (deleteId) {
+      dispatch(deleteHotelPartner(deleteId)); // Dispatch the delete action
+      setModalOpen(false);
+      setDeleteId(null);
+    }
   };
 
   const handleEditNavigation = (mitra) => {
     if (editableRow === mitra.id) {
-      if (dataType === "hotel") {
-        navigate(`/edit-mitra-hotel/${mitra.id}`);
-      } else if (dataType === "pesawat") {
-        navigate(`/edit-mitra-pesawat/${mitra.id}`);
-      }
+      navigate(`/edit-mitra-hotel/${mitra.name}`);
     }
   };
 
   const handleSaldoNavigation = (mitra) => {
     if (editableRow === mitra.id) {
-      if (dataType === "hotel") {
-        navigate(`/edit-saldo-mitra-hotel/${mitra.id}`);
-      } else if (dataType === "pesawat") {
-        navigate(`/edit-saldo-mitra-pesawat/${mitra.id}`);
-      }
+      navigate(`/edit-saldo-mitra-hotel/${mitra.id}`);
     }
   };
+
+  if (loadingFetch) {
+    return <div className="p-4 text-center">Loading data...</div>;
+  }
+
+  if (errorFetch) {
+    return <div className="p-4 text-center text-red-500">Error: {errorFetch}</div>;
+  }
 
   return (
     <div className="p-4">
@@ -101,17 +97,17 @@ const TableMitra = ({ searchQuery, dataType }) => {
                     className={`py-2 px-3 border ${editableRow === mitra.id ? "text-blue-500 cursor-pointer underline" : ""}`}
                     onClick={() => handleEditNavigation(mitra)}
                   >
-                    {mitra.nama}
+                    {mitra.name}
                   </td>
                   <td className="py-2 px-3 border">{mitra.email}</td>
-                  <td className="py-2 px-3 border">{mitra.tanggalDaftar}</td>
+                  <td className="py-2 px-3 border">{new Date(mitra.createdAt).toLocaleDateString()}</td>
                   <td
-                    className={`py-2 px-3 border ${editableRow === mitra.id ? "text-blue-500 cursor-pointer underline" : ""}`}
-                    onClick={() => handleSaldoNavigation(mitra)}
-                  >
-                    Rp.{mitra.saldo}
-                  </td>
-                  <td className="py-2 px-3 border">{mitra.status}</td>
+                     className={`py-2 px-3 border ${editableRow === mitra.id ? "text-blue-500 cursor-pointer underline" : ""}`}
+                     onClick={() => handleSaldoNavigation(mitra)}
+                   >
+                     Rp.{mitra.currentAmount}
+                   </td>
+                  <td className="py-2 px-3 border">Active</td>
                   <td className="flex py-2 px-3 text-center justify-center">
                     <button onClick={() => handleEditClick(mitra.id)}>
                       <i className="ri-edit-2-line text-2xl"></i>
@@ -124,7 +120,7 @@ const TableMitra = ({ searchQuery, dataType }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
+                <td colSpan="7" className="text-center py-4 text-gray-500">
                   Tidak ada hasil ditemukan.
                 </td>
               </tr>
@@ -160,4 +156,4 @@ const TableMitra = ({ searchQuery, dataType }) => {
   );
 };
 
-export default TableMitra
+export default TableMitra;
