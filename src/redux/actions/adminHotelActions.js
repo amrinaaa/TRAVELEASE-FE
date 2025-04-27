@@ -4,6 +4,11 @@ import {
   getHotelsRequest,
   getHotelsSuccess,
   getHotelsFailure,
+
+  createHotelRequest,
+  createHotelSuccess,
+  createHotelFailure,
+  resetCreateHotelState,
 } from "../reducers/adminHotelReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -35,4 +40,32 @@ export const getHotels = () => async (dispatch) => {
     console.error("[ERROR] Fetching hotels:", error);
     dispatch(getHotelsFailure(error.response?.data?.message || error.message));
   }
+};
+
+// Create new Mitra Hotel
+export const createHotelPartner = (partnerData) => async (dispatch) => {
+    try {
+      dispatch(createHotelRequest());
+  
+      const token = Cookies.get("token");
+      console.log("[DEBUG] Auth Token for Create:", token);
+  
+      const { data } = await axios.post(`${api_url}/partner`, partnerData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      console.log("[DEBUG] Hotel Create Response:", data);
+  
+      dispatch(createHotelSuccess(data.data.user)); // user object dari response
+    } catch (error) {
+      console.error("[ERROR] Creating hotel partner:", error);
+      dispatch(createHotelFailure(error.response?.data?.message || error.message));
+    }
+  };
+  
+export const resetCreateHotel = () => (dispatch) => {
+    dispatch(resetCreateHotelState());
 };
