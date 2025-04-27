@@ -56,11 +56,11 @@ const Navbar = () => {
                         </li>
                         <li className='flex items-center justify-center gap-3'>
                             <i className="ri-hotel-line md:hidden block"></i>
-                            <Link to="/hotels" className={`font-medium ${isActiveLink('/hotels')}`}>Hotels</Link>
+                            <Link to="/list-hotel" className={`font-medium ${isActiveLink('/list-hotel')}`}>Hotels</Link>
                         </li>
                         <li className='flex items-center justify-center gap-3'>
                             <i className="ri-flight-takeoff-line md:hidden block"></i>
-                            <Link to="/flights" className={`font-medium ${isActiveLink('/flights')}`}>Flights</Link>
+                            <Link to="/list-pesawat" className={`font-medium ${isActiveLink('/list-pesawat')}`}>Flights</Link>
                         </li>
                         <div className='flex md:flex-row md:gap-2 flex-col gap-4'>
                           <li className='flex items-center justify-center gap-3'>

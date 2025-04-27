@@ -1,114 +1,36 @@
 import React, { useState } from 'react';
 
 const TableSearch = () => {
-  const [activeTab, setActiveTab] = useState('flight');
+  const [activeTab, setActiveTab] = useState('hotel'); // Default to 'hotel' instead of 'flight'
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
   return (
-    <div className="bg-ungu10 rounded-3xl shadow-lg">
+    <div className="bg-ungu10 md:ml-0 md:mr-0 rounded-3xl shadow-lg">
       <div className="flex mb-6 bg-ungu4 rounded-tr-3xl rounded-tl-3xl">
         <button
           className={`flex-1 py-2 text-center font-semibold text-white ${
-            activeTab === 'flight' ? 'border-b-4 border-black' : ''
-          } ${activeTab === 'flight' ? 'bg-transparent' : 'bg-transparent'} rounded-tl-3xl`}
-          onClick={() => handleTabClick('flight')}
-        >
-          Flights
-        </button>
-        <button
-          className={`flex-1 py-2 text-center font-semibold text-white ${
             activeTab === 'hotel' ? 'border-b-4 border-black' : ''
-          } ${activeTab === 'hotel' ? 'bg-transparent' : 'bg-transparent'} rounded-tr-3xl`}
+          } ${activeTab === 'hotel' ? 'bg-transparent' : 'bg-transparent'} rounded-tl-3xl`}
           onClick={() => handleTabClick('hotel')}
         >
           Hotels
         </button>
+        <button
+          className={`flex-1 py-2 text-center font-semibold text-white ${
+            activeTab === 'flight' ? 'border-b-4 border-black' : ''
+          } ${activeTab === 'flight' ? 'bg-transparent' : 'bg-transparent'} rounded-tr-3xl`}
+          onClick={() => handleTabClick('flight')}
+        >
+          Flights
+        </button>
       </div>
 
-      {activeTab === 'flight' ? (
+      {activeTab === 'hotel' ? (
         <div className="flex flex-col space-y-4 pl-4 pr-4 pb-6">
-            <div className="flex space-x-4">
-                <div className="flex-1">
-                    <label htmlFor="from" className="font-medium text-gray-700">
-                        From:
-                    </label>
-                    <input
-                        type="text"
-                        id="from"
-                        className="w-full p-2 border border-gray-300 rounded-3xl"
-                        placeholder="From"
-                    />
-                </div>
-
-                <div className="flex-1">
-                    <label htmlFor="to" className="font-medium text-gray-700">
-                        To:
-                    </label>
-                    <input
-                        type="text"
-                        id="to"
-                        className="w-full p-2 border border-gray-300 rounded-3xl "
-                        placeholder="To"
-                    />
-                </div>
-
-                <div className="flex-1">
-                    <label htmlFor="noOfPassengers" className="font-medium text-gray-700">
-                        No. of Passengers:
-                    </label>
-                    <input
-                        type="number"
-                        id="noOfPassengers"
-                        className="w-full p-2 border border-gray-300 rounded-3xl "
-                        placeholder="No. of Passengers"
-                    />
-                </div>
-            </div>
-            <div className="flex space-x-4 pb-2">
-                <div className="flex-1">
-                    <label htmlFor="departureDate" className="font-medium text-gray-700">
-                        Departure Date:
-                    </label>
-                    <input
-                        type="date"
-                        id="departureDate"
-                        className="w-full p-2 border border-gray-300 rounded-3xl"
-                    />
-                </div>
-
-                <div className="flex-1">
-                    <label htmlFor="returnDate" className="font-medium text-gray-700">
-                        Return Date:
-                    </label>
-                    <input
-                        type="date"
-                        id="returnDate"
-                        className="w-full p-2 border border-gray-300 rounded-3xl"
-                    />
-                </div>
-
-                <div className="flex-1">
-                    <label htmlFor="seatClass" className="font-medium text-gray-700">
-                        Seat Class:
-                    </label>
-                    <input
-                        type="text"
-                        id="seatClass"
-                        className="w-full p-2 border border-gray-300 rounded-3xl"
-                        placeholder="Seat Class"
-                    />
-                </div>
-            </div>
-            <button className="bg-ungu4 text-white py-2 rounded-3xl md:ml-56 md:mr-56">
-                Search
-            </button>
-        </div>
-      ) : (
-        <div className="flex flex-col space-y-4 pl-4 pr-4 pb-6">
-          <div className="flex space-x-4">
+          <div className="flex flex-col md:flex-row md:space-x-4 md:space-y-0 space-y-3 pl-4 pr-4">
             <div className="flex-1">
               <label htmlFor="city" className="font-medium text-gray-700">
                 City or hotel name:
@@ -142,7 +64,7 @@ const TableSearch = () => {
             </div>
           </div>
 
-          <div className="flex space-x-4 ml-24 mr-24 pb-2">
+          <div className="flex space-x-4 md:ml-28 md:mr-28 pl-4 pr-4 pb-2">
             <div className="flex-1">
               <label htmlFor="guests" className="font-medium text-gray-700">
                 Guests:
@@ -167,8 +89,86 @@ const TableSearch = () => {
               />
             </div>
           </div>
-          <button className="bg-ungu4 text-white py-2 rounded-3xl md:ml-56 md:mr-56">
-            Search
+          <button className="bg-ungu4 text-white py-2 rounded-3xl md:ml-72 md:mr-72 mr-4 ml-4">
+            <i class="ri-search-line"></i> Search
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col space-y-4 pl-4 pr-4 pb-6">
+          <div className="flex flex-col md:flex-row md:space-x-4 md:space-y-0 space-y-3 pl-4 pr-4">
+            <div className="flex-1">
+              <label htmlFor="from" className="font-medium text-gray-700">
+                From:
+              </label>
+              <input
+                type="text"
+                id="from"
+                className="w-full p-2 border border-gray-300 rounded-3xl"
+                placeholder="From"
+              />
+            </div>
+
+            <div className="flex-1">
+              <label htmlFor="to" className="font-medium text-gray-700">
+                To:
+              </label>
+              <input
+                type="text"
+                id="to"
+                className="w-full p-2 border border-gray-300 rounded-3xl "
+                placeholder="To"
+              />
+            </div>
+
+            <div className="flex-1">
+              <label htmlFor="noOfPassengers" className="font-medium text-gray-700">
+                No. of Passengers:
+              </label>
+              <input
+                type="number"
+                id="noOfPassengers"
+                className="w-full p-2 border border-gray-300 rounded-3xl "
+                placeholder="No. of Passengers"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row md:space-x-4 md:space-y-0 space-y-3 pl-4 pr-4 pb-2">
+            <div className="flex-1">
+              <label htmlFor="departureDate" className="font-medium text-gray-700">
+                Departure Date:
+              </label>
+              <input
+                type="date"
+                id="departureDate"
+                className="w-full p-2 border border-gray-300 rounded-3xl"
+              />
+            </div>
+
+            <div className="flex-1">
+              <label htmlFor="returnDate" className="font-medium text-gray-700">
+                Return Date:
+              </label>
+              <input
+                type="date"
+                id="returnDate"
+                className="w-full p-2 border border-gray-300 rounded-3xl"
+              />
+            </div>
+
+            <div className="flex-1">
+              <label htmlFor="seatClass" className="font-medium text-gray-700">
+                Seat Class:
+              </label>
+              <input
+                type="text"
+                id="seatClass"
+                className="w-full p-2 border border-gray-300 rounded-3xl"
+                placeholder="Seat Class"
+              />
+            </div>
+          </div>
+          <button className="bg-ungu4 text-white py-2 rounded-3xl md:ml-72 md:mr-72 ml-4 mr-4">
+            <i class="ri-search-line"></i> Search
           </button>
         </div>
       )}

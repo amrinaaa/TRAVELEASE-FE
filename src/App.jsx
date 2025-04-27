@@ -26,6 +26,8 @@ import ManajemenPesawat from './pages/ManajemenPesawat';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import ListHotel from './pages/ListHotel';
+import ListPesawat from './pages/ListPesawat';
 import './App.css';
 
 const App = () => {
@@ -39,8 +41,8 @@ const App = () => {
   };
 
   // Show Navbar and Footer only on specific pages
-  const showNavbar = ['/', '/hotels', '/flights'].includes(location.pathname);
-  const showFooter = ['/', '/hotels', '/flights'].includes(location.pathname);
+  const showNavbar = ['/', '/list-hotel', '/list-pesawat'].includes(location.pathname);
+  const showFooter = ['/', '/list-hotel', '/list-pesawat'].includes(location.pathname);
 
   // Determine role based on the route path
   let role = null;
@@ -71,6 +73,8 @@ const App = () => {
 
         {/* Guest/User Routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/list-hotel" element={<ListHotel />} />
+        <Route path="/list-pesawat" element={<ListPesawat />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<DashboardAdmin isSidebarOpen={isSidebarOpen} />} />
