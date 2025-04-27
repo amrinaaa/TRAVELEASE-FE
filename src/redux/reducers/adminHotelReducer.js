@@ -12,6 +12,16 @@ const initialState = {
   loadingDelete: false,
   successDelete: false,
   errorDelete: null,
+
+  loadingEdit: false,
+  successEdit: false,
+  errorEdit: null,
+  editedHotel: null, // Store the edited hotel data
+
+  hotels: [],
+  hotelDetail: null,  // Store untuk hotel detail yang diambil
+  loadingFetch: false,
+  errorFetch: null,
 };
 
 const adminHotelSlice = createSlice({
@@ -82,6 +92,44 @@ const adminHotelSlice = createSlice({
         state.successDelete = false;
         state.errorDelete = action.payload;
       },
+
+      // Edit Hotel Partner (Update Name and Email)
+      editHotelRequest: (state) => {
+        state.loadingEdit = true;
+        state.errorEdit = null;
+        state.successEdit = false;
+      },
+      editHotelSuccess: (state, action) => {
+        state.loadingEdit = false;
+        state.successEdit = true;
+        state.errorEdit = null;
+        state.editedHotel = action.payload; // Update the edited hotel data
+        // Optionally update the hotel list with the edited data
+        const index = state.hotels.findIndex(hotel => hotel.id === action.payload.id);
+        if (index !== -1) {
+          state.hotels[index] = action.payload;
+        }
+      },
+      editHotelFailure: (state, action) => {
+        state.loadingEdit = false;
+        state.successEdit = false;
+        state.errorEdit = action.payload;
+      },
+
+      getHotelDetailRequest: (state) => {
+        state.loadingFetch = true;
+        state.errorFetch = null;
+      },
+      getHotelDetailSuccess: (state, action) => {
+        state.loadingFetch = false;
+        state.hotelDetail = action.payload; // Simpan hotel detail yang didapat
+        state.errorFetch = null;
+      },
+      getHotelDetailFailure: (state, action) => {
+        state.loadingFetch = false;
+        state.hotelDetail = null;
+        state.errorFetch = action.payload;
+      },
   }
 });
 
@@ -97,7 +145,13 @@ export const {
   resetCreateHotelState,
   deleteHotelRequest,
   deleteHotelSuccess,
-  deleteHotelFailure
+  deleteHotelFailure,
+  editHotelRequest,
+  editHotelSuccess,
+  editHotelFailure,
+  getHotelDetailRequest,
+  getHotelDetailSuccess,
+  getHotelDetailFailure,
 } = adminHotelSlice.actions;
 
 export default adminHotelSlice.reducer;

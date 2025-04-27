@@ -80,7 +80,7 @@ const App = () => {
         <Route path="/edit-saldo-pengguna/:userId" element={<EditSaldoPengguna isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-mitra-hotel" element={<ManajemenMitraHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-mitra-hotel" element={<TambahMitraHotel isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-mitra-hotel/:userId" element={<EditMitraHotel isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-mitra-hotel/:mitraName" element={<EditMitraHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-saldo-mitra-hotel/:userId" element={<EditSaldoMitraHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-mitra-pesawat" element={<ManajemenMitraPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-mitra-pesawat" element={<TambahMitraPesawat isSidebarOpen={isSidebarOpen} />} />

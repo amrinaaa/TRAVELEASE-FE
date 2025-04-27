@@ -13,6 +13,14 @@ import {
   deleteHotelRequest,
   deleteHotelSuccess,
   deleteHotelFailure,
+
+  editHotelRequest,
+  editHotelSuccess,
+  editHotelFailure,
+
+  getHotelDetailRequest,
+  getHotelDetailSuccess,
+  getHotelDetailFailure,
 } from "../reducers/adminHotelReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -93,5 +101,62 @@ export const deleteHotelPartner = (uid) => async (dispatch) => {
       dispatch(deleteHotelSuccess(uid)); // Notify success and pass the deleted UID
     } catch (error) {
       dispatch(deleteHotelFailure(error.response?.data?.message || error.message));
+    }
+  };
+
+  // Edit Mitra Hotel (Update Name and Email)
+export const editHotelPartner = (uid, name, email) => async (dispatch) => {
+    try {
+      dispatch(editHotelRequest());
+  
+      const token = Cookies.get("token");
+  
+      const response = await axios.patch(`${api_url}/user`, { uid, name, email }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.data?.data) {
+        dispatch(editHotelSuccess(response.data.data)); // Return the updated user data
+      } else {
+        throw new Error("Error while editing hotel partner");
+      }
+    } catch (error) {
+      dispatch(editHotelFailure(error.response?.data?.message || error.message));
+    }
+  };
+
+// Fetch detail partner berdasarkan identifier dan role
+export const getHotelDetail = (name) => async (dispatch) => {
+    try {
+      dispatch(getHotelDetailRequest());
+  
+      const token = Cookies.get("token");
+      console.log("[DEBUG] Auth Token:", token);
+  
+      const { data } = await axios.get(`${api_url}/partner`, {
+        params: {
+          identifier: name,
+          role: "MITRA_HOTEL", // role sudah ditentukan
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      console.log("[DEBUG] Hotel Data Response:", data);
+  
+      if (data?.data && data.data.length > 0) {
+        dispatch(getHotelDetailSuccess(data.data[0])); // Ambil data pertama dari array
+      } else {
+        throw new Error("Hotel not found");
+      }
+  
+    } catch (error) {
+      console.error("[ERROR] Fetching hotel detail:", error);
+      dispatch(getHotelDetailFailure(error.response?.data?.message || error.message));
     }
   };

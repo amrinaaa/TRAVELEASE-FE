@@ -55,7 +55,7 @@ const TableMitra = ({ searchQuery, dataType }) => {
 
   const handleEditNavigation = (mitra) => {
     if (editableRow === mitra.id) {
-      navigate(`/edit-mitra-hotel/${mitra.id}`);
+      navigate(`/edit-mitra-hotel/${mitra.name}`);
     }
   };
 
