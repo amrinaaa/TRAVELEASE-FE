@@ -8,6 +8,10 @@ const initialState = {
   loadingCreate: false,
   successCreate: false,
   errorCreate: null,
+
+  loadingDelete: false,
+  successDelete: false,
+  errorDelete: null,
 };
 
 const adminHotelSlice = createSlice({
@@ -60,6 +64,24 @@ const adminHotelSlice = createSlice({
         state.successCreate = false;
         state.errorCreate = null;
       },
+
+     // Delete Hotel Partner
+     deleteHotelRequest: (state) => {
+        state.loadingDelete = true;
+        state.errorDelete = null;
+        state.successDelete = false;
+      },
+      deleteHotelSuccess: (state, action) => {
+        state.loadingDelete = false;
+        state.successDelete = true;
+        state.hotels = state.hotels.filter(hotel => hotel.id !== action.payload); // Remove the deleted hotel by ID
+        state.errorDelete = null;
+      },
+      deleteHotelFailure: (state, action) => {
+        state.loadingDelete = false;
+        state.successDelete = false;
+        state.errorDelete = action.payload;
+      },
   }
 });
 
@@ -73,6 +95,9 @@ export const {
   createHotelSuccess,
   createHotelFailure,
   resetCreateHotelState,
+  deleteHotelRequest,
+  deleteHotelSuccess,
+  deleteHotelFailure
 } = adminHotelSlice.actions;
 
 export default adminHotelSlice.reducer;

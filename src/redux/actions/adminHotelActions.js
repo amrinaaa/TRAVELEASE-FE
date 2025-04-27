@@ -9,6 +9,10 @@ import {
   createHotelSuccess,
   createHotelFailure,
   resetCreateHotelState,
+
+  deleteHotelRequest,
+  deleteHotelSuccess,
+  deleteHotelFailure,
 } from "../reducers/adminHotelReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -65,7 +69,29 @@ export const createHotelPartner = (partnerData) => async (dispatch) => {
       dispatch(createHotelFailure(error.response?.data?.message || error.message));
     }
   };
-  
+
 export const resetCreateHotel = () => (dispatch) => {
     dispatch(resetCreateHotelState());
 };
+
+
+// Delete Mitra Hotel
+export const deleteHotelPartner = (uid) => async (dispatch) => {
+    try {
+      dispatch(deleteHotelRequest());
+  
+      const token = Cookies.get("token");
+  
+      const { data } = await axios.delete(`${api_url}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        data: { uid },
+      });
+  
+      dispatch(deleteHotelSuccess(uid)); // Notify success and pass the deleted UID
+    } catch (error) {
+      dispatch(deleteHotelFailure(error.response?.data?.message || error.message));
+    }
+  };
