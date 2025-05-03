@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const TableSearch = () => {
-  const [activeTab, setActiveTab] = useState('hotel'); // Default to 'hotel' instead of 'flight'
+  const [activeTab, setActiveTab] = useState('hotel'); 
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);

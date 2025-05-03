@@ -1,8 +1,8 @@
 import React from 'react'
 import TableSearch from '../components/TableSearch'
-import TiketPesawat from '../components/TiketPesawat'
+import CardReservasi from '../components/CardReservasi'
 
-const ListPesawat = () => {
+const Hotel = () => {
   return (
     <div>
       <section className='bg-cover bg-center pt-24' style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }}>
@@ -16,17 +16,17 @@ const ListPesawat = () => {
         </div>
       </section>
 
-      {/* Second Section for List Tikets */}
+      {/* Second Section for List Hotels */}
       <section className='py-8'>
         <div className='text-center mb-12'>
-          <p className='text-xl font-semibold'>Tickets</p>
+          <p className='text-xl font-semibold'>Hotels</p>
         </div>
         <div className='md:ml-48 md:mr-48'>
-          <TiketPesawat />
+          <CardReservasi />
         </div>
       </section>
     </div>
   )
 }
 
-export default ListPesawat
+export default Hotel
