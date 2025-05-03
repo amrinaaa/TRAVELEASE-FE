@@ -1,0 +1,74 @@
+[
+    {
+      "id": "T1",
+      "maskapai": "Super Plane",
+      "departure": { "tempat": "Balikpapan", "jam": "20.00" },
+      "arrival":   { "tempat": "Bali",      "jam": "22.00" },
+      "price": 2000000
+    },
+    {
+      "id": "T2",
+      "maskapai": "Air Fast",
+      "departure": { "tempat": "Surabaya", "jam": "07.00" },
+      "arrival":   { "tempat": "Jakarta",  "jam": "09.00" },
+      "price": 1500000
+    },
+    {
+      "id": "T3",
+      "maskapai": "Sky Wings",
+      "departure": { "tempat": "Jakarta",      "jam": "06.30" },
+      "arrival":   { "tempat": "Yogyakarta",  "jam": "07.45" },
+      "price": 800000
+    },
+    {
+      "id": "T4",
+      "maskapai": "Nusantara Air",
+      "departure": { "tempat": "Bandung",  "jam": "10.15" },
+      "arrival":   { "tempat": "Denpasar", "jam": "12.30" },
+      "price": 1750000
+
+    },
+    {
+      "id": "T5",
+      "maskapai": "RapidJet",
+      "departure": { "tempat": "Medan",    "jam": "13.00" },
+      "arrival":   { "tempat": "Jakarta",  "jam": "15.30" },
+      "price": 1850000
+    },
+    {
+      "id": "T6",
+      "maskapai": "Garuda Express",
+      "departure": { "tempat": "Jakarta",    "jam": "09.00" },
+      "arrival":   { "tempat": "Singapore",  "jam": "11.00" },
+      "price": 2500000
+    },
+    {
+      "id": "T7",
+      "maskapai": "Tiger Air",
+      "departure": { "tempat": "Surabaya",   "jam": "08.45" },
+      "arrival":   { "tempat": "Singapore",  "jam": "10.45" },
+      "price": 2400000
+    },
+    {
+      "id": "T8",
+      "maskapai": "Merpati Link",
+      "departure": { "tempat": "Makassar", "jam": "07.15" },
+      "arrival":   { "tempat": "Gorontalo", "jam": "08.50" },
+      "price": 950000
+    },
+    {
+      "id": "T9",
+      "maskapai": "Java Airways",
+      "departure": { "tempat": "Yogyakarta", "jam": "17.00" },
+      "arrival":   { "tempat": "Jakarta",    "jam": "18.15" },
+      "price": 900000
+    },
+    {
+      "id": "T10",
+      "maskapai": "Borneo Air",
+      "departure": { "tempat": "Balikpapan", "jam": "14.20" },
+      "arrival":   { "tempat": "Pontianak",  "jam": "15.10" },
+      "price": 850000
+    }
+  ]
+  

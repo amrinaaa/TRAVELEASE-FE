@@ -1,7 +1,8 @@
 import React from 'react'
 import TableSearch from '../components/TableSearch'
+import CardReservasi from '../components/CardReservasi'
 
-const Home = () => {
+const Hotel = () => {
   return (
     <div>
       <section className='bg-cover bg-center pt-24' style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }}>
@@ -15,21 +16,17 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Second Section for Tikets */}
+      {/* Second Section for List Hotels */}
       <section className='py-8'>
-        <div className='text-center'>
-          <p className='text-xl font-semibold'>Tickets</p>
-        </div>
-      </section>
-
-      {/* Third Section for Hotels */}
-      <section className='py-8'>
-        <div className='text-center'>
+        <div className='text-center mb-12'>
           <p className='text-xl font-semibold'>Hotels</p>
+        </div>
+        <div className='md:ml-48 md:mr-48'>
+          <CardReservasi />
         </div>
       </section>
     </div>
   )
 }
 
-export default Home
+export default Hotel
