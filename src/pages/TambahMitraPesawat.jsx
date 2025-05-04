@@ -1,10 +1,17 @@
-import React, { useState } from "react";
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from "../components/Button";
-import dataMitraPesawat from "../utils/dataMitraPesawat.json"; // Assuming you have the airline partner data
+import { createHotelPartner, resetCreateHotel } from "../redux/actions/adminPesawatActions";
 
 const TambahMitraPesawat = ({ isSidebarOpen }) => {
-  // State to store the input values for the new partner
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Ambil state dari Redux
+  const { loadingCreate, successCreate, errorCreate } = useSelector((state) => state.adminPesawat);
+
+  // State lokal untuk input form
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +31,7 @@ const TambahMitraPesawat = ({ isSidebarOpen }) => {
     }
   };
 
-  // Handle Reset button click - clear all inputs
+  // Reset all fields
   const handleReset = () => {
     setName('');
     setEmail('');
@@ -32,28 +39,37 @@ const TambahMitraPesawat = ({ isSidebarOpen }) => {
     setConfirmPassword('');
   };
 
-  // Handle Submit button click - add new partner to data
+  // Handle form submit
   const handleSubmit = () => {
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
 
-    // Create new partner object
-    const newMitra = {
-      id: `AP${(dataMitraPesawat.length + 1).toString().padStart(3, '0')}`, // Generating a new partner ID
-      nama: name,
-      email: email,
+    const newPartnerData = {
+      name,
+      email,
+      password,
+      role: "MITRA_PENERBANGAN",
     };
 
-    // Add the new partner to the existing data (For now, we'll just log it to console)
-    console.log("New airline partner added:", newMitra);
-    dataMitraPesawat.push(newMitra);  // This will add the new partner to the array
-
-    // Reset fields after submitting
-    handleReset();
-    alert("Airline partner added successfully!");
+    dispatch(createHotelPartner(newPartnerData));
   };
+
+  // Watch successCreate and errorCreate
+  useEffect(() => {
+    if (successCreate) {
+      alert("Pesawat partner added successfully!");
+      handleReset();
+      dispatch(resetCreateHotel());
+      navigate("/manajemen-mitra-pesawat"); // Redirect setelah sukses
+    }
+
+    if (errorCreate) {
+      alert(`Error: ${errorCreate}`);
+      dispatch(resetCreateHotel());
+    }
+  }, [successCreate, errorCreate, dispatch, navigate]);
 
   return (
     <div className="flex transition-all duration-300">
@@ -61,7 +77,7 @@ const TambahMitraPesawat = ({ isSidebarOpen }) => {
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
             <p className="text-xl">Partner Management</p>
-            <p className="text-xs pt-2  text-gray-600">Add Airline Partner</p>
+            <p className="text-xs pt-2 text-gray-600">Add Pesawat Partner</p>
           </div>
           <div className="flex flex-row justify-end">
             <Link to="/manajemen-mitra-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
@@ -70,15 +86,18 @@ const TambahMitraPesawat = ({ isSidebarOpen }) => {
             </Link>
             <Link to="/tambah-mitra-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
               <p>/</p>
-              <p className="text-xs md:text-sm">Add Airline Partner</p>
+              <p className="text-xs md:text-sm">Add Pesawat Partner</p>
             </Link>
           </div>
         </div>
+
         <div className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="flex-col px-4 items-center">
             <div className="text-left md:text-xl mb-6 md:mb-12">
-              <p>Add Airline Partner</p>
+              <p>Add Pesawat Partner</p>
             </div>
+
+            {/* Input Nama */}
             <div className="flex flex-col mb-2 md:mb-4 items-center">
               <div className="text-left">
                 <label className="block text-sm font-semibold text-gray-700">
@@ -99,6 +118,8 @@ const TambahMitraPesawat = ({ isSidebarOpen }) => {
                 </div>
               </div>
             </div>
+
+            {/* Input Email */}
             <div className="flex flex-col mb-2 md:mb-4 items-center">
               <div className="text-left">
                 <label className="block text-sm font-semibold text-gray-700">
@@ -119,6 +140,8 @@ const TambahMitraPesawat = ({ isSidebarOpen }) => {
                 </div>
               </div>
             </div>
+
+            {/* Input Password */}
             <div className="flex flex-col mb-2 md:mb-4 items-center">
               <div className="text-left">
                 <label className="block text-sm font-semibold text-gray-700">
@@ -139,6 +162,8 @@ const TambahMitraPesawat = ({ isSidebarOpen }) => {
                 </div>
               </div>
             </div>
+
+            {/* Input Confirm Password */}
             <div className="flex flex-col mb-2 md:mb-4 items-center">
               <div className="text-left">
                 <label className="block text-sm font-semibold text-gray-700">
@@ -159,6 +184,8 @@ const TambahMitraPesawat = ({ isSidebarOpen }) => {
                 </div>
               </div>
             </div>
+
+            {/* Tombol Submit dan Reset */}
             <div className="flex flex-row justify-center gap-6 text-white font-bold mt-12 mb-10">
               <Button text="Reset" bgColor="bg-yellow1" onClick={handleReset} />
               <Button text="Submit" bgColor="bg-blue1" onClick={handleSubmit} />
@@ -170,4 +197,4 @@ const TambahMitraPesawat = ({ isSidebarOpen }) => {
   );
 };
 
-export default TambahMitraPesawat
+export default TambahMitraPesawat;
