@@ -126,10 +126,10 @@ const TambahPengguna = ({ isSidebarOpen }) => {
 
             <div className="space-y-4 max-w-md mx-auto">
               <div className="form-group">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1 text-left">
                   <span className="text-red-600">*</span> Full Name
                 </label>
-                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-100">
                   <i className="ri-user-3-line text-gray-500 mr-2"></i>
                   <input
                     type="text"
@@ -144,10 +144,10 @@ const TambahPengguna = ({ isSidebarOpen }) => {
               </div>
 
               <div className="form-group">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1 text-left">
                   <span className="text-red-600">*</span> Email Address
                 </label>
-                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-100">
                   <i className="ri-mail-line text-gray-500 mr-2"></i>
                   <input
                     type="email"
@@ -162,10 +162,10 @@ const TambahPengguna = ({ isSidebarOpen }) => {
               </div>
 
               <div className="form-group">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1 text-left">
                   <span className="text-red-600">*</span> Password
                 </label>
-                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-100">
                   <i className="ri-lock-password-line text-gray-500 mr-2"></i>
                   <input
                     type="password"
@@ -180,10 +180,10 @@ const TambahPengguna = ({ isSidebarOpen }) => {
               </div>
 
               <div className="form-group">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1 text-left">
                   <span className="text-red-600">*</span> Confirm Password
                 </label>
-                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-100">
                   <i className="ri-lock-password-line text-gray-500 mr-2"></i>
                   <input
                     type="password"
@@ -197,16 +197,16 @@ const TambahPengguna = ({ isSidebarOpen }) => {
                 </div>
               </div>
 
-              <div className="flex justify-center gap-4 mt-8">
+              <div className="flex justify-center gap-4 md:pt-4 pt-2">
                 <Button
                   text="Reset Form"
-                  bgColor="bg-yellow-500 hover:bg-yellow-600"
+                  bgColor="bg-yellow1 hover:bg-yellow-400"
                   onClick={handleReset}
                   disabled={loadingCreate}
                 />
                 <Button
                   text={loadingCreate ? "Creating User..." : "Submit"}
-                  bgColor="bg-blue-600 hover:bg-blue-700"
+                  bgColor="bg-blue1 hover:bg-blue-500"
                   onClick={handleSubmit}
                   disabled={loadingCreate}
                 />

@@ -23,6 +23,7 @@ import DashboardMitraHotel from './pages/DashboardMitraHotel';
 import ManajemenHotel from './pages/ManajemenHotel';
 import DashboardMitraPesawat from './pages/DashboardMitraPesawat';
 import ManajemenPesawat from './pages/ManajemenPesawat';
+import TambahMaskapai from './pages/TambahMaskapai';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -43,7 +44,7 @@ const App = () => {
   };
 
   // Show Navbar and Footer only on specific pages
-  const showNavbar = ['/', '/hotel', '/pesawat'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat, /detail-hotel');
+  const showNavbar = ['/', '/hotel', '/pesawat'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel');
   const showFooter = showNavbar;
 
   // Determine role based on the route path
@@ -54,7 +55,7 @@ const App = () => {
     role = 'admin';
   } else if (location.pathname.match(/^\/mitra-hotel|\/manajemen-hotel/)) {
     role = 'mitra-hotel';
-  } else if (location.pathname.match(/^\/mitra-pesawat|\/manajemen-pesawat/)) {
+  } else if (location.pathname.match(/^\/mitra-pesawat|\/manajemen-maskapai|\/tambah-maskapai/)) {
     role = 'mitra-pesawat';
   }
 
@@ -100,7 +101,8 @@ const App = () => {
         <Route path="/manajemen-hotel" element={<ManajemenHotel isSidebarOpen={isSidebarOpen} />} />
 
         <Route path="/mitra-pesawat" element={<DashboardMitraPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/manajemen-pesawat" element={<ManajemenPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/manajemen-maskapai" element={<ManajemenPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/tambah-maskapai" element={<TambahMaskapai isSidebarOpen={isSidebarOpen} />} />
       </Routes>
 
       {showFooter && <Footer />}
