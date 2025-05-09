@@ -184,11 +184,11 @@ const Sidebar = ({ isOpen, role }) => {
                           </li>
                         </Link>
 
-                        <Link to="/manajemen-pesawat">
+                        <Link to="/manajemen-maskapai">
                           <li 
                               className={`relative flex flex-col items-center md:items-start rounded-2xl hover:shadow hover:text-black hover:bg-ungu10 mb-2 group 
-                                  ${activeMenu === "/manajemen-pesawat" ? "bg-ungu10 text-black" : ""}`}
-                              onClick={() => setActiveMenu("/manajemen-pesawat")}
+                                  ${activeMenu === "/manajemen-maskapai" ? "bg-ungu10 text-black" : ""}`}
+                              onClick={() => setActiveMenu("/manajemen-maskapai")}
                           >
                             <div className="flex items-center md:ml-2">
                                 <i className="ri-flight-takeoff-line text-2xl"></i>

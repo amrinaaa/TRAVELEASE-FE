@@ -132,7 +132,7 @@ const TableSearch = () => {
               />
             </div>
           </div>
-          <div className="flex flex-col md:flex-row md:space-x-4 md:space-y-0 space-y-3 pl-4 pr-4 pb-2">
+          <div className="flex flex-col md:flex-row md:space-x-4 md:space-y-0 space-y-3 pl-4 pr-4 pb-2 md:ml-28 md:mr-28">
             <div className="flex-1">
               <label htmlFor="departureDate" className="font-medium text-gray-700">
                 Departure Date:
@@ -140,17 +140,6 @@ const TableSearch = () => {
               <input
                 type="date"
                 id="departureDate"
-                className="w-full p-2 border border-gray-300 rounded-3xl"
-              />
-            </div>
-
-            <div className="flex-1">
-              <label htmlFor="returnDate" className="font-medium text-gray-700">
-                Return Date:
-              </label>
-              <input
-                type="date"
-                id="returnDate"
                 className="w-full p-2 border border-gray-300 rounded-3xl"
               />
             </div>
