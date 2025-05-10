@@ -214,3 +214,77 @@ export const createUser = (name, email, password) => async (dispatch) => {
     throw error;
   }
 };
+
+export const uploadProfilePicture = (userId, file) => async (dispatch) => {
+  try {
+    dispatch({ type: "UPLOAD_PROFILE_PIC_REQUEST" });
+
+    // Validate file
+    if (!file) throw new Error("No file selected");
+    if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+      throw new Error("Only JPG/JPEG/PNG files allowed");
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      throw new Error("File size must be less than 2MB");
+    }
+
+    const token = Cookies.get("token");
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const { data } = await axios.post(`${api_url}/admin/profile/${userId}`, 
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+
+    dispatch({ 
+      type: "UPLOAD_PROFILE_PIC_SUCCESS",
+      payload: data.message
+    });
+
+    // Refresh user data
+    dispatch(getUserByEmail(userId));
+
+  } catch (error) {
+    dispatch({
+      type: "UPLOAD_PROFILE_PIC_FAILURE",
+      payload: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+};
+
+export const deleteProfilePicture = (userId) => async (dispatch) => {
+  try {
+    dispatch({ type: "DELETE_PROFILE_PIC_REQUEST" });
+
+    const token = Cookies.get("token");
+    const { data } = await axios.delete(`${api_url}/admin/profile/${userId}`, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    dispatch({ 
+      type: "DELETE_PROFILE_PIC_SUCCESS",
+      payload: data.message
+    });
+
+    // Refresh user data
+    dispatch(getUserByEmail(userId));
+
+  } catch (error) {
+    dispatch({
+      type: "DELETE_PROFILE_PIC_FAILURE",
+      payload: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+};
