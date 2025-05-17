@@ -5,6 +5,7 @@ import { Pencil } from "lucide-react";
 import Button from "../components/Button";
 import { getHotelDetail, editHotelPartner } from "../redux/actions/adminPesawatActions";
 import { resetHotelState } from "../redux/reducers/adminPesawatReducer";
+import { uploadProfilePicture, deleteProfilePicture } from '../redux/actions/adminActions';
 
 const EditMitraPesawat = ({ isSidebarOpen }) => {
   const { mitraName } = useParams();
@@ -15,8 +16,9 @@ const EditMitraPesawat = ({ isSidebarOpen }) => {
   
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [image, setImage] = useState("https://via.placeholder.com/100");
-  
+  const [imagePreview, setImagePreview] = useState("");
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+
   useEffect(() => {
     if (mitraName) {
       dispatch(getHotelDetail(mitraName));
@@ -27,7 +29,7 @@ const EditMitraPesawat = ({ isSidebarOpen }) => {
     if (hotelDetail) {
       setName(hotelDetail.name);
       setEmail(hotelDetail.email);
-      setImage(hotelDetail.profilePicture || "https://via.placeholder.com/100");
+      setImagePreview(hotelDetail.profilePicture || "https://via.placeholder.com/100");
     }
   }, [hotelDetail]);
 
@@ -43,6 +45,42 @@ const EditMitraPesawat = ({ isSidebarOpen }) => {
     }
   }, [successEdit, errorEdit, dispatch, navigate]);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+      setSelectedImageFile(file);
+    }
+  };
+
+  const handleImageUpload = () => {
+    if (selectedImageFile && hotelDetail) {
+      dispatch(uploadProfilePicture(hotelDetail.id, selectedImageFile))
+        .then(() => {
+          alert("Profile picture updated!");
+          dispatch(getHotelDetail(hotelDetail.name));
+        })
+        .catch((error) => {
+          alert(`Upload failed: ${error.message}`);
+        });
+    } else {
+      alert("No image selected.");
+    }
+  };
+
+  const handleImageDelete = () => {
+    if (hotelDetail) {
+      dispatch(deleteProfilePicture(hotelDetail.id))
+        .then(() => {
+          alert("Profile picture deleted!");
+          dispatch(getHotelDetail(hotelDetail.name));
+        })
+        .catch((error) => {
+          alert(`Delete failed: ${error.message}`);
+        });
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (name.trim() === "" || email.trim() === "") {
@@ -50,14 +88,7 @@ const EditMitraPesawat = ({ isSidebarOpen }) => {
       return;
     }
     const uid = hotelDetail.id;
-    dispatch(editHotelPartner(uid, name, email, image));
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-    }
+    dispatch(editHotelPartner(uid, name, email));
   };
 
   if (loadingFetch) return <div className="text-center p-4">Loading...</div>;
@@ -93,9 +124,12 @@ const EditMitraPesawat = ({ isSidebarOpen }) => {
               <div className="flex flex-col md:flex-row items-center md:gap-12 gap-6 justify-center">
                 <div className="relative md:w-64 w-32 md:h-64 h-32">
                   <img
-                    src={image}
+                    src={imagePreview}
                     alt="Profile"
                     className="w-full h-full rounded-full object-cover border-2 border-gray-300 shadow-md"
+                    onError={(e) => {
+                      e.target.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZWVlZSIvPgo8L3N2Zz4=";
+                    }}
                   />
                   <label className="absolute bottom-0 md:right-12 right-2 bg-green-500 p-2 rounded-full border-2 border-white cursor-pointer">
                     <Pencil size={16} color="white" />
@@ -159,6 +193,19 @@ const EditMitraPesawat = ({ isSidebarOpen }) => {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <div className="flex flex-row justify-center gap-4 mt-6 mb-8">
+                <Button
+                  text="Upload Image"
+                  bgColor="bg-green-500"
+                  onClick={handleImageUpload}
+                />
+                <Button
+                  text="Delete Image"
+                  bgColor="bg-red-500"
+                  onClick={handleImageDelete}
+                />
               </div>
 
               <div className="flex flex-row justify-center gap-6 text-white font-bold mt-12 mb-10">
