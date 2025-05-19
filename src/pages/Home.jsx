@@ -11,7 +11,7 @@ const Home = () => {
         style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }}
       >
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-50 z-0"></div>
+        <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
 
         {/* Content */}
         <div className="relative z-10 text-center p-8">
