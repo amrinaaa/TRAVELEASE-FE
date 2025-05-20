@@ -193,7 +193,22 @@ const Sidebar = ({ isOpen, role }) => {
                             <div className="flex items-center md:ml-2">
                                 <i className="ri-flight-takeoff-line text-2xl"></i>
                                 <span className="hidden md:inline ml-3 mt-1">
-                                    Airplane Management
+                                    Airline Management
+                                </span>
+                            </div>
+                          </li>
+                        </Link>
+
+                        <Link to="/jadwal-penerbangan">
+                          <li 
+                              className={`relative flex flex-col items-center md:items-start rounded-2xl hover:shadow hover:text-black hover:bg-ungu10 mb-2 group 
+                                  ${activeMenu === "/jadwal-penerbangan" ? "bg-ungu10 text-black" : ""}`}
+                              onClick={() => setActiveMenu("/jadwal-penerbangan")}
+                          >
+                            <div className="flex items-center md:ml-2">
+                                <i class="ri-calendar-schedule-line text-2xl"></i>
+                                <span className="hidden md:inline ml-3 mt-1">
+                                    Flight Schedule
                                 </span>
                             </div>
                           </li>

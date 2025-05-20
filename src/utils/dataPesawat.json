@@ -1,0 +1,14 @@
+[
+    {
+      "id": "LA-17",
+      "name": "Lion Air LA17",
+      "type" :"Boeing 17",
+      "class": "Business, Economy"
+    },
+    {
+      "id": "LA-02",
+      "name": "Lion Air LA02",
+      "type" : "Boeing 02",
+      "class": "Premium, Business, Economy"
+    }
+]  

@@ -1,10 +1,9 @@
-
-// TableAirline.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import dataAirlines from "../utils/dataAirlines.json";
+import dataPesawat from "../utils/dataPesawat.json";
 
-const TableAirline = ({ searchQuery }) => {
+
+const TablePlane = ({ searchQuery }) => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
@@ -12,7 +11,7 @@ const TableAirline = ({ searchQuery }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setData(dataAirlines); // Use the dummy data
+    setData(dataPesawat); // Use the dummy data
   }, []);
 
   // Function to handle sorting
@@ -35,8 +34,8 @@ const TableAirline = ({ searchQuery }) => {
     return 0;
   });
 
-  const filteredData = sortedData.filter((airline) =>
-    airline.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = sortedData.filter((plane) =>
+    plane.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Function to confirm deletion
@@ -47,23 +46,9 @@ const TableAirline = ({ searchQuery }) => {
 
   // Handle deletion of data
   const handleDelete = () => {
-    setData((prevData) => prevData.filter((airline) => airline.id !== deleteId));
+    setData((prevData) => prevData.filter((plane) => plane.id !== deleteId));
     setModalOpen(false);
     setDeleteId(null);
-  };
-
-  // Function to handle click on airplane icon
-  const handleAirplaneClick = (airline) => {
-    console.log("Navigating to planes for airline:", airline.name);
-    
-    // Store the selected airline in localStorage for persistence
-    localStorage.setItem('selectedAirline', JSON.stringify(airline));
-    
-    // Navigate to the plane management page with the airline ID
-    // Pass the airline object in state for immediate access
-    navigate(`/manajemen-pesawat/${airline.id}`, { 
-      state: { airline: airline } 
-    });
   };
 
   return (
@@ -72,7 +57,7 @@ const TableAirline = ({ searchQuery }) => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {["ID", "Name", "Description"].map((col) => (
+              {["ID", "Name", "Type", "Class"].map((col) => (
                 <th
                   key={col}
                   className="py-2 px-3 border cursor-pointer"
@@ -87,22 +72,25 @@ const TableAirline = ({ searchQuery }) => {
           </thead>
           <tbody className="text-gray-700">
             {filteredData.length > 0 ? (
-              filteredData.map((airline) => (
-                <tr key={airline.id} className="border-b hover:bg-gray-100">
-                  <td className="py-2 px-3 border text-center">{airline.id}</td>
+              filteredData.map((plane) => (
+                <tr key={plane.id} className="border-b hover:bg-gray-100">
+                  <td className="py-2 px-3 border text-center">{plane.id}</td>
 
-                  <td className="py-2 px-3 border text-center">{airline.name}</td>
+                  <td className="py-2 px-3 border text-center">{plane.name}</td>
 
-                  <td className="py-2 px-3 border text-center">{airline.description}</td>
+                  <td className="py-2 px-3 border text-center">{plane.type}</td>
+
+                  <td className="py-2 px-3 border text-center">{plane.class}</td>
 
                   <td className="flex py-2 px-3 text-center justify-center">
-                    <button onClick={() => handleAirplaneClick(airline)}>
-                      <svg className="text-blue-400" xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path fill="currentColor" d="M20.56 3.91c.59.59.59 1.54 0 2.12l-3.89 3.89l2.12 9.19l-1.41 1.42l-3.88-7.43L9.6 17l.36 2.47l-1.07 1.06l-1.76-3.18l-3.19-1.77L5 14.5l2.5.37L11.37 11L3.94 7.09l1.42-1.41l9.19 2.12l3.89-3.89c.56-.58 1.56-.58 2.12 0"></path></svg>
+                    <button onClick={() => navigate("/manajemen-pesawat")}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path fill="currentColor" d="M16 9c-.91 0-1.77.18-2.57.5l-.7-3.05l3.89-3.89c.58-.56.58-1.53 0-2.12s-1.54-.586-2.12 0l-3.89 3.89l-9.2-2.12L0 3.62L7.43 7.5l-3.89 3.9l-2.48-.35L0 12.11l3.18 1.76l1.77 3.19L6 16l-.34-2.5l3.89-3.87l1.02 1.96A6.995 6.995 0 0 0 16 23c3.87 0 7-3.13 7-7s-3.13-7-7-7m0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5s5 2.24 5 5s-2.24 5-5 5m.5-4.75V12H15v5l3.61 2.16l.75-1.22z"></path></svg>
                     </button>
-                    <button onClick={() => navigate(`/edit-maskapai/${airline.id}`)}>
-                      <i className="ri-edit-2-line text-2xl"></i>
+                    <button onClick={() => navigate(`/edit-pesawat/${plane.id}`)}>
+                      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=chair_alt" />
+                      <span class="material-symbols-outlined mt-1 ml-1">chair_alt</span>
                     </button>
-                    <button className="text-red-500 mx-1" onClick={() => confirmDelete(airline.id)}>
+                    <button className="text-red-500 mx-1" onClick={() => confirmDelete(plane.id)}>
                       <i className="ri-delete-bin-5-line text-2xl"></i>
                     </button>
                   </td>
@@ -139,4 +127,4 @@ const TableAirline = ({ searchQuery }) => {
   );
 };
 
-export default TableAirline
+export default TablePlane
