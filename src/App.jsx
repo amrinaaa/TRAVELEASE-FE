@@ -22,8 +22,12 @@ import TambahMitraPesawat from './pages/TambahMitraPesawat';
 import DashboardMitraHotel from './pages/DashboardMitraHotel';
 import ManajemenHotel from './pages/ManajemenHotel';
 import DashboardMitraPesawat from './pages/DashboardMitraPesawat';
-import ManajemenPesawat from './pages/ManajemenPesawat';
+import ManajemenMaskapai from './pages/ManajemenMaskapai';
 import TambahMaskapai from './pages/TambahMaskapai';
+import EditMaskapai from './pages/EditMaskapai';
+import ManajemenPesawat from './pages/ManajemenPesawat';
+import TambahPesawat from './pages/TambahPesawat';
+import EditPesawat from './pages/EditPesawat';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -55,7 +59,7 @@ const App = () => {
     role = 'admin';
   } else if (location.pathname.match(/^\/mitra-hotel|\/manajemen-hotel/)) {
     role = 'mitra-hotel';
-  } else if (location.pathname.match(/^\/mitra-pesawat|\/manajemen-maskapai|\/tambah-maskapai/)) {
+  } else if (location.pathname.match(/^\/mitra-pesawat|\/manajemen-maskapai|\/tambah-maskapai|\/edit-maskapai|\/manajemen-pesawat|\/tambah-pesawat|\/edit-pesawat/)) {
     role = 'mitra-pesawat';
   }
 
@@ -101,8 +105,12 @@ const App = () => {
         <Route path="/manajemen-hotel" element={<ManajemenHotel isSidebarOpen={isSidebarOpen} />} />
 
         <Route path="/mitra-pesawat" element={<DashboardMitraPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/manajemen-maskapai" element={<ManajemenPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/manajemen-maskapai" element={<ManajemenMaskapai isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-maskapai" element={<TambahMaskapai isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-maskapai/:userId" element={<EditMaskapai isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/manajemen-pesawat/:userId" element={<ManajemenPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/tambah-pesawat" element={<TambahPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-pesawat/:userId" element={<EditPesawat isSidebarOpen={isSidebarOpen} />} />
       </Routes>
 
       {showFooter && <Footer />}

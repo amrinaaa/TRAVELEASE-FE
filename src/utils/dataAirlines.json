@@ -1,11 +1,11 @@
 [
     {
-      "id": "SS",
+      "id": "AL01",
       "name": "Super Air jet",
       "description": "Super Air jet adalah pesawat anak dari Lion Air tetapi layanannya lebih baik dan lebih premium."
     },
     {
-      "id": "LN",
+      "id": "AL02",
       "name": "Lion Air",
       "description": "Lion Air adalah pesawat indukan dari pelita air tetapi layanannya lebih buruk dan lebih ekonomis."
     }
