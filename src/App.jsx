@@ -97,7 +97,7 @@ const App = () => {
         <Route path="/edit-saldo-mitra-hotel/:userId" element={<EditSaldoMitraHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-mitra-pesawat" element={<ManajemenMitraPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-mitra-pesawat" element={<TambahMitraPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-mitra-pesawat/:userId" element={<EditMitraPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-mitra-pesawat/:mitraName" element={<EditMitraPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-saldo-mitra-pesawat/:userId" element={<EditSaldoMitraPesawat isSidebarOpen={isSidebarOpen} />} />
 
         {/* Mitra Routes */}

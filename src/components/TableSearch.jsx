@@ -1,168 +1,187 @@
 import React, { useState } from 'react';
 
 const TableSearch = () => {
-  const [activeTab, setActiveTab] = useState('hotel'); 
+  const [activeTab, setActiveTab] = useState('hotel');
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
   return (
-    <div className="bg-ungu10 md:ml-0 md:mr-0 rounded-3xl shadow-lg">
-      <div className="flex mb-6 bg-ungu4 rounded-tr-3xl rounded-tl-3xl">
+    <div className="bg-ungu10 rounded-3xl shadow-lg overflow-hidden max-w-[800px] mx-auto">
+      {/* Tabs */}
+      <div className="flex bg-ungu4 text-white font-semibold">
         <button
-          className={`flex-1 py-2 text-center font-semibold text-white ${
-            activeTab === 'hotel' ? 'border-b-4 border-black' : ''
-          } ${activeTab === 'hotel' ? 'bg-transparent' : 'bg-transparent'} rounded-tl-3xl`}
           onClick={() => handleTabClick('hotel')}
+          className={`w-1/2 py-3 transition duration-200 ${
+            activeTab === 'hotel'
+              ? 'border-b-4 border-black bg-[radial-gradient(circle,_#7F56D9,_#9F6DFD)]'
+              : 'hover:bg-ungu3'
+          }`}
         >
           Hotels
         </button>
         <button
-          className={`flex-1 py-2 text-center font-semibold text-white ${
-            activeTab === 'flight' ? 'border-b-4 border-black' : ''
-          } ${activeTab === 'flight' ? 'bg-transparent' : 'bg-transparent'} rounded-tr-3xl`}
           onClick={() => handleTabClick('flight')}
+          className={`w-1/2 py-3 transition duration-200 ${
+            activeTab === 'flight'
+              ? 'border-b-4 border-black bg-[radial-gradient(circle,_#7F56D9,_#9F6DFD)]'
+              : 'hover:bg-ungu3'
+          }`}
         >
           Flights
         </button>
       </div>
 
-      {activeTab === 'hotel' ? (
-        <div className="flex flex-col space-y-4 pl-4 pr-4 pb-6">
-          <div className="flex flex-col md:flex-row md:space-x-4 md:space-y-0 space-y-3 pl-4 pr-4">
-            <div className="flex-1">
-              <label htmlFor="city" className="font-medium text-gray-700">
-                City or hotel name:
-              </label>
-              <input
-                type="text"
-                id="city"
-                className="w-full p-2 border border-gray-300 rounded-3xl"
-                placeholder="City or hotel name"
-              />
-            </div>
-            <div className="flex-1">
-              <label htmlFor="checkinDate" className="font-medium text-gray-700">
-                Check-in Date:
-              </label>
-              <input
-                type="date"
-                id="checkinDate"
-                className="w-full p-2 border border-gray-300 rounded-3xl"
-              />
-            </div>
-            <div className="flex-1">
-              <label htmlFor="checkoutDate" className="font-medium text-gray-700">
-                Check-out Date:
-              </label>
-              <input
-                type="date"
-                id="checkoutDate"
-                className="w-full p-2 border border-gray-300 rounded-3xl"
-              />
-            </div>
-          </div>
 
-          <div className="flex space-x-4 md:ml-28 md:mr-28 pl-4 pr-4 pb-2">
-            <div className="flex-1">
-              <label htmlFor="guests" className="font-medium text-gray-700">
-                Guests:
-              </label>
-              <input
-                type="number"
-                id="guests"
-                className="w-full p-2 border border-gray-300 rounded-3xl"
-                placeholder="Guests"
-              />
+
+      {/* Content */}
+      <div className="p-6">
+        {activeTab === 'hotel' ? (
+          <form className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="city" className="block font-medium text-gray-700 mb-1">
+                  City or Hotel Name
+                </label>
+                <input
+                  type="text"
+                  id="city"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                  placeholder="City or hotel name"
+                />
+              </div>
+              <div>
+                <label htmlFor="checkinDate" className="block font-medium text-gray-700 mb-1">
+                  Check-in Date
+                </label>
+                <input
+                  type="date"
+                  id="checkinDate"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                />
+              </div>
+              <div>
+                <label htmlFor="checkoutDate" className="block font-medium text-gray-700 mb-1">
+                  Check-out Date
+                </label>
+                <input
+                  type="date"
+                  id="checkoutDate"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                />
+              </div>
             </div>
 
-            <div className="flex-1">
-              <label htmlFor="rooms" className="font-medium text-gray-700">
-                Rooms:
-              </label>
-              <input
-                type="number"
-                id="rooms"
-                className="w-full p-2 border border-gray-300 rounded-3xl"
-                placeholder="Rooms"
-              />
-            </div>
-          </div>
-          <button className="bg-ungu4 text-white py-2 rounded-3xl md:ml-72 md:mr-72 mr-4 ml-4">
-            <i class="ri-search-line"></i> Search
-          </button>
-        </div>
-      ) : (
-        <div className="flex flex-col space-y-4 pl-4 pr-4 pb-6">
-          <div className="flex flex-col md:flex-row md:space-x-4 md:space-y-0 space-y-3 pl-4 pr-4">
-            <div className="flex-1">
-              <label htmlFor="from" className="font-medium text-gray-700">
-                From:
-              </label>
-              <input
-                type="text"
-                id="from"
-                className="w-full p-2 border border-gray-300 rounded-3xl"
-                placeholder="From"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="guests" className="block font-medium text-gray-700 mb-1">
+                  Guests
+                </label>
+                <input
+                  type="number"
+                  id="guests"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                  placeholder="Guests"
+                />
+              </div>
+              <div>
+                <label htmlFor="rooms" className="block font-medium text-gray-700 mb-1">
+                  Rooms
+                </label>
+                <input
+                  type="number"
+                  id="rooms"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                  placeholder="Rooms"
+                />
+              </div>
             </div>
 
-            <div className="flex-1">
-              <label htmlFor="to" className="font-medium text-gray-700">
-                To:
-              </label>
-              <input
-                type="text"
-                id="to"
-                className="w-full p-2 border border-gray-300 rounded-3xl "
-                placeholder="To"
-              />
+            <div className="text-center">
+              <button
+                type="submit"
+                className="bg-ungu4 text-white py-2 px-6 rounded-3xl hover:bg-ungu3 transition duration-200"
+              >
+                <i className="ri-search-line mr-1" /> Search
+              </button>
+            </div>
+          </form>
+        ) : (
+          <form className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="from" className="block font-medium text-gray-700 mb-1">
+                  From
+                </label>
+                <input
+                  type="text"
+                  id="from"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                  placeholder="Departure city"
+                />
+              </div>
+              <div>
+                <label htmlFor="to" className="block font-medium text-gray-700 mb-1">
+                  To
+                </label>
+                <input
+                  type="text"
+                  id="to"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                  placeholder="Destination city"
+                />
+              </div>
+              <div>
+                <label htmlFor="passengers" className="block font-medium text-gray-700 mb-1">
+                  No. of Passengers
+                </label>
+                <input
+                  type="number"
+                  id="passengers"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                  placeholder="e.g. 2"
+                />
+              </div>
             </div>
 
-            <div className="flex-1">
-              <label htmlFor="noOfPassengers" className="font-medium text-gray-700">
-                No. of Passengers:
-              </label>
-              <input
-                type="number"
-                id="noOfPassengers"
-                className="w-full p-2 border border-gray-300 rounded-3xl "
-                placeholder="No. of Passengers"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col md:flex-row md:space-x-4 md:space-y-0 space-y-3 pl-4 pr-4 pb-2 md:ml-28 md:mr-28">
-            <div className="flex-1">
-              <label htmlFor="departureDate" className="font-medium text-gray-700">
-                Departure Date:
-              </label>
-              <input
-                type="date"
-                id="departureDate"
-                className="w-full p-2 border border-gray-300 rounded-3xl"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="departureDate" className="block font-medium text-gray-700 mb-1">
+                  Departure Date
+                </label>
+                <input
+                  type="date"
+                  id="departureDate"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                />
+              </div>
+              <div>
+                <label htmlFor="seatClass" className="block font-medium text-gray-700 mb-1">
+                  Seat Class
+                </label>
+                <input
+                  type="text"
+                  id="seatClass"
+                  className="w-full p-2 border border-gray-300 rounded-3xl"
+                  placeholder="e.g. Economy"
+                />
+              </div>
             </div>
 
-            <div className="flex-1">
-              <label htmlFor="seatClass" className="font-medium text-gray-700">
-                Seat Class:
-              </label>
-              <input
-                type="text"
-                id="seatClass"
-                className="w-full p-2 border border-gray-300 rounded-3xl"
-                placeholder="Seat Class"
-              />
+            <div className="text-center">
+              <button
+                type="submit"
+                className="bg-ungu4 text-white py-2 px-6 rounded-3xl hover:bg-ungu3 transition duration-200"
+              >
+                <i className="ri-search-line mr-1" /> Search
+              </button>
             </div>
-          </div>
-          <button className="bg-ungu4 text-white py-2 rounded-3xl md:ml-72 md:mr-72 ml-4 mr-4">
-            <i class="ri-search-line"></i> Search
-          </button>
-        </div>
-      )}
+          </form>
+        )}
+      </div>
     </div>
   );
 };
 
-export default TableSearch
+export default TableSearch;

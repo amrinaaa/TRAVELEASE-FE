@@ -15,6 +15,10 @@ const initialState = {
   errorFetchById: null,
   loadingCreate: false,
   errorCreate: null,
+  loadingProfilePic: false,
+  errorProfilePic: null,
+  loadingDeletePic: false,
+  errorDeletePic: null,
 };
 
 const adminSlice = createSlice({
@@ -133,7 +137,31 @@ const adminSlice = createSlice({
         state.loadingCreate = false;
         state.errorCreate = null;
         state.successCreate = false;
-      }
+      },
+          UPLOAD_PROFILE_PIC_REQUEST: (state) => {
+      state.loadingProfilePic = true;
+      state.errorProfilePic = null;
+    },
+    UPLOAD_PROFILE_PIC_SUCCESS: (state) => {
+      state.loadingProfilePic = false;
+      state.errorProfilePic = null;
+    },
+    UPLOAD_PROFILE_PIC_FAILURE: (state, action) => {
+      state.loadingProfilePic = false;
+      state.errorProfilePic = action.payload;
+    },
+    DELETE_PROFILE_PIC_REQUEST: (state) => {
+      state.loadingDeletePic = true;
+      state.errorDeletePic = null;
+    },
+    DELETE_PROFILE_PIC_SUCCESS: (state) => {
+      state.loadingDeletePic = false;
+      state.errorDeletePic = null;
+    },
+    DELETE_PROFILE_PIC_FAILURE: (state, action) => {
+      state.loadingDeletePic = false;
+      state.errorDeletePic = action.payload;
+    }    
     });
     
     // Export all actions
@@ -159,7 +187,13 @@ const adminSlice = createSlice({
       DELETE_USER_FAILURE,
       CREATE_USER_REQUEST,
       CREATE_USER_SUCCESS,
-      CREATE_USER_FAILURE
+      CREATE_USER_FAILURE,
+      UPLOAD_PROFILE_PIC_REQUEST,
+      UPLOAD_PROFILE_PIC_SUCCESS,
+      UPLOAD_PROFILE_PIC_FAILURE,
+      DELETE_PROFILE_PIC_REQUEST,
+      DELETE_PROFILE_PIC_SUCCESS,
+      DELETE_PROFILE_PIC_FAILURE
     } = adminSlice.actions;
     
     export default adminSlice.reducer;
