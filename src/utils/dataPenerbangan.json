@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "name": "ITK GT-25",
+    "lastCheckIn": "02/05/2025 12:35",
+    "departureTime": "02/05/2025 12:35",
+    "departureAirport": "Balikpapan (BPN)",
+    "arrivalTime": "02/05/2025 13:35",
+    "arrivalAirport": "Surabaya (SUB)",
+    "price": "Rp 1.500.000",
+    "seatsAvailable": "46/180"
+  },
+  {
+    "id": 2,
+    "name": "ITK GT-33",
+    "lastCheckIn": "03/05/2025 08:40",
+    "departureTime": "03/05/2025 08:40",
+    "departureAirport": "Surabaya (SUB)",
+    "arrivalTime": "03/05/2025 10:30",
+    "arrivalAirport": "Balikpapan (BPN)",
+    "price": "Rp 1.206.000",
+    "seatsAvailable": "06/180"
+  },
+  {
+    "id": 3,
+    "name": "ITK GT-33",
+    "lastCheckIn": "05/05/2025 06:00",
+    "departureTime": "05/05/2025 06:00",
+    "departureAirport": "Bali (CGK)",
+    "arrivalTime": "05/05/2025 08:00",
+    "arrivalAirport": "Surabaya (SUB)",
+    "price": "Rp 1.736.000",
+    "seatsAvailable": "56/180"
+  }
+]

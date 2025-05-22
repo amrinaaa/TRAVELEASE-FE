@@ -71,7 +71,7 @@ const ManajemenPesawat = ({ isSidebarOpen }) => {
             </Link>
             <Link 
               to={selectedAirline ? `/manajemen-pesawat/${selectedAirline.id}` : "/manajemen-pesawat"} 
-              className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0"
+              className="flex items-center gap-1 text-black pt-9 md:pt-0"
             >
               <p>/</p>
               <p className="text-xs md:text-sm">Plane List</p>
@@ -90,7 +90,7 @@ const ManajemenPesawat = ({ isSidebarOpen }) => {
             </div>
             <div className="flex gap-3 items-center">
               <Searchbar forWhat="plane" onSearch={setSearchQuery} />
-              <Link to="/tambah-pesawat">
+              <Link to={selectedAirline ? `/tambah-pesawat/${selectedAirline.id}` : "/tambah-pesawat"}>
                 <button className="bg-ungu7 text-white rounded-xl px-2 py-1 hidden md:inline">
                   <i className="ri-add-line mr-1"></i>
                   <span>Plane</span>
