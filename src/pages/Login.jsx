@@ -3,12 +3,14 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/actions/authActions";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize useNavigate
   const auth = useSelector((state) => state.auth);
   const { loading, error, userInfo } = auth;
 
@@ -18,7 +20,12 @@ const Login = () => {
     if (token) {
       dispatch({ type: "LOGIN_SUCCESS", payload: { data: token } });
     }
-  }, [dispatch]);
+
+    // Redirect if login is successful
+    if (userInfo) {
+      navigate("/"); // Redirect to the home page
+    }
+  }, [dispatch, userInfo, navigate]); // Add navigate to dependency array
 
   const handleSubmit = (e) => {
     e.preventDefault();
