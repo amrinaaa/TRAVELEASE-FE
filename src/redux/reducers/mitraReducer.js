@@ -17,15 +17,26 @@ const initialState = {
   errorPlanes: null,
   loadingDeletePlane: false,
   errorDeletePlane: null,
-  loadingCreatePlane: false, // New state for creating plane
-  errorCreatePlane: null,   // New state for creating plane error
-  createdPlane: null,       // New state for created plane
+  loadingCreatePlane: false,
+  errorCreatePlane: null,
+  createdPlane: null,
   planeTypeList: [],
   loadingPlaneTypes: false,
   errorPlaneTypes: null,
   loadingCreatePlaneType: false,
   errorCreatePlaneType: null,
   createdPlaneType: null,
+  seatList: [],
+  loadingSeats: false,
+  errorSeats: null,
+  loadingDeleteSeat: false,
+  errorDeleteSeat: null,
+  loadingCreateSeats: false,
+  errorCreateSeats: null,
+  createdSeatsInfo: null,
+  seatCategoryList: [],
+  loadingSeatCategories: false,
+  errorSeatCategories: null,
 };
 
 const mitraSlice = createSlice({
@@ -129,22 +140,17 @@ const mitraSlice = createSlice({
       state.loadingDeletePlane = false;
       state.errorDeletePlane = action.payload;
     },
-    createPlaneRequest: (state) => { // Reducer for creating plane request
+    createPlaneRequest: (state) => {
       state.loadingCreatePlane = true;
       state.errorCreatePlane = null;
       state.createdPlane = null;
     },
-    createPlaneSuccess: (state, action) => { // Reducer for creating plane success
+    createPlaneSuccess: (state, action) => {
       state.loadingCreatePlane = false;
       state.createdPlane = action.payload;
       state.errorCreatePlane = null;
-      // Note: The response doesn't include the full planeType object.
-      // We push it, but might need a refetch for full consistency later.
-      // Or, better, refetch `getPlanesRequest` after success in the component.
-      // For now, we don't push to avoid inconsistent data.
-      // state.planeList.push(action.payload); // Consider refetching instead.
     },
-    createPlaneFailure: (state, action) => { // Reducer for creating plane failure
+    createPlaneFailure: (state, action) => {
       state.loadingCreatePlane = false;
       state.errorCreatePlane = action.payload;
       state.createdPlane = null;
@@ -179,6 +185,87 @@ const mitraSlice = createSlice({
       state.loadingCreatePlaneType = false;
       state.errorCreatePlaneType = action.payload;
       state.createdPlaneType = null;
+    },
+    // --- Seat Reducers ---
+    getSeatsRequest: (state) => {
+      state.loadingSeats = true;
+      state.errorSeats = null;
+    },
+    getSeatsSuccess: (state, action) => {
+      state.loadingSeats = false;
+      state.seatList = action.payload;
+      state.errorSeats = null;
+    },
+    getSeatsFailure: (state, action) => {
+      state.loadingSeats = false;
+      state.errorSeats = action.payload;
+      state.seatList = [];
+    },
+    deleteSeatRequest: (state) => {
+      state.loadingDeleteSeat = true;
+      state.errorDeleteSeat = null;
+    },
+    deleteSeatSuccess: (state, action) => {
+      state.loadingDeleteSeat = false;
+      const seatIdToDelete = action.payload;
+      state.seatList = state.seatList.map(category => ({
+          ...category,
+          seats: category.seats.filter(seat => seat.id !== seatIdToDelete),
+      }));
+      state.errorDeleteSeat = null;
+    },
+    deleteSeatFailure: (state, action) => {
+      state.loadingDeleteSeat = false;
+      state.errorDeleteSeat = action.payload;
+    },
+    createSeatsRequest: (state) => {
+        state.loadingCreateSeats = true;
+        state.errorCreateSeats = null;
+        state.createdSeatsInfo = null;
+    },
+    createSeatsSuccess: (state, action) => {
+        state.loadingCreateSeats = false;
+        const { response, seatCategoryId } = action.payload;
+        state.createdSeatsInfo = response;
+        state.errorCreateSeats = null;
+        state.seatList = state.seatList.map(category => {
+            if (category.categoryId === seatCategoryId) {
+                const existingSeats = Array.isArray(category.seats) ? category.seats : [];
+                const newSeats = Array.isArray(response.seats) ? response.seats : [];
+                return {
+                    ...category,
+                    seats: [...existingSeats, ...newSeats],
+                };
+            }
+            return category;
+        });
+    },
+    createSeatsFailure: (state, action) => {
+        state.loadingCreateSeats = false;
+        state.errorCreateSeats = action.payload;
+        state.createdSeatsInfo = null;
+    },
+    // ---- TAMBAHKAN REDUCER INI ----
+    resetCreateSeatsStatus: (state) => {
+        state.loadingCreateSeats = false;
+        state.errorCreateSeats = null;
+        state.createdSeatsInfo = null;
+    },
+    // -----------------------------
+    // --- Seat Category Reducers ---
+    getSeatCategoriesRequest: (state) => {
+      state.loadingSeatCategories = true;
+      state.errorSeatCategories = null;
+    },
+    getSeatCategoriesSuccess: (state, action) => {
+      state.loadingSeatCategories = false;
+      state.seatCategoryList = action.payload;
+      state.errorSeatCategories = null;
+    },
+    getSeatCategoriesFailure: (state, action) => {
+      state.loadingSeatCategories = false;
+      state.errorSeatCategories = action.payload;
+      state.seatCategoryList = [];
     },
     // --- Reset State ---
     resetMitraState: (state) => {
@@ -215,6 +302,19 @@ export const {
   createPlaneTypeRequest,
   createPlaneTypeSuccess,
   createPlaneTypeFailure,
+  getSeatsRequest,
+  getSeatsSuccess,
+  getSeatsFailure,
+  deleteSeatRequest,
+  deleteSeatSuccess,
+  deleteSeatFailure,
+  createSeatsRequest,
+  createSeatsSuccess,
+  createSeatsFailure,
+  resetCreateSeatsStatus, // <-- Pastikan diekspor
+  getSeatCategoriesRequest,
+  getSeatCategoriesSuccess,
+  getSeatCategoriesFailure,
   resetMitraState,
 } = mitraSlice.actions;
 

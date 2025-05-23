@@ -19,15 +19,27 @@ import {
   deletePlaneRequest,
   deletePlaneSuccess,
   deletePlaneFailure,
+  createPlaneRequest,
+  createPlaneSuccess,
+  createPlaneFailure,
   getPlaneTypesRequest,
   getPlaneTypesSuccess,
   getPlaneTypesFailure,
   createPlaneTypeRequest,
   createPlaneTypeSuccess,
   createPlaneTypeFailure,
-  createPlaneRequest, // Import new action type for creating plane
-  createPlaneSuccess, // Import new action type for creating plane
-  createPlaneFailure, // Import new action type for creating plane
+  getSeatsRequest,
+  getSeatsSuccess,
+  getSeatsFailure,
+  deleteSeatRequest,
+  deleteSeatSuccess,
+  deleteSeatFailure,
+  getSeatCategoriesRequest,
+  getSeatCategoriesSuccess,
+  getSeatCategoriesFailure,
+  createSeatsRequest, // Import new action type
+  createSeatsSuccess, // Import new action type
+  createSeatsFailure, // Import new action type
 } from "../reducers/mitraReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -128,25 +140,14 @@ export const createPlane = (planeData) => async (dispatch) => {
   dispatch(createPlaneRequest());
   try {
     const token = Cookies.get("token");
-    console.log("[DEBUG] Auth Token:", token);
-    console.log("[DEBUG] Sending Plane Data:", planeData);
-
     const response = await axios.post(`${api_url}/plane`, planeData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
-
-    console.log("[DEBUG] API Response (Create Plane):", response.data);
-
     dispatch(createPlaneSuccess(response.data.data));
   } catch (error) {
-    console.error("[ERROR] Creating plane:", error.response || error);
     dispatch(createPlaneFailure(error.response?.data?.message || error.message));
   }
 };
-
 
 // --- Plane Type Actions ---
 
@@ -177,5 +178,85 @@ export const createPlaneType = (planeTypeData) => async (dispatch) => {
     dispatch(createPlaneTypeSuccess(response.data.data));
   } catch (error) {
     dispatch(createPlaneTypeFailure(error.response?.data?.message || error.message));
+  }
+};
+
+// --- Seat Actions ---
+
+export const fetchSeatsRequest = (planeId) => async (dispatch) => {
+  dispatch(getSeatsRequest());
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.get(`${api_url}/seats?planeId=${planeId}`, {
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    });
+    if (response.data?.data && Array.isArray(response.data.data)) {
+      dispatch(getSeatsSuccess(response.data.data));
+    } else {
+      throw new Error("Invalid data format from API or no seats found");
+    }
+  } catch (error) {
+    dispatch(getSeatsFailure(error.response?.data?.message || error.message));
+  }
+};
+
+export const deleteSeat = (seatId) => async (dispatch) => {
+  dispatch(deleteSeatRequest());
+  try {
+    const token = Cookies.get("token");
+    await axios.delete(`${api_url}/seat`, {
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      data: { seatId: seatId },
+    });
+    dispatch(deleteSeatSuccess(seatId));
+  } catch (error) {
+    dispatch(deleteSeatFailure(error.response?.data?.message || error.message));
+  }
+};
+
+export const createSeats = (seatData) => async (dispatch) => {
+  dispatch(createSeatsRequest());
+  try {
+    const token = Cookies.get("token");
+    console.log("[DEBUG] Auth Token:", token);
+    console.log("[DEBUG] Sending Seat Data:", seatData);
+
+    const response = await axios.post(`${api_url}/seat`, seatData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("[DEBUG] API Response (Create Seats):", response.data);
+
+    // Kirim response dan categoryId ke reducer
+    dispatch(createSeatsSuccess({
+        response: response.data.data,
+        seatCategoryId: seatData.seatCategoryId
+    }));
+  } catch (error) {
+    console.error("[ERROR] Creating seats:", error.response || error);
+    dispatch(createSeatsFailure(error.response?.data?.message || error.message));
+  }
+};
+
+
+// --- Seat Category Actions ---
+
+export const fetchSeatCategoriesRequest = (planeId) => async (dispatch) => {
+  dispatch(getSeatCategoriesRequest());
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.get(`${api_url}/seat-category?planeId=${planeId}`, {
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    });
+    if (response.data?.data && Array.isArray(response.data.data)) {
+      dispatch(getSeatCategoriesSuccess(response.data.data));
+    } else {
+      throw new Error("Invalid data format from API");
+    }
+  } catch (error) {
+    dispatch(getSeatCategoriesFailure(error.response?.data?.message || error.message));
   }
 };

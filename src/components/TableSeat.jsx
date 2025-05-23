@@ -1,13 +1,46 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import dataKursi from "../utils/dataKursi.json";
-import SeatModal from "./SeatModal"; // pastikan path benar
+import React, { useState, useMemo, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteSeat } from "../redux/actions/mitraAction"; // Import action deleteSeat
 
-const TableSeat = ({ searchQuery, data, setData }) => {
+const TableSeat = ({ searchQuery, seatCategories }) => {
+  const dispatch = useDispatch();
+  const { loadingDeleteSeat, errorDeleteSeat } = useSelector((state) => state.mitra);
+
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
+  const [deleteId, setDeleteId] = useState(null); // ID kursi yang akan dihapus
+  const [seatNameToDelete, setSeatNameToDelete] = useState(''); // Nama kursi untuk alert
+  const [isDeleting, setIsDeleting] = useState(false); // Status untuk tracking
 
+  // --- Flattening Data ---
+  const flattenedSeats = useMemo(() => {
+    if (!seatCategories || !Array.isArray(seatCategories)) return [];
+    return seatCategories.flatMap(category =>
+        (category.seats || []).map(seat => ({
+            ...seat,
+            className: category.categoryName,
+            categoryId: category.categoryId,
+            price: category.price,
+        }))
+    );
+  }, [seatCategories]); // Bergantung pada seatCategories dari Redux
+
+  // --- Effect untuk Menangani Hasil Delete ---
+  useEffect(() => {
+      if (isDeleting && !loadingDeleteSeat) {
+          if (errorDeleteSeat) {
+              alert(`Error deleting seat: ${errorDeleteSeat}`);
+          } else {
+              alert(`Seat ${seatNameToDelete} (ID: ${deleteId}) deleted successfully!`);
+          }
+          setIsDeleting(false);
+          setDeleteId(null);
+          setSeatNameToDelete('');
+      }
+  }, [loadingDeleteSeat, errorDeleteSeat, isDeleting, deleteId, seatNameToDelete]);
+
+
+  // --- Sorting ---
   const handleSort = (key) => {
     setSortConfig((prev) => {
       if (prev.key === key) {
@@ -19,26 +52,34 @@ const TableSeat = ({ searchQuery, data, setData }) => {
     });
   };
 
-  const sortedData = [...data].sort((a, b) => {
+  const sortedData = [...flattenedSeats].sort((a, b) => {
     if (sortConfig.direction === "default" || sortConfig.key === null) return 0;
-    if (sortConfig.direction === "asc") return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
-    if (sortConfig.direction === "desc") return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
+    const valA = a[sortConfig.key]?.toString().toLowerCase();
+    const valB = b[sortConfig.key]?.toString().toLowerCase();
+    if (sortConfig.direction === "asc") return valA > valB ? 1 : -1;
+    if (sortConfig.direction === "desc") return valA < valB ? 1 : -1;
     return 0;
   });
 
+  // --- Filtering ---
   const filteredData = sortedData.filter((seat) =>
-    seat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    seat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    seat.className.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const confirmDelete = (id) => {
+  // --- Deleting ---
+  const confirmDelete = (id, name) => {
     setDeleteId(id);
+    setSeatNameToDelete(name); // Simpan nama untuk alert
     setModalOpen(true);
   };
 
   const handleDelete = () => {
-    setData((prevData) => prevData.filter((seat) => seat.id !== deleteId));
-    setModalOpen(false);
-    setDeleteId(null);
+    if (deleteId) {
+        setIsDeleting(true); // Mulai tracking
+        dispatch(deleteSeat(deleteId)); // Dispatch action deleteSeat
+        setModalOpen(false);
+    }
   };
 
   return (
@@ -47,13 +88,14 @@ const TableSeat = ({ searchQuery, data, setData }) => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {["Name", "Class Name"].map((col) => (
+              {["Name", "className"].map((col) => (
                 <th
                   key={col}
                   className="py-2 px-3 border cursor-pointer"
-                  onClick={() => handleSort(col.toLowerCase())}
+                  onClick={() => handleSort(col)}
                 >
-                  {col} <i className="ml-1 ri-arrow-up-down-line"></i>
+                  {col === "className" ? "Class Name" : col}
+                  <i className="ml-1 ri-arrow-up-down-line"></i>
                 </th>
               ))}
               <th className="py-2 px-3 border">Action</th>
@@ -66,7 +108,12 @@ const TableSeat = ({ searchQuery, data, setData }) => {
                   <td className="py-2 px-3 border text-center">{seat.name}</td>
                   <td className="py-2 px-3 border text-center">{seat.className}</td>
                   <td className="flex py-2 px-3 text-center justify-center">
-                    <button className="text-red-500 mx-1" onClick={() => confirmDelete(seat.id)}>
+                    {/* Tombol Hapus: Dinonaktifkan saat sedang menghapus */}
+                    <button
+                        className="text-red-500 mx-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => confirmDelete(seat.id, seat.name)} // Kirim ID dan Nama
+                        disabled={loadingDeleteSeat}
+                    >
                       <i className="ri-delete-bin-5-line text-2xl"></i>
                     </button>
                   </td>
@@ -74,8 +121,8 @@ const TableSeat = ({ searchQuery, data, setData }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
-                  No results found.
+                <td colSpan="3" className="text-center py-4 text-gray-500">
+                  {searchQuery ? "No results found." : "No seats found for this plane."}
                 </td>
               </tr>
             )}
@@ -83,18 +130,27 @@ const TableSeat = ({ searchQuery, data, setData }) => {
         </table>
       </div>
 
+      {/* Modal Konfirmasi Hapus */}
       {modalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           <div className="bg-gray-200 p-6 rounded-md shadow-md">
             <p className="text-xs md:text-lg font-semibold mb-4">
-              Are you sure you want to delete {deleteId}?
+              Are you sure you want to delete seat {seatNameToDelete} ({deleteId})?
             </p>
-            <div className="flex justify-center text-xs md:text-base">
-              <button className="bg-gray-400 text-white px-4 py-2 rounded-md mr-2" onClick={() => setModalOpen(false)}>
+            <div className="flex justify-center text-xs md:text-base gap-2">
+              <button
+                className="bg-gray-400 text-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => setModalOpen(false)}
+                disabled={loadingDeleteSeat}
+              >
                 No
               </button>
-              <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={handleDelete}>
-                Yes
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleDelete}
+                disabled={loadingDeleteSeat}
+              >
+                {loadingDeleteSeat ? "Deleting..." : "Yes"}
               </button>
             </div>
           </div>
