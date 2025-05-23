@@ -1,55 +1,99 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import dataPesawat from "../utils/dataPesawat.json";
-
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchPlanesRequest } from "../redux/actions/mitraAction"; // Pastikan path ini benar
 
 const TablePlane = ({ searchQuery }) => {
-  const [data, setData] = useState([]);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { airlineId } = useParams(); // Mendapatkan airlineId dari URL
+
+  // Mengambil data dari Redux store
+  const { planeList, loadingPlanes, errorPlanes } = useSelector(
+    (state) => state.mitra
+  );
+
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const navigate = useNavigate();
 
+  // Fetch data pesawat ketika komponen dimuat atau airlineId berubah
   useEffect(() => {
-    setData(dataPesawat); // Use the dummy data
-  }, []);
+    if (airlineId) {
+      dispatch(fetchPlanesRequest(airlineId));
+    }
+  }, [dispatch, airlineId]);
 
-  // Function to handle sorting
+  // Data yang akan digunakan, pastikan selalu array
+  const data = Array.isArray(planeList) ? planeList : [];
+
+  // Fungsi untuk menangani sorting
   const handleSort = (key) => {
     setSortConfig((prev) => {
       if (prev.key === key) {
         if (prev.direction === "default") return { key, direction: "asc" };
         if (prev.direction === "asc") return { key, direction: "desc" };
-        return { key: null, direction: "default" }; // Reset to default order
+        return { key: null, direction: "default" };
       }
-      return { key, direction: "asc" }; // If changing columns, start from ascending
+      return { key, direction: "asc" };
     });
   };
 
-  // Sort data according to config
+  // Fungsi untuk mendapatkan nilai (termasuk nested) untuk sorting
+  const getSortValue = (item, key) => {
+      if (key === 'type') {
+          return item.planeType?.name?.toLowerCase() || '';
+      }
+      return item[key]?.toString().toLowerCase() || '';
+  }
+
+  // Sort data sesuai config
   const sortedData = [...data].sort((a, b) => {
     if (sortConfig.direction === "default" || sortConfig.key === null) return 0;
-    if (sortConfig.direction === "asc") return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
-    if (sortConfig.direction === "desc") return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
+
+    const valA = getSortValue(a, sortConfig.key);
+    const valB = getSortValue(b, sortConfig.key);
+
+    if (sortConfig.direction === "asc") return valA > valB ? 1 : -1;
+    if (sortConfig.direction === "desc") return valA < valB ? 1 : -1;
     return 0;
   });
 
+  // Filter data berdasarkan pencarian
   const filteredData = sortedData.filter((plane) =>
     plane.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Function to confirm deletion
+  // Fungsi konfirmasi hapus
   const confirmDelete = (id) => {
     setDeleteId(id);
     setModalOpen(true);
   };
 
-  // Handle deletion of data
+  // Handle hapus data (placeholder - perlu implementasi Redux/API)
   const handleDelete = () => {
-    setData((prevData) => prevData.filter((plane) => plane.id !== deleteId));
+    console.log("Menghapus pesawat dengan ID:", deleteId);
+    // TODO: Dispatch action untuk menghapus pesawat jika sudah ada
+    // dispatch(deletePlaneAction(deleteId));
     setModalOpen(false);
     setDeleteId(null);
   };
+
+  // Tampilkan loading jika sedang fetch
+  if (loadingPlanes) {
+    return <p className="p-4 text-center">Loading planes...</p>;
+  }
+
+  // Tampilkan error jika terjadi
+  if (errorPlanes) {
+    return <p className="p-4 text-center text-red-600">Error: {errorPlanes}</p>;
+  }
+
+  // Tampilkan pesan jika tidak ada airlineId
+  if (!airlineId) {
+      return <p className="p-4 text-center">Please select an airline first to see its planes.</p>;
+  }
+
 
   return (
     <div className="p-4">
@@ -57,7 +101,7 @@ const TablePlane = ({ searchQuery }) => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {["Name", "Type", "Class"].map((col) => (
+              {["Name", "Type"].map((col) => ( // Hanya Name dan Type
                 <th
                   key={col}
                   className="py-2 px-3 border cursor-pointer"
@@ -74,22 +118,21 @@ const TablePlane = ({ searchQuery }) => {
             {filteredData.length > 0 ? (
               filteredData.map((plane) => (
                 <tr key={plane.id} className="border-b hover:bg-gray-100">
-
                   <td className="py-2 px-3 border text-center">{plane.name}</td>
-
-                  <td className="py-2 px-3 border text-center">{plane.type}</td>
-
-                  <td className="py-2 px-3 border text-center">{plane.class}</td>
-
-                  <td className="flex py-2 px-3 text-center justify-center">
-                    <button onClick={() => navigate(`/tambah-penerbangan/${plane.id}`)}>
+                  {/* Tampilkan nama tipe pesawat dari planeType */}
+                  <td className="py-2 px-3 border text-center">{plane.planeType?.name || 'N/A'}</td>
+                  <td className="flex py-2 px-3 text-center justify-center gap-2">
+                    {/* Tombol Tambah Penerbangan */}
+                    <button title="Tambah Penerbangan" onClick={() => navigate(`/tambah-penerbangan/${plane.id}`)}>
                       <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path fill="currentColor" d="M16 9c-.91 0-1.77.18-2.57.5l-.7-3.05l3.89-3.89c.58-.56.58-1.53 0-2.12s-1.54-.586-2.12 0l-3.89 3.89l-9.2-2.12L0 3.62L7.43 7.5l-3.89 3.9l-2.48-.35L0 12.11l3.18 1.76l1.77 3.19L6 16l-.34-2.5l3.89-3.87l1.02 1.96A6.995 6.995 0 0 0 16 23c3.87 0 7-3.13 7-7s-3.13-7-7-7m0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5s5 2.24 5 5s-2.24 5-5 5m.5-4.75V12H15v5l3.61 2.16l.75-1.22z"></path></svg>
                     </button>
-                    <button onClick={() => navigate(`/edit-pesawat/${plane.id}`)}>
+                    {/* Tombol Edit Pesawat */}
+                    <button title="Edit Pesawat" onClick={() => navigate(`/edit-pesawat/${plane.id}`)}>
                       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=chair_alt" />
-                      <span class="material-symbols-outlined mt-1 ml-1">chair_alt</span>
+                      <span className="material-symbols-outlined mt-1 ml-1">chair_alt</span>
                     </button>
-                    <button className="text-red-500 mx-1" onClick={() => confirmDelete(plane.id)}>
+                    {/* Tombol Hapus */}
+                    <button title="Hapus Pesawat" className="text-red-500 mx-1" onClick={() => confirmDelete(plane.id)}>
                       <i className="ri-delete-bin-5-line text-2xl"></i>
                     </button>
                   </td>
@@ -97,19 +140,20 @@ const TablePlane = ({ searchQuery }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
-                  No results found.
+                <td colSpan="3" className="text-center py-4 text-gray-500">
+                  No planes found for this airline.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+      {/* Modal Konfirmasi Hapus */}
       {modalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           <div className="bg-gray-200 p-6 rounded-md shadow-md">
             <p className="text-xs md:text-lg font-semibold mb-4">
-              Are you sure you want to delete {deleteId}?
+              Are you sure you want to delete this plane?
             </p>
             <div className="flex justify-center text-xs md:text-base">
               <button className="bg-gray-400 text-white px-4 py-2 rounded-md mr-2" onClick={() => setModalOpen(false)}>
@@ -126,4 +170,4 @@ const TablePlane = ({ searchQuery }) => {
   );
 };
 
-export default TablePlane
+export default TablePlane;
