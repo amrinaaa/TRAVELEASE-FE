@@ -31,9 +31,9 @@ const initialState = {
   errorSeats: null,
   loadingDeleteSeat: false,
   errorDeleteSeat: null,
-  loadingCreateSeats: false, // New state for creating seats
-  errorCreateSeats: null,   // New state for creating seats error
-  createdSeatsInfo: null, // New state to store response
+  loadingCreateSeats: false,
+  errorCreateSeats: null,
+  createdSeatsInfo: null,
   seatCategoryList: [],
   loadingSeatCategories: false,
   errorSeatCategories: null,
@@ -218,21 +218,18 @@ const mitraSlice = createSlice({
       state.loadingDeleteSeat = false;
       state.errorDeleteSeat = action.payload;
     },
-    createSeatsRequest: (state) => { // Reducer for creating seats request
+    createSeatsRequest: (state) => {
         state.loadingCreateSeats = true;
         state.errorCreateSeats = null;
         state.createdSeatsInfo = null;
     },
-    createSeatsSuccess: (state, action) => { // Reducer for creating seats success
+    createSeatsSuccess: (state, action) => {
         state.loadingCreateSeats = false;
         const { response, seatCategoryId } = action.payload;
         state.createdSeatsInfo = response;
         state.errorCreateSeats = null;
-
-        // Update the seatList by adding new seats to the correct category
         state.seatList = state.seatList.map(category => {
             if (category.categoryId === seatCategoryId) {
-                // Pastikan 'seats' adalah array sebelum menggabungkan
                 const existingSeats = Array.isArray(category.seats) ? category.seats : [];
                 const newSeats = Array.isArray(response.seats) ? response.seats : [];
                 return {
@@ -243,11 +240,18 @@ const mitraSlice = createSlice({
             return category;
         });
     },
-    createSeatsFailure: (state, action) => { // Reducer for creating seats failure
+    createSeatsFailure: (state, action) => {
         state.loadingCreateSeats = false;
         state.errorCreateSeats = action.payload;
         state.createdSeatsInfo = null;
     },
+    // ---- TAMBAHKAN REDUCER INI ----
+    resetCreateSeatsStatus: (state) => {
+        state.loadingCreateSeats = false;
+        state.errorCreateSeats = null;
+        state.createdSeatsInfo = null;
+    },
+    // -----------------------------
     // --- Seat Category Reducers ---
     getSeatCategoriesRequest: (state) => {
       state.loadingSeatCategories = true;
@@ -307,6 +311,7 @@ export const {
   createSeatsRequest,
   createSeatsSuccess,
   createSeatsFailure,
+  resetCreateSeatsStatus, // <-- Pastikan diekspor
   getSeatCategoriesRequest,
   getSeatCategoriesSuccess,
   getSeatCategoriesFailure,

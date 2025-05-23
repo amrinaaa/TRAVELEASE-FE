@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSeatCategoriesRequest, createSeats } from "../redux/actions/mitraAction";
+import {
+  fetchSeatCategoriesRequest,
+  createSeats
+} from "../redux/actions/mitraAction";
 
-// Pindahkan seatLines ke luar komponen agar menjadi konstanta
+import { resetCreateSeatsStatus } from "../redux/reducers/mitraReducer";
+
 const SEAT_LINES = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 const SeatModal = ({ onClose, existingSeats, planeId, categories }) => {
@@ -17,22 +21,24 @@ const SeatModal = ({ onClose, existingSeats, planeId, categories }) => {
 
   const [seatConfig, setSeatConfig] = useState({});
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
+  const [hasHandledResult, setHasHandledResult] = useState(false); // State lokal untuk track
 
   // 1. Fetch Kategori Kursi
   useEffect(() => {
     if (planeId) {
       dispatch(fetchSeatCategoriesRequest(planeId));
+      setHasHandledResult(false); // Reset status handle saat modal dibuka
     }
   }, [dispatch, planeId]);
 
-  // 2. Set Kategori Default saat daftar kategori berubah
+  // 2. Set Kategori Default
   useEffect(() => {
     if (seatCategoryList.length > 0 && !selectedCategoryId) {
       setSelectedCategoryId(seatCategoryList[0].id);
     }
-  }, [seatCategoryList, selectedCategoryId]); // Hanya jalankan saat daftar berubah
+  }, [seatCategoryList, selectedCategoryId]);
 
-  // 3. Hitung 'start' saat Kategori atau Kursi yang Ada berubah
+  // 3. Hitung 'start'
   useEffect(() => {
     const config = {};
     const currentCategoryData = categories.find(cat => cat.categoryId === selectedCategoryId);
@@ -45,47 +51,40 @@ const SeatModal = ({ onClose, existingSeats, planeId, categories }) => {
         .filter(num => !isNaN(num));
 
       const nextStart = seatsInLine.length > 0 ? Math.max(...seatsInLine) + 1 : 1;
-      // Set nilai HANYA jika berbeda dari yang ada atau jika belum ada
-      // Ini mencegah pembaruan yang tidak perlu, tetapi untuk input, kita biarkan di-set
-      config[line] = seatConfig[line] || { start: nextStart, end: nextStart + 5 };
-      // Jika start default lebih besar dari end yang ada, update end
-      if(config[line].start > config[line].end) {
-          config[line].end = config[line].start + 5;
+      // Hanya set jika belum ada atau kategori berubah
+      if (!seatConfig[line] || seatConfig[line].categoryId !== selectedCategoryId) {
+          config[line] = { start: nextStart, end: nextStart + 5, categoryId: selectedCategoryId };
+      } else {
+          config[line] = seatConfig[line];
       }
-      // Jika start default berbeda dari yang ada, set ulang
-       if (!seatConfig[line] || seatConfig[line].start !== nextStart) {
-           config[line] = { start: nextStart, end: nextStart + 5 };
-       }
-
     });
-     // Hanya set jika config benar-benar baru atau berbeda (shallow compare)
-     // Untuk kasus ini, kita set saja, tapi loop harusnya sudah teratasi dengan memindahkan seatLines
     setSeatConfig(config);
 
-  }, [selectedCategoryId, categories]); // Hapus seatLines dari dependensi
+  }, [selectedCategoryId, categories]); // Hapus seatConfig dari dependensi
 
-  // 4. Tangani Hasil Penambahan Kursi
+  // 4. Tangani Hasil Penambahan Kursi (MODIFIKASI DI SINI)
   useEffect(() => {
-      if (!loadingCreateSeats && (createdSeatsInfo || errorCreateSeats)) {
+      // Cek jika proses *tidak* loading, ada hasilnya, DAN belum ditangani
+      if (!loadingCreateSeats && (createdSeatsInfo || errorCreateSeats) && !hasHandledResult) {
           if (errorCreateSeats) {
               alert(`Error adding seats: ${errorCreateSeats}`);
           } else if (createdSeatsInfo) {
               alert(`Successfully added ${createdSeatsInfo.seatCount} seats!`);
-              onClose();
+              onClose(); // Tutup hanya jika sukses
           }
-          // Reset status? Tergantung bagaimana Redux diatur,
-          // Mungkin perlu action `resetCreateSeatsStatus`.
+          dispatch(resetCreateSeatsStatus()); // Panggil action reset
+          setHasHandledResult(true); // Tandai bahwa hasil sudah ditangani
       }
-  }, [loadingCreateSeats, createdSeatsInfo, errorCreateSeats, onClose]);
+  }, [loadingCreateSeats, createdSeatsInfo, errorCreateSeats, onClose, dispatch, hasHandledResult]); // Tambah hasHandledResult
 
-  // Handler input dengan useCallback agar lebih stabil
+
+  // Handler input
   const handleInputChange = useCallback((line, field, value) => {
       const numValue = parseInt(value);
       setSeatConfig(prev => ({
           ...prev,
           [line]: {
               ...prev[line],
-              // Pastikan nilai minimal adalah 1 atau nilai start (untuk end)
               [field]: isNaN(numValue) ? (field === 'start' ? 1 : prev[line]?.start || 1) : numValue,
           },
       }));
@@ -117,6 +116,7 @@ const SeatModal = ({ onClose, existingSeats, planeId, categories }) => {
       seatArrangement: seatArrangement,
     };
 
+    setHasHandledResult(false); // Reset status handle sebelum kirim
     dispatch(createSeats(seatData));
   };
 
@@ -147,13 +147,13 @@ const SeatModal = ({ onClose, existingSeats, planeId, categories }) => {
           <div className="font-bold">Start</div>
           <div className="font-bold">End</div>
 
-          {SEAT_LINES.map(line => ( // Gunakan konstanta SEAT_LINES
+          {SEAT_LINES.map(line => (
             <React.Fragment key={line}>
               <div className="pt-2">{line}</div>
               <input
                 type="number"
                 min="1"
-                value={seatConfig[line]?.start || 1} // Beri nilai default jika belum ada
+                value={seatConfig[line]?.start || 1}
                 onChange={(e) => handleInputChange(line, 'start', e.target.value)}
                 className="p-1 border rounded disabled:bg-gray-200"
                 disabled={isLoading}
@@ -161,7 +161,7 @@ const SeatModal = ({ onClose, existingSeats, planeId, categories }) => {
               <input
                 type="number"
                 min={seatConfig[line]?.start || 1}
-                value={seatConfig[line]?.end || seatConfig[line]?.start || 1} // Beri nilai default
+                value={seatConfig[line]?.end || seatConfig[line]?.start || 1}
                 onChange={(e) => handleInputChange(line, 'end', e.target.value)}
                 className="p-1 border rounded disabled:bg-gray-200"
                 disabled={isLoading}
