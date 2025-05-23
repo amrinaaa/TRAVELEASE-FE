@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import dataPesawat from "../utils/dataPesawat.json";
+import dataPenerbangan from "../utils/dataPenerbangan.json";
 
 
-const TablePlane = ({ searchQuery }) => {
+const TableFlight = ({ searchQuery }) => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
@@ -11,7 +11,7 @@ const TablePlane = ({ searchQuery }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setData(dataPesawat); // Use the dummy data
+    setData(dataPenerbangan); // Use the dummy data
   }, []);
 
   // Function to handle sorting
@@ -34,8 +34,8 @@ const TablePlane = ({ searchQuery }) => {
     return 0;
   });
 
-  const filteredData = sortedData.filter((plane) =>
-    plane.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = sortedData.filter((flight) =>
+    flight.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Function to confirm deletion
@@ -46,7 +46,7 @@ const TablePlane = ({ searchQuery }) => {
 
   // Handle deletion of data
   const handleDelete = () => {
-    setData((prevData) => prevData.filter((plane) => plane.id !== deleteId));
+    setData((prevData) => prevData.filter((flight) => flight.id !== deleteId));
     setModalOpen(false);
     setDeleteId(null);
   };
@@ -57,7 +57,7 @@ const TablePlane = ({ searchQuery }) => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {["Name", "Type", "Class"].map((col) => (
+              {["Name", "Last Check In", "Depature Time", "Departure Airport", "Arrival Time", "Arrival Airport", "Price", "Seats Available"].map((col) => (
                 <th
                   key={col}
                   className="py-2 px-3 border cursor-pointer"
@@ -72,24 +72,23 @@ const TablePlane = ({ searchQuery }) => {
           </thead>
           <tbody className="text-gray-700">
             {filteredData.length > 0 ? (
-              filteredData.map((plane) => (
-                <tr key={plane.id} className="border-b hover:bg-gray-100">
+              filteredData.map((flight) => (
+                <tr key={flight.id} className="border-b hover:bg-gray-100">
 
-                  <td className="py-2 px-3 border text-center">{plane.name}</td>
-
-                  <td className="py-2 px-3 border text-center">{plane.type}</td>
-
-                  <td className="py-2 px-3 border text-center">{plane.class}</td>
+                  <td className="py-2 px-3 border text-center">{flight.name}</td>
+                  <td className="py-2 px-3 border text-center">{flight.lastCheckIn}</td>
+                  <td className="py-2 px-3 border text-center">{flight.departureTime}</td>
+                  <td className="py-2 px-3 border text-center">{flight.departureAirport}</td>
+                  <td className="py-2 px-3 border text-center">{flight.arrivalTime}</td>
+                  <td className="py-2 px-3 border text-center">{flight.arrivalAirport}</td>
+                  <td className="py-2 px-3 border text-center">{flight.price}</td>
+                  <td className="py-2 px-3 border text-center">{flight.seatsAvailable}</td>
 
                   <td className="flex py-2 px-3 text-center justify-center">
-                    <button onClick={() => navigate(`/tambah-penerbangan/${plane.id}`)}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path fill="currentColor" d="M16 9c-.91 0-1.77.18-2.57.5l-.7-3.05l3.89-3.89c.58-.56.58-1.53 0-2.12s-1.54-.586-2.12 0l-3.89 3.89l-9.2-2.12L0 3.62L7.43 7.5l-3.89 3.9l-2.48-.35L0 12.11l3.18 1.76l1.77 3.19L6 16l-.34-2.5l3.89-3.87l1.02 1.96A6.995 6.995 0 0 0 16 23c3.87 0 7-3.13 7-7s-3.13-7-7-7m0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5s5 2.24 5 5s-2.24 5-5 5m.5-4.75V12H15v5l3.61 2.16l.75-1.22z"></path></svg>
+                    <button onClick={() => navigate(`/list-pengguna-pesawat/${flight.id}`)}>
+                      <i className="ri-user-fill text-2xl"></i>
                     </button>
-                    <button onClick={() => navigate(`/edit-pesawat/${plane.id}`)}>
-                      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=chair_alt" />
-                      <span class="material-symbols-outlined mt-1 ml-1">chair_alt</span>
-                    </button>
-                    <button className="text-red-500 mx-1" onClick={() => confirmDelete(plane.id)}>
+                    <button className="text-red-500 mx-1" onClick={() => confirmDelete(flight.id)}>
                       <i className="ri-delete-bin-5-line text-2xl"></i>
                     </button>
                   </td>
@@ -126,4 +125,4 @@ const TablePlane = ({ searchQuery }) => {
   );
 };
 
-export default TablePlane
+export default TableFlight

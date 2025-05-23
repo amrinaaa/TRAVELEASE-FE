@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Button from "../components/Button";
 import dataPesawat from "../utils/dataPesawat.json";
 
 const TambahPesawat = ({ isSidebarOpen }) => {
+  // Ambil ID dari URL parameters (jika ada)
+  const { userId } = useParams();
+  
   // State to store the input values for the new plane
   const [name, setName] = useState('');
   const [planes, setPlanes] = useState(dataPesawat);
@@ -135,11 +138,12 @@ const TambahPesawat = ({ isSidebarOpen }) => {
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
-            <Link to="/manajemen-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+            {/* Perbaikan: Tambahkan ID ke link Plane List */}
+            <Link to={userId ? `/manajemen-pesawat/${userId}` : "/manajemen-pesawat"} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
               <p>/</p>
-              <p className="text-xs md:text-sm">List Plane</p>
+              <p className="text-xs md:text-sm">Plane List</p>
             </Link>
-            <Link to="/tambah-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+            <Link to={userId ? `/tambah-pesawat/${userId}` : "/tambah-pesawat"} className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Add Plane</p>
             </Link>

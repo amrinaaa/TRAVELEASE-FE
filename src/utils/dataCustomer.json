@@ -1,0 +1,137 @@
+[
+  {
+    "id": 1,
+    "name": "Edward Hazellnut Saipul Ismail Marzuki",
+    "nik": "350907030001",
+    "gender": "Male",
+    "ageCategory": "Adult",
+    "class": "Economy",
+    "seat": "A23"
+  },
+  {
+    "id": 2,
+    "name": "Sarah Melinda Hartono",
+    "nik": "350907030002",
+    "gender": "Female",
+    "ageCategory": "Adult",
+    "class": "Business",
+    "seat": "B12"
+  },
+  {
+    "id": 3,
+    "name": "Ahmad Jafar Alatas",
+    "nik": "350907030003",
+    "gender": "Male",
+    "ageCategory": "Adult",
+    "class": "Economy",
+    "seat": "C10"
+  },
+  {
+    "id": 4,
+    "name": "Nadia Kusuma Putri",
+    "nik": "350907030004",
+    "gender": "Female",
+    "ageCategory": "Child",
+    "class": "Economy",
+    "seat": "D03"
+  },
+  {
+    "id": 5,
+    "name": "Daniel Hartmann",
+    "nik": "350907030005",
+    "gender": "Male",
+    "ageCategory": "Adult",
+    "class": "Business",
+    "seat": "B14"
+  },
+  {
+    "id": 6,
+    "name": "Maya Anggraeni",
+    "nik": "350907030006",
+    "gender": "Female",
+    "ageCategory": "Adult",
+    "class": "First",
+    "seat": "F01"
+  },
+  {
+    "id": 7,
+    "name": "Tono Suharto",
+    "nik": "350907030007",
+    "gender": "Male",
+    "ageCategory": "Senior",
+    "class": "Economy",
+    "seat": "E05"
+  },
+  {
+    "id": 8,
+    "name": "Linda Margaretha",
+    "nik": "350907030008",
+    "gender": "Female",
+    "ageCategory": "Adult",
+    "class": "Business",
+    "seat": "B15"
+  },
+  {
+    "id": 9,
+    "name": "Kevin Wijaya",
+    "nik": "350907030009",
+    "gender": "Male",
+    "ageCategory": "Adult",
+    "class": "Economy",
+    "seat": "C11"
+  },
+  {
+    "id": 10,
+    "name": "Yulianti Sari",
+    "nik": "350907030010",
+    "gender": "Female",
+    "ageCategory": "Child",
+    "class": "Economy",
+    "seat": "D04"
+  },
+  {
+    "id": 11,
+    "name": "Reza Ardiansyah",
+    "nik": "350907030011",
+    "gender": "Male",
+    "ageCategory": "Adult",
+    "class": "Economy",
+    "seat": "C12"
+  },
+  {
+    "id": 12,
+    "name": "Putri Amelia",
+    "nik": "350907030012",
+    "gender": "Female",
+    "ageCategory": "Adult",
+    "class": "First",
+    "seat": "F02"
+  },
+  {
+    "id": 13,
+    "name": "Zaki Ahmad",
+    "nik": "350907030013",
+    "gender": "Male",
+    "ageCategory": "Adult",
+    "class": "Business",
+    "seat": "B16"
+  },
+  {
+    "id": 14,
+    "name": "Rina Marlina",
+    "nik": "350907030014",
+    "gender": "Female",
+    "ageCategory": "Senior",
+    "class": "Economy",
+    "seat": "E06"
+  },
+  {
+    "id": 15,
+    "name": "Bayu Saputra",
+    "nik": "350907030015",
+    "gender": "Male",
+    "ageCategory": "Adult",
+    "class": "Economy",
+    "seat": "C13"
+  }
+]

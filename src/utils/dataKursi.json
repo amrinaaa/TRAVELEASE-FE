@@ -1,0 +1,22 @@
+[
+  { 
+    "id": 1, 
+    "name": "A1", 
+    "className": "First Class" 
+  },
+  { 
+    "id": 2, 
+    "name": "A2", 
+    "className": "First Class" 
+  },
+  {
+    "id": 3, 
+    "name": "A3", 
+    "className": "First Class" 
+  },
+  {
+    "id": 4, 
+    "name": "B1", 
+    "className": "First Class" 
+  }
+]
