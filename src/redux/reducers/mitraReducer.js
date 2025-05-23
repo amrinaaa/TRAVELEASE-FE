@@ -26,9 +26,11 @@ const initialState = {
   loadingCreatePlaneType: false,
   errorCreatePlaneType: null,
   createdPlaneType: null,
-  seatList: [], // New state for seats list
-  loadingSeats: false, // New state for loading seats
-  errorSeats: null,   // New state for seats error
+  seatList: [],
+  loadingSeats: false,
+  errorSeats: null,
+  loadingDeleteSeat: false, // New state for deleting seat
+  errorDeleteSeat: null,   // New state for deleting seat error
 };
 
 const mitraSlice = createSlice({
@@ -193,6 +195,24 @@ const mitraSlice = createSlice({
       state.errorSeats = action.payload;
       state.seatList = [];
     },
+    deleteSeatRequest: (state) => { // Reducer for deleting seat request
+      state.loadingDeleteSeat = true;
+      state.errorDeleteSeat = null;
+    },
+    deleteSeatSuccess: (state, action) => { // Reducer for deleting seat success
+      state.loadingDeleteSeat = false;
+      const seatIdToDelete = action.payload;
+      // Filter out the deleted seat from the nested structure
+      state.seatList = state.seatList.map(category => ({
+          ...category,
+          seats: category.seats.filter(seat => seat.id !== seatIdToDelete),
+      })).filter(category => category.seats.length > 0 || state.seatList.some(cat => cat.categoryId === category.categoryId && cat.seats.length > 0)); // Optional: remove category if empty
+      state.errorDeleteSeat = null;
+    },
+    deleteSeatFailure: (state, action) => { // Reducer for deleting seat failure
+      state.loadingDeleteSeat = false;
+      state.errorDeleteSeat = action.payload;
+    },
     // --- Reset State ---
     resetMitraState: (state) => {
       Object.assign(state, initialState);
@@ -231,6 +251,9 @@ export const {
   getSeatsRequest,
   getSeatsSuccess,
   getSeatsFailure,
+  deleteSeatRequest,
+  deleteSeatSuccess,
+  deleteSeatFailure,
   resetMitraState,
 } = mitraSlice.actions;
 

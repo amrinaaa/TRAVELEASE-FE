@@ -28,9 +28,12 @@ import {
   createPlaneTypeRequest,
   createPlaneTypeSuccess,
   createPlaneTypeFailure,
-  getSeatsRequest, // Import new action type for getting seats
-  getSeatsSuccess, // Import new action type for getting seats
-  getSeatsFailure, // Import new action type for getting seats
+  getSeatsRequest,
+  getSeatsSuccess,
+  getSeatsFailure,
+  deleteSeatRequest, // Import new action type for deleting seat
+  deleteSeatSuccess, // Import new action type for deleting seat
+  deleteSeatFailure, // Import new action type for deleting seat
 } from "../reducers/mitraReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -178,26 +181,38 @@ export const fetchSeatsRequest = (planeId) => async (dispatch) => {
   dispatch(getSeatsRequest());
   try {
     const token = Cookies.get("token");
+    const response = await axios.get(`${api_url}/seats?planeId=${planeId}`, {
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    });
+    if (response.data?.data && Array.isArray(response.data.data)) {
+      dispatch(getSeatsSuccess(response.data.data));
+    } else {
+      throw new Error("Invalid data format from API or no seats found");
+    }
+  } catch (error) {
+    dispatch(getSeatsFailure(error.response?.data?.message || error.message));
+  }
+};
+
+export const deleteSeat = (seatId) => async (dispatch) => {
+  dispatch(deleteSeatRequest());
+  try {
+    const token = Cookies.get("token");
     console.log("[DEBUG] Auth Token:", token);
 
-    const response = await axios.get(`${api_url}/seats?planeId=${planeId}`, {
+    const response = await axios.delete(`${api_url}/seat`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      data: { seatId: seatId }, // Send seatId in the request body
     });
 
-    console.log("[DEBUG] API Response (Fetch Seats):", response.data);
+    console.log("[DEBUG] API Response (Delete Seat):", response.data);
 
-    if (response.data?.data && Array.isArray(response.data.data)) {
-      dispatch(getSeatsSuccess(response.data.data));
-    } else {
-      // Handle cases where data might be present but not an array (though unlikely based on response)
-      // Or if data is completely missing
-      throw new Error("Invalid data format from API or no seats found");
-    }
+    dispatch(deleteSeatSuccess(seatId)); // Pass the ID of the deleted item
   } catch (error) {
-    console.error("[ERROR] Fetching seats:", error);
-    dispatch(getSeatsFailure(error.response?.data?.message || error.message));
+    console.error("[ERROR] Deleting seat:", error);
+    dispatch(deleteSeatFailure(error.response?.data?.message || error.message));
   }
 };
