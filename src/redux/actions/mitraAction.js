@@ -7,6 +7,9 @@
 //   createMitraRequest,
 //   createMitraSuccess,
 //   createMitraFailure,
+//   deleteMitraRequest, // Import new action type
+//   deleteMitraSuccess, // Import new action type
+//   deleteMitraFailure, // Import new action type
 // } from "../reducers/mitraReducer";
 
 // const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -60,6 +63,29 @@
 //   }
 // };
 
+// export const deleteMitra = (airlineId) => async (dispatch) => {
+//   dispatch(deleteMitraRequest());
+//   try {
+//     const token = Cookies.get("token");
+//     console.log("[DEBUG] Auth Token:", token);
+
+//     const response = await axios.delete(`${api_url}/airline`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//       data: { airlineId: airlineId }, // Send airlineId in the request body for DELETE
+//     });
+
+//     console.log("[DEBUG] API Response (Delete Mitra):", response.data);
+
+//     dispatch(deleteMitraSuccess(airlineId)); // Pass the ID of the deleted item
+//   } catch (error) {
+//     console.error("[ERROR] Deleting mitra:", error);
+//     dispatch(deleteMitraFailure(error.response?.data?.message || error.message));
+//   }
+// };
+
 import axios from "axios";
 import Cookies from "js-cookie";
 import {
@@ -69,9 +95,12 @@ import {
   createMitraRequest,
   createMitraSuccess,
   createMitraFailure,
-  deleteMitraRequest, // Import new action type
-  deleteMitraSuccess, // Import new action type
-  deleteMitraFailure, // Import new action type
+  deleteMitraRequest,
+  deleteMitraSuccess,
+  deleteMitraFailure,
+  updateMitraRequest, // Import new action type
+  updateMitraSuccess, // Import new action type
+  updateMitraFailure, // Import new action type
 } from "../reducers/mitraReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -136,14 +165,36 @@ export const deleteMitra = (airlineId) => async (dispatch) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      data: { airlineId: airlineId }, // Send airlineId in the request body for DELETE
+      data: { airlineId: airlineId },
     });
 
     console.log("[DEBUG] API Response (Delete Mitra):", response.data);
 
-    dispatch(deleteMitraSuccess(airlineId)); // Pass the ID of the deleted item
+    dispatch(deleteMitraSuccess(airlineId));
   } catch (error) {
     console.error("[ERROR] Deleting mitra:", error);
     dispatch(deleteMitraFailure(error.response?.data?.message || error.message));
+  }
+};
+
+export const updateMitra = (mitraData) => async (dispatch) => {
+  dispatch(updateMitraRequest());
+  try {
+    const token = Cookies.get("token");
+    console.log("[DEBUG] Auth Token:", token);
+
+    const response = await axios.put(`${api_url}/airline`, mitraData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("[DEBUG] API Response (Update Mitra):", response.data);
+
+    dispatch(updateMitraSuccess(response.data.data));
+  } catch (error) {
+    console.error("[ERROR] Updating mitra:", error);
+    dispatch(updateMitraFailure(error.response?.data?.message || error.message));
   }
 };

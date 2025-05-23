@@ -266,7 +266,7 @@ const TableAirline = ({ searchQuery }) => {
                     </button>
                     <button
                       title="Edit"
-                      onClick={() => navigate(`/edit-airline/${airline.id}`)}
+                      onClick={() => navigate(`/edit-maskapai/${airline.id}`)}
                     >
                       <i className="ri-edit-2-line text-2xl"></i>
                     </button>
