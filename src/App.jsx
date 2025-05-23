@@ -111,8 +111,8 @@ const App = () => {
         <Route path="/manajemen-maskapai" element={<ManajemenMaskapai isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-maskapai" element={<TambahMaskapai isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-maskapai/:userId" element={<EditMaskapai isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/manajemen-pesawat/:userId" element={<ManajemenPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/tambah-pesawat:userId" element={<TambahPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/manajemen-pesawat/:airlineId" element={<ManajemenPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/tambah-pesawat/:airlineId" element={<TambahPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-pesawat/:userId" element={<EditPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-penerbangan/:userId" element={<TambahPenerbangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/jadwal-penerbangan" element={<JadwalPenerbangan isSidebarOpen={isSidebarOpen} />} />
