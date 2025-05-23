@@ -29,8 +29,14 @@ const initialState = {
   seatList: [],
   loadingSeats: false,
   errorSeats: null,
-  loadingDeleteSeat: false, // New state for deleting seat
-  errorDeleteSeat: null,   // New state for deleting seat error
+  loadingDeleteSeat: false,
+  errorDeleteSeat: null,
+  loadingCreateSeats: false, // New state for creating seats
+  errorCreateSeats: null,   // New state for creating seats error
+  createdSeatsInfo: null, // New state to store response
+  seatCategoryList: [],
+  loadingSeatCategories: false,
+  errorSeatCategories: null,
 };
 
 const mitraSlice = createSlice({
@@ -195,23 +201,67 @@ const mitraSlice = createSlice({
       state.errorSeats = action.payload;
       state.seatList = [];
     },
-    deleteSeatRequest: (state) => { // Reducer for deleting seat request
+    deleteSeatRequest: (state) => {
       state.loadingDeleteSeat = true;
       state.errorDeleteSeat = null;
     },
-    deleteSeatSuccess: (state, action) => { // Reducer for deleting seat success
+    deleteSeatSuccess: (state, action) => {
       state.loadingDeleteSeat = false;
       const seatIdToDelete = action.payload;
-      // Filter out the deleted seat from the nested structure
       state.seatList = state.seatList.map(category => ({
           ...category,
           seats: category.seats.filter(seat => seat.id !== seatIdToDelete),
-      })).filter(category => category.seats.length > 0 || state.seatList.some(cat => cat.categoryId === category.categoryId && cat.seats.length > 0)); // Optional: remove category if empty
+      }));
       state.errorDeleteSeat = null;
     },
-    deleteSeatFailure: (state, action) => { // Reducer for deleting seat failure
+    deleteSeatFailure: (state, action) => {
       state.loadingDeleteSeat = false;
       state.errorDeleteSeat = action.payload;
+    },
+    createSeatsRequest: (state) => { // Reducer for creating seats request
+        state.loadingCreateSeats = true;
+        state.errorCreateSeats = null;
+        state.createdSeatsInfo = null;
+    },
+    createSeatsSuccess: (state, action) => { // Reducer for creating seats success
+        state.loadingCreateSeats = false;
+        const { response, seatCategoryId } = action.payload;
+        state.createdSeatsInfo = response;
+        state.errorCreateSeats = null;
+
+        // Update the seatList by adding new seats to the correct category
+        state.seatList = state.seatList.map(category => {
+            if (category.categoryId === seatCategoryId) {
+                // Pastikan 'seats' adalah array sebelum menggabungkan
+                const existingSeats = Array.isArray(category.seats) ? category.seats : [];
+                const newSeats = Array.isArray(response.seats) ? response.seats : [];
+                return {
+                    ...category,
+                    seats: [...existingSeats, ...newSeats],
+                };
+            }
+            return category;
+        });
+    },
+    createSeatsFailure: (state, action) => { // Reducer for creating seats failure
+        state.loadingCreateSeats = false;
+        state.errorCreateSeats = action.payload;
+        state.createdSeatsInfo = null;
+    },
+    // --- Seat Category Reducers ---
+    getSeatCategoriesRequest: (state) => {
+      state.loadingSeatCategories = true;
+      state.errorSeatCategories = null;
+    },
+    getSeatCategoriesSuccess: (state, action) => {
+      state.loadingSeatCategories = false;
+      state.seatCategoryList = action.payload;
+      state.errorSeatCategories = null;
+    },
+    getSeatCategoriesFailure: (state, action) => {
+      state.loadingSeatCategories = false;
+      state.errorSeatCategories = action.payload;
+      state.seatCategoryList = [];
     },
     // --- Reset State ---
     resetMitraState: (state) => {
@@ -254,6 +304,12 @@ export const {
   deleteSeatRequest,
   deleteSeatSuccess,
   deleteSeatFailure,
+  createSeatsRequest,
+  createSeatsSuccess,
+  createSeatsFailure,
+  getSeatCategoriesRequest,
+  getSeatCategoriesSuccess,
+  getSeatCategoriesFailure,
   resetMitraState,
 } = mitraSlice.actions;
 

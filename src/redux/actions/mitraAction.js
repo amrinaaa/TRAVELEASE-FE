@@ -31,9 +31,15 @@ import {
   getSeatsRequest,
   getSeatsSuccess,
   getSeatsFailure,
-  deleteSeatRequest, // Import new action type for deleting seat
-  deleteSeatSuccess, // Import new action type for deleting seat
-  deleteSeatFailure, // Import new action type for deleting seat
+  deleteSeatRequest,
+  deleteSeatSuccess,
+  deleteSeatFailure,
+  getSeatCategoriesRequest,
+  getSeatCategoriesSuccess,
+  getSeatCategoriesFailure,
+  createSeatsRequest, // Import new action type
+  createSeatsSuccess, // Import new action type
+  createSeatsFailure, // Import new action type
 } from "../reducers/mitraReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -198,21 +204,59 @@ export const deleteSeat = (seatId) => async (dispatch) => {
   dispatch(deleteSeatRequest());
   try {
     const token = Cookies.get("token");
-    console.log("[DEBUG] Auth Token:", token);
+    await axios.delete(`${api_url}/seat`, {
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      data: { seatId: seatId },
+    });
+    dispatch(deleteSeatSuccess(seatId));
+  } catch (error) {
+    dispatch(deleteSeatFailure(error.response?.data?.message || error.message));
+  }
+};
 
-    const response = await axios.delete(`${api_url}/seat`, {
+export const createSeats = (seatData) => async (dispatch) => {
+  dispatch(createSeatsRequest());
+  try {
+    const token = Cookies.get("token");
+    console.log("[DEBUG] Auth Token:", token);
+    console.log("[DEBUG] Sending Seat Data:", seatData);
+
+    const response = await axios.post(`${api_url}/seat`, seatData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      data: { seatId: seatId }, // Send seatId in the request body
     });
 
-    console.log("[DEBUG] API Response (Delete Seat):", response.data);
+    console.log("[DEBUG] API Response (Create Seats):", response.data);
 
-    dispatch(deleteSeatSuccess(seatId)); // Pass the ID of the deleted item
+    // Kirim response dan categoryId ke reducer
+    dispatch(createSeatsSuccess({
+        response: response.data.data,
+        seatCategoryId: seatData.seatCategoryId
+    }));
   } catch (error) {
-    console.error("[ERROR] Deleting seat:", error);
-    dispatch(deleteSeatFailure(error.response?.data?.message || error.message));
+    console.error("[ERROR] Creating seats:", error.response || error);
+    dispatch(createSeatsFailure(error.response?.data?.message || error.message));
+  }
+};
+
+
+// --- Seat Category Actions ---
+
+export const fetchSeatCategoriesRequest = (planeId) => async (dispatch) => {
+  dispatch(getSeatCategoriesRequest());
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.get(`${api_url}/seat-category?planeId=${planeId}`, {
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    });
+    if (response.data?.data && Array.isArray(response.data.data)) {
+      dispatch(getSeatCategoriesSuccess(response.data.data));
+    } else {
+      throw new Error("Invalid data format from API");
+    }
+  } catch (error) {
+    dispatch(getSeatCategoriesFailure(error.response?.data?.message || error.message));
   }
 };
