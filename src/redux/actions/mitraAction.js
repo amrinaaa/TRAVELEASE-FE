@@ -19,15 +19,18 @@ import {
   deletePlaneRequest,
   deletePlaneSuccess,
   deletePlaneFailure,
+  createPlaneRequest,
+  createPlaneSuccess,
+  createPlaneFailure,
   getPlaneTypesRequest,
   getPlaneTypesSuccess,
   getPlaneTypesFailure,
   createPlaneTypeRequest,
   createPlaneTypeSuccess,
   createPlaneTypeFailure,
-  createPlaneRequest, // Import new action type for creating plane
-  createPlaneSuccess, // Import new action type for creating plane
-  createPlaneFailure, // Import new action type for creating plane
+  getSeatsRequest, // Import new action type for getting seats
+  getSeatsSuccess, // Import new action type for getting seats
+  getSeatsFailure, // Import new action type for getting seats
 } from "../reducers/mitraReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -128,25 +131,14 @@ export const createPlane = (planeData) => async (dispatch) => {
   dispatch(createPlaneRequest());
   try {
     const token = Cookies.get("token");
-    console.log("[DEBUG] Auth Token:", token);
-    console.log("[DEBUG] Sending Plane Data:", planeData);
-
     const response = await axios.post(`${api_url}/plane`, planeData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
-
-    console.log("[DEBUG] API Response (Create Plane):", response.data);
-
     dispatch(createPlaneSuccess(response.data.data));
   } catch (error) {
-    console.error("[ERROR] Creating plane:", error.response || error);
     dispatch(createPlaneFailure(error.response?.data?.message || error.message));
   }
 };
-
 
 // --- Plane Type Actions ---
 
@@ -177,5 +169,35 @@ export const createPlaneType = (planeTypeData) => async (dispatch) => {
     dispatch(createPlaneTypeSuccess(response.data.data));
   } catch (error) {
     dispatch(createPlaneTypeFailure(error.response?.data?.message || error.message));
+  }
+};
+
+// --- Seat Actions ---
+
+export const fetchSeatsRequest = (planeId) => async (dispatch) => {
+  dispatch(getSeatsRequest());
+  try {
+    const token = Cookies.get("token");
+    console.log("[DEBUG] Auth Token:", token);
+
+    const response = await axios.get(`${api_url}/seats?planeId=${planeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("[DEBUG] API Response (Fetch Seats):", response.data);
+
+    if (response.data?.data && Array.isArray(response.data.data)) {
+      dispatch(getSeatsSuccess(response.data.data));
+    } else {
+      // Handle cases where data might be present but not an array (though unlikely based on response)
+      // Or if data is completely missing
+      throw new Error("Invalid data format from API or no seats found");
+    }
+  } catch (error) {
+    console.error("[ERROR] Fetching seats:", error);
+    dispatch(getSeatsFailure(error.response?.data?.message || error.message));
   }
 };

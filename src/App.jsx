@@ -113,7 +113,7 @@ const App = () => {
         <Route path="/edit-maskapai/:userId" element={<EditMaskapai isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-pesawat/:airlineId" element={<ManajemenPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-pesawat/:airlineId" element={<TambahPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-pesawat/:userId" element={<EditPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-pesawat/:planeId" element={<EditPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-penerbangan/:userId" element={<TambahPenerbangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/jadwal-penerbangan" element={<JadwalPenerbangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/list-pengguna-pesawat/:flightId" element={<ListPenggunaPesawat isSidebarOpen={isSidebarOpen} />} />

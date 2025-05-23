@@ -17,15 +17,18 @@ const initialState = {
   errorPlanes: null,
   loadingDeletePlane: false,
   errorDeletePlane: null,
-  loadingCreatePlane: false, // New state for creating plane
-  errorCreatePlane: null,   // New state for creating plane error
-  createdPlane: null,       // New state for created plane
+  loadingCreatePlane: false,
+  errorCreatePlane: null,
+  createdPlane: null,
   planeTypeList: [],
   loadingPlaneTypes: false,
   errorPlaneTypes: null,
   loadingCreatePlaneType: false,
   errorCreatePlaneType: null,
   createdPlaneType: null,
+  seatList: [], // New state for seats list
+  loadingSeats: false, // New state for loading seats
+  errorSeats: null,   // New state for seats error
 };
 
 const mitraSlice = createSlice({
@@ -129,22 +132,17 @@ const mitraSlice = createSlice({
       state.loadingDeletePlane = false;
       state.errorDeletePlane = action.payload;
     },
-    createPlaneRequest: (state) => { // Reducer for creating plane request
+    createPlaneRequest: (state) => {
       state.loadingCreatePlane = true;
       state.errorCreatePlane = null;
       state.createdPlane = null;
     },
-    createPlaneSuccess: (state, action) => { // Reducer for creating plane success
+    createPlaneSuccess: (state, action) => {
       state.loadingCreatePlane = false;
       state.createdPlane = action.payload;
       state.errorCreatePlane = null;
-      // Note: The response doesn't include the full planeType object.
-      // We push it, but might need a refetch for full consistency later.
-      // Or, better, refetch `getPlanesRequest` after success in the component.
-      // For now, we don't push to avoid inconsistent data.
-      // state.planeList.push(action.payload); // Consider refetching instead.
     },
-    createPlaneFailure: (state, action) => { // Reducer for creating plane failure
+    createPlaneFailure: (state, action) => {
       state.loadingCreatePlane = false;
       state.errorCreatePlane = action.payload;
       state.createdPlane = null;
@@ -179,6 +177,21 @@ const mitraSlice = createSlice({
       state.loadingCreatePlaneType = false;
       state.errorCreatePlaneType = action.payload;
       state.createdPlaneType = null;
+    },
+    // --- Seat Reducers ---
+    getSeatsRequest: (state) => {
+      state.loadingSeats = true;
+      state.errorSeats = null;
+    },
+    getSeatsSuccess: (state, action) => {
+      state.loadingSeats = false;
+      state.seatList = action.payload;
+      state.errorSeats = null;
+    },
+    getSeatsFailure: (state, action) => {
+      state.loadingSeats = false;
+      state.errorSeats = action.payload;
+      state.seatList = [];
     },
     // --- Reset State ---
     resetMitraState: (state) => {
@@ -215,6 +228,9 @@ export const {
   createPlaneTypeRequest,
   createPlaneTypeSuccess,
   createPlaneTypeFailure,
+  getSeatsRequest,
+  getSeatsSuccess,
+  getSeatsFailure,
   resetMitraState,
 } = mitraSlice.actions;
 
