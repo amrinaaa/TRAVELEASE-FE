@@ -133,22 +133,7 @@ const adminHotelSlice = createSlice({
         state.hotelDetail = null;
         state.errorFetch = action.payload;
       },
-      // UPDATE_AMOUNT_REQUEST: (state) => {
-      //   state.loadingUpdateAmount = true;
-      //   state.errorUpdateAmount = null;
-      // },
-      // UPDATE_AMOUNT_SUCCESS: (state, action) => {
-      //   state.loadingUpdateAmount = false;
-      //   if (state.currentUser) {
-      //     state.currentUser.currentAmount += action.payload.amount;
-      //   }
-      //   state.errorUpdateAmount = null;
-      // },
-      // UPDATE_AMOUNT_FAILURE: (state, action) => {
-      //   state.loadingUpdateAmount = false;
-      //   state.errorUpdateAmount = action.payload;
-      // },
-            UPDATE_AMOUNT_REQUEST: (state) => {
+      UPDATE_AMOUNT_REQUEST: (state) => {
         state.loadingUpdateAmount = true;
         state.errorUpdateAmount = null;
       },

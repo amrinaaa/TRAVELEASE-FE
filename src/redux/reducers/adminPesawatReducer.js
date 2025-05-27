@@ -22,6 +22,9 @@ const initialState = {
   hotelDetail: null,  // Store untuk pesawat detail yang diambil
   loadingFetch: false,
   errorFetch: null,
+
+  loadingUpdateAmount: false,
+  errorUpdateAmount: null,
 };
 
 const adminPesawatSlice = createSlice({
