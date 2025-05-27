@@ -21,16 +21,16 @@ export const getUsers = () => async (dispatch) => {
         'Content-Type': 'application/json'
       }
     });
-    
+
     console.log("[DEBUG] API Response:", data);
-    
+
     // Ensure proper data structure
     if (data?.data && Array.isArray(data.data)) {
       dispatch(getUsersSuccess(data.data));
     } else {
       throw new Error("Invalid data format from API");
     }
-    
+
   } catch (error) {
     console.error("[ERROR] Fetching users:", error);
     dispatch(getUsersFailure(error.response?.data?.message || error.message));
@@ -40,17 +40,17 @@ export const getUsers = () => async (dispatch) => {
 export const getUserByEmail = (email) => async (dispatch) => {
   try {
     dispatch({ type: "admin/GET_USER_BY_EMAIL_REQUEST" }); // Add slice prefix
-    
+
     const encodedEmail = decodeURIComponent(email);
     const { data } = await axios.get(`${api_url}/user/?identifier=${encodedEmail}`, {
-      headers: { 
+      headers: {
         Authorization: `Bearer ${Cookies.get("token")}`,
         'Content-Type': 'application/json'
       }
     });
 
     if (data?.data?.length > 0) {
-      dispatch({ 
+      dispatch({
         type: "admin/GET_USER_BY_EMAIL_SUCCESS", // Add slice prefix
         payload: data.data[0]
       });
@@ -70,7 +70,7 @@ export const updateUser = (uid, name, email) => async (dispatch) => {
     dispatch({ type: "UPDATE_USER_REQUEST" });
 
     const token = Cookies.get("token");
-    const { data } = await axios.patch(`${api_url}/user`, 
+    const { data } = await axios.patch(`${api_url}/user`,
       { uid, name, email },
       {
         headers: {
@@ -80,14 +80,14 @@ export const updateUser = (uid, name, email) => async (dispatch) => {
       }
     );
 
-    dispatch({ 
+    dispatch({
       type: "UPDATE_USER_SUCCESS",
       payload: data.data
     });
-    
+
     // Return the data for chaining
     return data.data;
-    
+
   } catch (error) {
     dispatch({
       type: "UPDATE_USER_FAILURE",
@@ -101,17 +101,17 @@ export const updateUser = (uid, name, email) => async (dispatch) => {
 export const getUserById = (userId) => async (dispatch) => {
   try {
     dispatch({ type: "admin/GET_USER_BY_ID_REQUEST" });
-    
+
     const { data } = await axios.get(`${api_url}/user/${userId}`, {
-      headers: { 
+      headers: {
         Authorization: `Bearer ${Cookies.get("token")}`,
         'Content-Type': 'application/json'
       }
     });
 
     if (data?.data) {
-      dispatch({ 
-        type: "admin/GET_USER_BY_ID_SUCCESS", 
+      dispatch({
+        type: "admin/GET_USER_BY_ID_SUCCESS",
         payload: data.data
       });
     } else {
@@ -125,16 +125,17 @@ export const getUserById = (userId) => async (dispatch) => {
   }
 };
 
-export const updateUserAmount = (uid, amount) => async (dispatch) => {
+// Modified updateUserAmount to include 'type'
+export const updateUserAmount = (uid, amount, type) => async (dispatch) => {
   try {
     dispatch({ type: "admin/UPDATE_AMOUNT_REQUEST" });
 
     const token = Cookies.get("token");
-    const { data } = await axios.put(`${api_url}/amount`, 
+    const { data } = await axios.put(`${api_url}/amount`,
       {
         uid,
-        amount: Number(amount),
-        type: "adding"
+        amount: Number(amount), // Ensure amount is a number
+        type: type // Send 'adding' or 'reduce'
       },
       {
         headers: {
@@ -144,9 +145,9 @@ export const updateUserAmount = (uid, amount) => async (dispatch) => {
       }
     );
 
-    dispatch({ 
+    dispatch({
       type: "admin/UPDATE_AMOUNT_SUCCESS",
-      payload: { uid, amount }
+      payload: { uid, amount, type } // Send type to reducer if needed
     });
 
     return data;
@@ -189,7 +190,7 @@ export const createUser = (name, email, password) => async (dispatch) => {
     dispatch({ type: "CREATE_USER_REQUEST" });
 
     const token = Cookies.get("token");
-    const { data } = await axios.post(`${api_url}/user`, 
+    const { data } = await axios.post(`${api_url}/user`,
       { name, email, password },
       {
         headers: {
@@ -199,7 +200,7 @@ export const createUser = (name, email, password) => async (dispatch) => {
       }
     );
 
-    dispatch({ 
+    dispatch({
       type: "CREATE_USER_SUCCESS",
       payload: data.data.user
     });
@@ -232,7 +233,7 @@ export const uploadProfilePicture = (userId, file) => async (dispatch) => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const { data } = await axios.post(`${api_url}/admin/profile/${userId}`, 
+    const { data } = await axios.post(`${api_url}/admin/profile/${userId}`,
       formData,
       {
         headers: {
@@ -242,7 +243,7 @@ export const uploadProfilePicture = (userId, file) => async (dispatch) => {
       }
     );
 
-    dispatch({ 
+    dispatch({
       type: "UPLOAD_PROFILE_PIC_SUCCESS",
       payload: data.message
     });
@@ -264,7 +265,7 @@ export const deleteProfilePicture = (userId) => async (dispatch) => {
     dispatch({ type: "DELETE_PROFILE_PIC_REQUEST" });
 
     const token = Cookies.get("token");
-    const { data } = await axios.delete(`${api_url}/admin/profile/${userId}`, 
+    const { data } = await axios.delete(`${api_url}/admin/profile/${userId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -272,7 +273,7 @@ export const deleteProfilePicture = (userId) => async (dispatch) => {
       }
     );
 
-    dispatch({ 
+    dispatch({
       type: "DELETE_PROFILE_PIC_SUCCESS",
       payload: data.message
     });

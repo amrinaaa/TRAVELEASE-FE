@@ -22,15 +22,8 @@ import TambahMitraPesawat from './pages/TambahMitraPesawat';
 import DashboardMitraHotel from './pages/DashboardMitraHotel';
 import ManajemenHotel from './pages/ManajemenHotel';
 import DashboardMitraPesawat from './pages/DashboardMitraPesawat';
-import ManajemenMaskapai from './pages/ManajemenMaskapai';
-import TambahMaskapai from './pages/TambahMaskapai';
-import EditMaskapai from './pages/EditMaskapai';
 import ManajemenPesawat from './pages/ManajemenPesawat';
-import TambahPesawat from './pages/TambahPesawat';
-import EditPesawat from './pages/EditPesawat';
-import TambahPenerbangan from './pages/TambahPenerbangan';
-import JadwalPenerbangan from './pages/JadwalPenerbangan';
-import ListPenggunaPesawat from './pages/ListPenggunaPesawat';
+import TambahMaskapai from './pages/TambahMaskapai';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -62,7 +55,7 @@ const App = () => {
     role = 'admin';
   } else if (location.pathname.match(/^\/mitra-hotel|\/manajemen-hotel/)) {
     role = 'mitra-hotel';
-  } else if (location.pathname.match(/^\/mitra-pesawat|\/manajemen-maskapai|\/tambah-maskapai|\/edit-maskapai|\/manajemen-pesawat|\/tambah-pesawat|\/edit-pesawat|\/tambah-penerbangan|\/jadwal-penerbangan|\/list-pengguna-pesawat/)) {
+  } else if (location.pathname.match(/^\/mitra-pesawat|\/manajemen-maskapai|\/tambah-maskapai/)) {
     role = 'mitra-pesawat';
   }
 
@@ -100,7 +93,7 @@ const App = () => {
         <Route path="/edit-saldo-mitra-hotel/:userId" element={<EditSaldoMitraHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-mitra-pesawat" element={<ManajemenMitraPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-mitra-pesawat" element={<TambahMitraPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-mitra-pesawat/:userId" element={<EditMitraPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-mitra-pesawat/:mitraName" element={<EditMitraPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-saldo-mitra-pesawat/:userId" element={<EditSaldoMitraPesawat isSidebarOpen={isSidebarOpen} />} />
 
         {/* Mitra Routes */}
@@ -108,15 +101,8 @@ const App = () => {
         <Route path="/manajemen-hotel" element={<ManajemenHotel isSidebarOpen={isSidebarOpen} />} />
 
         <Route path="/mitra-pesawat" element={<DashboardMitraPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/manajemen-maskapai" element={<ManajemenMaskapai isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/manajemen-maskapai" element={<ManajemenPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-maskapai" element={<TambahMaskapai isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-maskapai/:userId" element={<EditMaskapai isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/manajemen-pesawat/:airlineId" element={<ManajemenPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/tambah-pesawat/:airlineId" element={<TambahPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-pesawat/:planeId" element={<EditPesawat isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/tambah-penerbangan/:userId" element={<TambahPenerbangan isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/jadwal-penerbangan" element={<JadwalPenerbangan isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/list-pengguna-pesawat/:flightId" element={<ListPenggunaPesawat isSidebarOpen={isSidebarOpen} />} />
       </Routes>
 
       {showFooter && <Footer />}

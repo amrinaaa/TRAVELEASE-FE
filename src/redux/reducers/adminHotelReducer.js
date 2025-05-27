@@ -22,6 +22,9 @@ const initialState = {
   hotelDetail: null,  // Store untuk hotel detail yang diambil
   loadingFetch: false,
   errorFetch: null,
+
+  loadingUpdateAmount: false,
+  errorUpdateAmount: null,
 };
 
 const adminHotelSlice = createSlice({

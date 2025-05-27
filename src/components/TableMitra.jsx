@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { deleteHotelPartner } from "../redux/actions/adminHotelActions"; // Import delete action
+import { deleteHotelPartner } from "../redux/actions/adminHotelActions"; // Pastikan action import benar
 
 const TableMitra = ({ searchQuery, dataType }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  // Pastikan Anda menunjuk ke state adminHotel
   const { hotels, loadingFetch, errorFetch, loadingDelete, errorDelete } = useSelector((state) => state.adminHotel);
 
   const [editableRow, setEditableRow] = useState(null);
@@ -14,30 +15,56 @@ const TableMitra = ({ searchQuery, dataType }) => {
   const [deleteId, setDeleteId] = useState(null);
 
   const handleEditClick = (id) => {
-    setEditableRow((prev) => (prev === id ? null : id)); 
+    setEditableRow((prev) => (prev === id ? null : id));
   };
 
   const handleSort = (key) => {
     setSortConfig((prev) => {
+      let direction = "asc";
       if (prev.key === key) {
-        if (prev.direction === "default") return { key, direction: "asc" };
-        if (prev.direction === "asc") return { key, direction: "desc" };
-        return { key: null, direction: "default" };
+        if (prev.direction === "asc") {
+          direction = "desc";
+        } else if (prev.direction === "desc") {
+          direction = "default";
+          key = null; // Reset key saat kembali ke default
+        }
       }
-      return { key, direction: "asc" };
+      return { key, direction };
     });
   };
 
   const sortedData = [...hotels].sort((a, b) => {
-    if (sortConfig.direction === "default" || sortConfig.key === null) return 0;
-    if (sortConfig.direction === "asc") return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
-    if (sortConfig.direction === "desc") return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
-    return 0;
+      if (!sortConfig.key || sortConfig.direction === "default") return 0;
+
+      const aValue = a[sortConfig.key];
+      const bValue = b[sortConfig.key];
+
+      if (aValue == null) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (bValue == null) return sortConfig.direction === 'asc' ? 1 : -1;
+
+      // Handle sorting for 'createdAt' (date)
+      if (sortConfig.key === 'createdAt') {
+          return sortConfig.direction === 'asc'
+              ? new Date(aValue) - new Date(bValue)
+              : new Date(bValue) - new Date(aValue);
+      }
+
+      // Handle sorting for string and number
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortConfig.direction === 'asc'
+              ? aValue.localeCompare(bValue)
+              : bValue.localeCompare(aValue);
+      } else {
+          return sortConfig.direction === 'asc'
+              ? aValue - bValue
+              : bValue - aValue;
+      }
   });
 
+
   const filteredData = sortedData.filter((mitra) =>
-    mitra.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    mitra.email.toLowerCase().includes(searchQuery.toLowerCase())
+    (mitra.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (mitra.email?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   );
 
   const confirmDelete = (id) => {
@@ -47,7 +74,7 @@ const TableMitra = ({ searchQuery, dataType }) => {
 
   const handleDelete = () => {
     if (deleteId) {
-      dispatch(deleteHotelPartner(deleteId)); // Dispatch the delete action
+      dispatch(deleteHotelPartner(deleteId));
       setModalOpen(false);
       setDeleteId(null);
     }
@@ -55,13 +82,17 @@ const TableMitra = ({ searchQuery, dataType }) => {
 
   const handleEditNavigation = (mitra) => {
     if (editableRow === mitra.id) {
+      // Navigasi ke edit mitra hotel menggunakan nama (sesuai permintaan)
       navigate(`/edit-mitra-hotel/${mitra.name}`);
     }
   };
 
   const handleSaldoNavigation = (mitra) => {
     if (editableRow === mitra.id) {
-      navigate(`/edit-saldo-mitra-hotel/${mitra.id}`);
+      navigate(`/edit-saldo-mitra-hotel/${mitra.id}`, {
+        // Kirim currentAmount melalui state
+        state: { currentAmount: mitra.currentAmount }
+      });
     }
   };
 
@@ -79,9 +110,9 @@ const TableMitra = ({ searchQuery, dataType }) => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {["id", "name", "email", "Sign-up date", "saldo", "status"].map((col) => (
-                <th key={col} className="py-2 px-1 border cursor-pointer" onClick={() => handleSort(col)}>
-                  {col.charAt(0).toUpperCase() + col.slice(1)}
+              {["id", "name", "email", "createdAt", "currentAmount", "status"].map((colKey) => (
+                <th key={colKey} className="py-2 px-1 border cursor-pointer" onClick={() => handleSort(colKey)}>
+                  {colKey === 'createdAt' ? 'Sign-up date' : colKey.charAt(0).toUpperCase() + colKey.slice(1)}
                   <i className="ml-1 ri-arrow-up-down-line"></i>
                 </th>
               ))}
@@ -97,22 +128,32 @@ const TableMitra = ({ searchQuery, dataType }) => {
                     className={`py-2 px-3 border ${editableRow === mitra.id ? "text-blue-500 cursor-pointer underline" : ""}`}
                     onClick={() => handleEditNavigation(mitra)}
                   >
-                    {mitra.name}
+                    {mitra.name || 'N/A'}
                   </td>
-                  <td className="py-2 px-3 border">{mitra.email}</td>
-                  <td className="py-2 px-3 border">{new Date(mitra.createdAt).toLocaleDateString()}</td>
+                  <td className="py-2 px-3 border">{mitra.email || 'N/A'}</td>
+                  <td className="py-2 px-3 border">
+                    {mitra.createdAt ? new Date(mitra.createdAt).toLocaleDateString() : 'N/A'}
+                  </td>
                   <td
                      className={`py-2 px-3 border ${editableRow === mitra.id ? "text-blue-500 cursor-pointer underline" : ""}`}
                      onClick={() => handleSaldoNavigation(mitra)}
                    >
-                     Rp.{mitra.currentAmount}
+                     Rp.{(mitra.currentAmount || 0).toLocaleString()}
                    </td>
                   <td className="py-2 px-3 border">Active</td>
                   <td className="flex py-2 px-3 text-center justify-center">
-                    <button onClick={() => handleEditClick(mitra.id)}>
+                    <button
+                        onClick={() => handleEditClick(mitra.id)}
+                        className={`hover:text-ungu7 transition-colors ${
+                          editableRow === mitra.id ? "text-green-500" : ""
+                        }`}
+                    >
                       <i className="ri-edit-2-line text-2xl"></i>
                     </button>
-                    <button className="text-red-500 mx-1" onClick={() => confirmDelete(mitra.id)}>
+                    <button
+                        className="text-red-500 mx-1 hover:text-red-700 transition-colors"
+                        onClick={() => confirmDelete(mitra.id)}
+                    >
                       <i className="ri-delete-bin-5-line text-2xl"></i>
                     </button>
                   </td>
@@ -121,7 +162,9 @@ const TableMitra = ({ searchQuery, dataType }) => {
             ) : (
               <tr>
                 <td colSpan="7" className="text-center py-4 text-gray-500">
-                  Tidak ada hasil ditemukan.
+                  {searchQuery
+                    ? `Tidak ada hasil untuk "${searchQuery}"`
+                    : "Tidak ada data mitra hotel"}
                 </td>
               </tr>
             )}
@@ -129,24 +172,34 @@ const TableMitra = ({ searchQuery, dataType }) => {
         </table>
       </div>
 
+      {/* Modal Konfirmasi Hapus */}
       {modalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-gray-200 p-6 rounded-md shadow-md">
             <p className="text-xs md:text-lg font-semibold mb-4">
-              Anda yakin ingin menghapus {deleteId}?
+              Anda yakin ingin menghapus mitra dengan ID {deleteId}?
             </p>
+
+            {errorDelete && (
+                <div className="text-red-500 text-sm mb-4 text-center">
+                    Error: {errorDelete}
+                </div>
+            )}
+
             <div className="flex justify-center text-xs md:text-base">
               <button
-                className="bg-gray-400 text-white px-4 py-2 rounded-md mr-2"
+                className="bg-gray-400 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-500 transition-colors"
                 onClick={() => setModalOpen(false)}
+                disabled={loadingDelete}
               >
-                No
+                Batal
               </button>
               <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors disabled:bg-red-300"
                 onClick={handleDelete}
+                disabled={loadingDelete}
               >
-                Yes
+                {loadingDelete ? "Menghapus..." : "Ya, Hapus"}
               </button>
             </div>
           </div>
