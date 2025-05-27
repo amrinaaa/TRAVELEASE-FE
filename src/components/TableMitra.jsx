@@ -82,12 +82,11 @@ const TableMitra = ({ searchQuery, dataType }) => {
 
   const handleEditNavigation = (mitra) => {
     if (editableRow === mitra.id) {
-      // Navigasi ke edit mitra hotel (gunakan ID jika memungkinkan)
-      navigate(`/edit-mitra-hotel/${mitra.id}`);
+      // Navigasi ke edit mitra hotel menggunakan nama (sesuai permintaan)
+      navigate(`/edit-mitra-hotel/${mitra.name}`);
     }
   };
 
-  // --- FIX: Tambahkan state saat navigasi ---
   const handleSaldoNavigation = (mitra) => {
     if (editableRow === mitra.id) {
       navigate(`/edit-saldo-mitra-hotel/${mitra.id}`, {
@@ -96,7 +95,6 @@ const TableMitra = ({ searchQuery, dataType }) => {
       });
     }
   };
-  // --- END FIX ---
 
   if (loadingFetch) {
     return <div className="p-4 text-center">Loading data...</div>;
@@ -112,10 +110,8 @@ const TableMitra = ({ searchQuery, dataType }) => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {/* Gunakan key yang ada di data (createdAt, currentAmount) */}
               {["id", "name", "email", "createdAt", "currentAmount", "status"].map((colKey) => (
                 <th key={colKey} className="py-2 px-1 border cursor-pointer" onClick={() => handleSort(colKey)}>
-                  {/* Tampilkan 'Sign-up date' tapi sort berdasarkan 'createdAt' */}
                   {colKey === 'createdAt' ? 'Sign-up date' : colKey.charAt(0).toUpperCase() + colKey.slice(1)}
                   <i className="ml-1 ri-arrow-up-down-line"></i>
                 </th>
