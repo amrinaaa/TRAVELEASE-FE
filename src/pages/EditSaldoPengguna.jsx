@@ -10,7 +10,7 @@ const EditSaldoPengguna = ({ isSidebarOpen }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   // Get current amount from navigation state
   const [currentAmount] = useState(location.state?.currentAmount || 0);
   const [changeAmount, setChangeAmount] = useState("");
@@ -19,29 +19,37 @@ const EditSaldoPengguna = ({ isSidebarOpen }) => {
   const [labelColor, setLabelColor] = useState("");
 
   const handleChangeAmount = (e) => {
-    const value = e.target.value.replace(/\D/g, '');
+    const value = e.target.value.replace(/\D/g, ''); // Allow only digits
     setChangeAmount(value);
 
     const numericValue = parseInt(value || 0);
-    const calculatedAmount = changeType === "tambah" 
-      ? currentAmount + numericValue 
+    const calculatedAmount = changeType === "tambah"
+      ? currentAmount + numericValue
       : currentAmount - numericValue;
-    
+
     setLabelColor(changeType === "tambah" ? "green" : "red");
-    setNewAmount(calculatedAmount);
+    setNewAmount(calculatedAmount < 0 ? 0 : calculatedAmount); // Prevent negative new amount preview
   };
 
   const handleChangeType = (e) => {
-    setChangeType(e.target.value);
-    setChangeAmount("");
-    setLabelColor("");
-    setNewAmount(currentAmount);
+    const newType = e.target.value;
+    setChangeType(newType);
+
+    // Recalculate newAmount when type changes
+    const numericValue = parseInt(changeAmount || 0);
+    const calculatedAmount = newType === "tambah"
+      ? currentAmount + numericValue
+      : currentAmount - numericValue;
+
+    setLabelColor(newType === "tambah" ? "green" : "red");
+    setNewAmount(calculatedAmount < 0 ? 0 : calculatedAmount);
   };
 
   const handleReset = () => {
     setChangeAmount("");
     setLabelColor("");
     setNewAmount(currentAmount);
+    setChangeType("tambah"); // Optionally reset type too
   };
 
   const handleSubmit = () => {
@@ -50,18 +58,28 @@ const EditSaldoPengguna = ({ isSidebarOpen }) => {
       return;
     }
 
-    if (!changeAmount || isNaN(changeAmount)) {
-      alert("Masukkan jumlah yang valid");
+    // Ensure amount is a positive number
+    if (!changeAmount || isNaN(changeAmount) || parseInt(changeAmount) <= 0) {
+      alert("Masukkan jumlah perubahan yang valid (angka positif)");
       return;
     }
 
     const numericAmount = parseInt(changeAmount);
-    const finalAmount = changeType === "tambah" ? numericAmount : -numericAmount;
 
-    dispatch(updateUserAmount(userId, finalAmount))
+    // Check if reducing would result in negative balance
+    if (changeType === "kurang" && numericAmount > currentAmount) {
+        alert("Saldo tidak boleh kurang dari nol.");
+        return;
+    }
+
+    // Determine the type for the API call
+    const type = changeType === "tambah" ? "adding" : "reduce";
+
+    // Dispatch with userId, positive amount, and type
+    dispatch(updateUserAmount(userId, numericAmount, type))
       .then(() => {
         alert("Saldo berhasil diperbarui!");
-        navigate("/manajemen-pengguna");
+        navigate("/manajemen-pengguna"); // Navigate back to user management
       })
       .catch((error) => {
         alert(`Gagal memperbarui saldo: ${error.message}`);
@@ -71,8 +89,8 @@ const EditSaldoPengguna = ({ isSidebarOpen }) => {
   return (
     <div className="flex transition-all duration-300">
       <div className={`bg-ungu10 pt-20 h-full transition-all duration-300 ${
-        isSidebarOpen 
-          ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" 
+        isSidebarOpen
+          ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]"
           : "ml-0 w-full"
       }`}>
         <div className="grid grid-cols-2 px-4">
@@ -149,12 +167,13 @@ const EditSaldoPengguna = ({ isSidebarOpen }) => {
                   <div className="flex items-center gap-2">
                     <span className="text-gray-600">Rp.</span>
                     <input
-                      type="number"
+                      type="text" // Change to text to handle Rp format better if needed, or keep number and use pattern
+                      pattern="[0-9]*" // Ensure only numbers can be input
                       value={changeAmount}
                       onChange={handleChangeAmount}
                       className={`w-full p-2 border border-gray-300 rounded-lg ${
-                        labelColor === "green" ? "bg-green-100" : 
-                        labelColor === "red" ? "bg-red-100" : ""
+                        changeAmount && (labelColor === "green" ? "bg-green-100" :
+                        labelColor === "red" ? "bg-red-100" : "")
                       }`}
                       placeholder="Masukkan jumlah"
                     />
@@ -177,10 +196,10 @@ const EditSaldoPengguna = ({ isSidebarOpen }) => {
             </div>
 
             <div className="flex flex-row justify-center gap-6 text-white font-bold mt-12 mb-10">
-              <Button 
-                text="Reset" 
-                bgColor="bg-yellow1" 
-                onClick={handleReset} 
+              <Button
+                text="Reset"
+                bgColor="bg-yellow1"
+                onClick={handleReset}
               />
               <Button
                 text="Submit"
