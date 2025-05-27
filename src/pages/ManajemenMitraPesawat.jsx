@@ -19,10 +19,10 @@ const ManajemenMitraPesawat = ({ isSidebarOpen }) => {
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
             <p className="text-xl">Partner Management</p>
-            <p className="text-xs pt-2 text-gray-600">Pesawat Partner List</p>
+            <p className="text-xs pt-2 text-gray-600">Plane Partner List</p>
           </div>
           <div className="flex flex-row justify-end">
-            <Link to="/manajemen-mitra" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link to="/manajemen-mitra" className="flex items-center gap-1 text-black pt-9 md:pt-0">
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
@@ -31,7 +31,7 @@ const ManajemenMitraPesawat = ({ isSidebarOpen }) => {
         <div className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="grid grid-cols-2 px-4 items-center">
             <div className="text-left md:text-xl">
-              <p>Pesawat Partner List</p>
+              <p>Plane Partner List</p>
             </div>
             <div className="flex gap-3 items-center">
               <Searchbar forWhat="partner" onSearch={setSearchQuery} />

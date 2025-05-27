@@ -65,7 +65,7 @@ const ManajemenPesawat = ({ isSidebarOpen }) => {
             <p className="text-xs pt-2 text-gray-600">Plane List</p>
           </div>
           <div className="flex flex-row justify-end gap-1">
-            <Link to="/manajemen-maskapai" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link to="/manajemen-maskapai" className="flex items-center gap-1 text-black pt-9 md:pt-0">
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>

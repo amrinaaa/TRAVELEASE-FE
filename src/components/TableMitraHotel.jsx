@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { deleteHotelPartner } from "../redux/actions/adminHotelActions"; // Pastikan action import benar
 
-const TableMitra = ({ searchQuery, dataType }) => {
+const TableMitraHotel = ({ searchQuery, dataType }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // Pastikan Anda menunjuk ke state adminHotel
@@ -106,13 +106,13 @@ const TableMitra = ({ searchQuery, dataType }) => {
 
   return (
     <div className="p-4">
-      <div className="overflow-x-auto shadow-md">
-        <table className="min-w-full bg-white border border-gray-300">
+      <div className="overflow-x-auto shadow-md rounded-2xl">
+        <table className="min-w-full bg-white border roun border-gray-300">
           <thead>
-            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {["id", "name", "email", "createdAt", "currentAmount", "status"].map((colKey) => (
-                <th key={colKey} className="py-2 px-1 border cursor-pointer" onClick={() => handleSort(colKey)}>
-                  {colKey === 'createdAt' ? 'Sign-up date' : colKey.charAt(0).toUpperCase() + colKey.slice(1)}
+            <tr className="bg-purple-200  text-gray-700 uppercase text-sm leading-normal">
+              {["id", "name", "email", "Sign-up date", "saldo", "status"].map((col) => (
+                <th key={col} className="py-2 px-1 border cursor-pointer" onClick={() => handleSort(col)}>
+                  {col.charAt(0).toUpperCase() + col.slice(1)}
                   <i className="ml-1 ri-arrow-up-down-line"></i>
                 </th>
               ))}
@@ -209,4 +209,4 @@ const TableMitra = ({ searchQuery, dataType }) => {
   );
 };
 
-export default TableMitra;
+export default TableMitraHotel;

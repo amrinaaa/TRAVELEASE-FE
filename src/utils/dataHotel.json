@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "name": "Platinum I",
+    "description": "Platinum Hotel adalah hotel berbintang lima dengan fasilitas mewah dan pelayanan terbaik.",
+    "city": "Balikpapan",
+    "address": "Jl. Imam Bonjol Rt. 002 Sungai Wein",
+    "contact": "081234567890",
+    "image": "hotel1.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Platinum II",
+    "description": "Platinum Hotel adalah hotel berbintang lima dengan fasilitas mewah dan pelayanan terbaik.",
+    "city": "Jakarta",
+    "address": "Jl. Imam Bonjol Rt. 002 Sungai Wein",
+    "contact": "082345678901",
+    "image": "hotel2.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Platinum III",
+    "description": "Platinum Hotel adalah hotel berbintang lima dengan fasilitas mewah dan pelayanan terbaik.",
+    "city": "Surabaya",
+    "address": "Jl. Imam Bonjol Rt. 002 Sungai Wein",
+    "contact": "083456789012",
+    "image": "hotel3.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Platinum IV",
+    "description": "Hotel ini menyediakan spa, kolam renang infinity, dan restoran dengan pemandangan laut.",
+    "city": "Bandung",
+    "address": "Jl. Asia Afrika No. 100",
+    "contact": "084567890123",
+    "image": "hotel4.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Platinum V",
+    "description": "Hotel bintang lima dengan layanan premium di pusat kota.",
+    "city": "Medan",
+    "address": "Jl. Gatot Subroto No. 45",
+    "contact": "085678901234",
+    "image": "hotel5.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Platinum VI",
+    "description": "Tempat menginap terbaik untuk pelancong bisnis dan wisatawan.",
+    "city": "Makassar",
+    "address": "Jl. Pengayoman No. 27",
+    "contact": "086789012345",
+    "image": "hotel6.jpg"
+  }
+]
