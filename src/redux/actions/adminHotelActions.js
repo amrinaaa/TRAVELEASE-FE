@@ -162,40 +162,37 @@ export const getHotelDetail = (name) => async (dispatch) => {
   };
 
   // Modified updateUserAmount to include 'type'
+
   export const updateUserAmount = (uid, amount, type) => async (dispatch) => {
-    try {
-      dispatch({ type: "admin/UPDATE_AMOUNT_REQUEST" });
+  try {
+    dispatch({ type: "admin/UPDATE_AMOUNT_REQUEST" });
 
-      const token = Cookies.get("token");
-      const { data } = await axios.put(`${api_url}/amount`,
-        {
-          uid,
-          amount: Number(amount), // Ensure amount is a number
-          type: type // Send 'adding' or 'reduce'
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+    const token = Cookies.get("token");
+    const { data } = await axios.put(`${api_url}/amount`,
+      {
+        uid,
+        amount: Number(amount), // Ensure amount is a number
+        type: type // Send 'adding' or 'reduce'
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      );
+      }
+    );
 
-      console.log("[DEBUG] Amount Data Response:", data);
+    dispatch({
+      type: "admin/UPDATE_AMOUNT_SUCCESS",
+      payload: { uid, amount, type } // Send type to reducer if needed
+    });
 
-      dispatch({
-        type: "admin/UPDATE_AMOUNT_SUCCESS",
-        payload: { uid, amount, type } // Send type to reducer if needed
-      });
-
-      console.log("[DEBUG] Amount Data Response:", data);
-
-      return data;
-    } catch (error) {
-      dispatch({
-        type: "admin/UPDATE_AMOUNT_FAILURE",
-        payload: error.response?.data?.message || error.message
-      });
-      throw error;
-    }
-  };
+    return data;
+  } catch (error) {
+    dispatch({
+      type: "admin/UPDATE_AMOUNT_FAILURE",
+      payload: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+};
