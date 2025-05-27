@@ -30,7 +30,13 @@ import TambahPesawat from './pages/TambahPesawat';
 import EditPesawat from './pages/EditPesawat';
 import TambahPenerbangan from './pages/TambahPenerbangan';
 import JadwalPenerbangan from './pages/JadwalPenerbangan';
-import ListPenggunaPesawat from './pages/ListPenggunaPesawat';
+import CustomerPesawat from './pages/CustomerPesawat';
+import TambahHotel from './pages/TambahHotel';
+import EditHotel from './pages/EditHotel';
+import ManajemenRuangan from './pages/ManajemenRuangan';
+import TambahRuangan from './pages/TambahRuangan';
+import EditRuangan from './pages/EditRuangan';
+import CustomerHotel from './pages/CustomerHotel';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -60,7 +66,7 @@ const App = () => {
   // Check if the current path matches the admin or mitra paths
   if (location.pathname.match(/^\/(admin|manajemen-pengguna|tambah-pengguna|edit-pengguna\/.+|edit-saldo-pengguna\/.+|manajemen-mitra-hotel|tambah-mitra-hotel|edit-mitra-hotel\/.+|edit-saldo-mitra-hotel\/.+|manajemen-mitra-pesawat|tambah-mitra-pesawat|edit-mitra-pesawat\/.+|edit-saldo-mitra-pesawat\/.+)$/)) {
     role = 'admin';
-  } else if (location.pathname.match(/^\/mitra-hotel|\/manajemen-hotel/)) {
+  } else if (location.pathname.match(/^\/mitra-hotel|\/manajemen-hotel|\/tambah-hotel|\/edit-hotel|\/manajemen-ruangan|\/tambah-ruangan|\/edit-ruangan|\/list-pengguna-hotel/)) {
     role = 'mitra-hotel';
   } else if (location.pathname.match(/^\/mitra-pesawat|\/manajemen-maskapai|\/tambah-maskapai|\/edit-maskapai|\/manajemen-pesawat|\/tambah-pesawat|\/edit-pesawat|\/tambah-penerbangan|\/jadwal-penerbangan|\/list-pengguna-pesawat/)) {
     role = 'mitra-pesawat';
@@ -116,7 +122,13 @@ const App = () => {
         <Route path="/edit-pesawat/:userId" element={<EditPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-penerbangan/:userId" element={<TambahPenerbangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/jadwal-penerbangan" element={<JadwalPenerbangan isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/list-pengguna-pesawat/:flightId" element={<ListPenggunaPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/list-pengguna-pesawat/:flightId" element={<CustomerPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/tambah-hotel" element={<TambahHotel isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-hotel/:userId" element={<EditHotel isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/manajemen-ruangan/:hotelId" element={<ManajemenRuangan isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/tambah-ruangan/:userId" element={<TambahRuangan isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-ruangan/:roomId" element={<EditRuangan isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/list-pengguna-hotel/:hotelId" element={<CustomerHotel isSidebarOpen={isSidebarOpen} />} />
       </Routes>
 
       {showFooter && <Footer />}

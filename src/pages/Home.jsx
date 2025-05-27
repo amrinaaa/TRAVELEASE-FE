@@ -7,7 +7,7 @@ const Home = () => {
     <div>
       {/* Hero Section */}
       <section
-        className="relative bg-cover bg-center min-h-[90vh] flex flex-col justify-center"
+        className="relative bg-cover bg-center pt-24 min-h-[90vh] flex flex-col justify-center"
         style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }}
       >
         {/* Overlay */}

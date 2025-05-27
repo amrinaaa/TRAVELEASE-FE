@@ -154,9 +154,9 @@ const Sidebar = ({ isOpen, role }) => {
                             onClick={() => setActiveMenu("/manajemen-hotel")}
                         >
                           <div className="flex items-center md:ml-2">
-                              <i className="ri-hotel-bed-fill text-2xl"></i>
+                              <i className="ri-hotel-line text-xl"></i>
                               <span className="hidden md:inline ml-3 mt-1">
-                                  Room Management
+                                  Hotel Management
                               </span>
                           </div>
                         </li>

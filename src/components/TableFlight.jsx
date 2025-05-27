@@ -53,10 +53,10 @@ const TableFlight = ({ searchQuery }) => {
 
   return (
     <div className="p-4">
-      <div className="overflow-x-auto shadow-md">
-        <table className="min-w-full bg-white border border-gray-300">
+      <div className="overflow-x-auto shadow-md rounded-2xl">
+        <table className="min-w-full bg-white border roun border-gray-300">
           <thead>
-            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+            <tr className="bg-purple-200  text-gray-700 uppercase text-sm leading-normal">
               {["Name", "Last Check In", "Depature Time", "Departure Airport", "Arrival Time", "Arrival Airport", "Price", "Seats Available"].map((col) => (
                 <th
                   key={col}
@@ -86,7 +86,7 @@ const TableFlight = ({ searchQuery }) => {
 
                   <td className="flex py-2 px-3 text-center justify-center">
                     <button onClick={() => navigate(`/list-pengguna-pesawat/${flight.id}`)}>
-                      <i className="ri-user-fill text-2xl"></i>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="text-ungu7" width="27" height="27" viewBox="0 0 24 24"><path fill="currentColor" d="M6 17c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1H6m9-9a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3a3 3 0 0 1 3 3M3 5v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2"/></svg>
                     </button>
                     <button className="text-red-500 mx-1" onClick={() => confirmDelete(flight.id)}>
                       <i className="ri-delete-bin-5-line text-2xl"></i>

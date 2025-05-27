@@ -85,7 +85,7 @@ const EditSaldoMitraPesawat = ({ isSidebarOpen }) => {
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
-            <Link to={`/edit-saldo-pengguna/${userId}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+            <Link to={`/edit-saldo-pengguna/${userId}`} className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Edit Saldo</p>
             </Link>

@@ -82,10 +82,10 @@ const Table = ({ searchQuery, users = [] }) => {
 
   return (
     <div className="p-4">
-      <div className="overflow-x-auto shadow-md">
-        <table className="min-w-full bg-white border border-gray-300">
+      <div className="overflow-x-auto shadow-md rounded-2xl">
+        <table className="min-w-full bg-white border roun border-gray-300">
           <thead>
-            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+            <tr className="bg-purple-200 text-gray-700 uppercase text-sm leading-normal">
               {["name", "email", "createdAt", "currentAmount"].map((col) => (
                 <th 
                   key={col} 
