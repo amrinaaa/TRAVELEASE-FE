@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { deleteHotelPartner } from "../redux/actions/adminHotelActions"; // Pastikan action import benar
 
-import { deleteHotelPartner } from "../redux/actions/adminPesawatActions";
-
-const TableMitraPesawat = ({ searchQuery, dataType }) => {
+const TableMitraHotel = ({ searchQuery, dataType }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { hotels, loadingFetch, errorFetch, loadingDelete, errorDelete } = useSelector((state) => state.adminPesawat);
+  // Pastikan Anda menunjuk ke state adminHotel
+  const { hotels, loadingFetch, errorFetch, loadingDelete, errorDelete } = useSelector((state) => state.adminHotel);
 
   const [editableRow, setEditableRow] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
@@ -74,7 +74,7 @@ const TableMitraPesawat = ({ searchQuery, dataType }) => {
 
   const handleDelete = () => {
     if (deleteId) {
-      dispatch(deleteHotelPartner(deleteId)); // Gunakan action delete yang sesuai
+      dispatch(deleteHotelPartner(deleteId));
       setModalOpen(false);
       setDeleteId(null);
     }
@@ -82,14 +82,14 @@ const TableMitraPesawat = ({ searchQuery, dataType }) => {
 
   const handleEditNavigation = (mitra) => {
     if (editableRow === mitra.id) {
-      // Navigasi ke edit mitra pesawat menggunakan nama
-      navigate(`/edit-mitra-pesawat/${mitra.name}`);
+      // Navigasi ke edit mitra hotel menggunakan nama (sesuai permintaan)
+      navigate(`/edit-mitra-hotel/${mitra.name}`);
     }
   };
 
   const handleSaldoNavigation = (mitra) => {
     if (editableRow === mitra.id) {
-      navigate(`/edit-saldo-mitra-pesawat/${mitra.id}`, {
+      navigate(`/edit-saldo-mitra-hotel/${mitra.id}`, {
         // Kirim currentAmount melalui state
         state: { currentAmount: mitra.currentAmount }
       });
@@ -164,7 +164,7 @@ const TableMitraPesawat = ({ searchQuery, dataType }) => {
                 <td colSpan="7" className="text-center py-4 text-gray-500">
                   {searchQuery
                     ? `Tidak ada hasil untuk "${searchQuery}"`
-                    : "Tidak ada data mitra pesawat"} {/* FIX: Teks diubah */}
+                    : "Tidak ada data mitra hotel"}
                 </td>
               </tr>
             )}
@@ -209,4 +209,4 @@ const TableMitraPesawat = ({ searchQuery, dataType }) => {
   );
 };
 
-export default TableMitraPesawat;
+export default TableMitraHotel;

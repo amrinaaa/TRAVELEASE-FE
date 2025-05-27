@@ -5,13 +5,28 @@ import TiketPesawat from '../components/TiketPesawat'
 const Pesawat = () => {
   return (
     <div>
-      <section className='bg-cover bg-center pt-24' style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }}>
-        <div className='p-8 text-center'>
-          <h1 className='text-white text-6xl font-bold mb-6'>TravelEase</h1>
-          <p className='text-white text-xl'>Pesan Tiket & Hotel</p>
-          <p className='text-white text-xl'>Mudah, Cepat dan Praktis!</p>
+      <section
+        className="relative bg-cover bg-center pt-24 min-h-[90vh] flex flex-col justify-center"
+        style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
+
+        {/* Content */}
+        <div className="relative z-10 text-center p-8">
+          <h1 className="text-white text-5xl md:text-6xl font-bold mb-4 animate-fadeIn">
+            TravelEase
+          </h1>
+          <p className="text-white text-lg md:text-xl">
+            Pesan Tiket & Hotel dengan
+          </p>
+          <p className="text-white text-lg md:text-xl font-medium">
+            Mudah, Cepat dan Praktis!
+          </p>
         </div>
-        <div className='mt-4 md:ml-80 md:mr-80 ml-8 mr-8 text-left pb-12'>
+
+        {/* TableSearch di bawah teks */}
+        <div className="relative z-10 mt-6 mx-4 md:mx-80 text-left pb-12">
           <TableSearch />
         </div>
       </section>

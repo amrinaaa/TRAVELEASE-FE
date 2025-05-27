@@ -1,0 +1,38 @@
+[
+  {
+    "id" : 1,
+    "name": "Laure Iais Syakila",
+    "id_room": 412,
+    "room_type": "Superior",
+    "start_date": "21-04-2025",
+    "end_date": "20-04-2025",
+    "price": "Rp 825.000"
+  },
+  {
+    "id" : 2,
+    "name": "Edward Hazellnut",
+    "id_room": 356,
+    "room_type": "Luxury",
+    "start_date": "21-04-2025",
+    "end_date": "20-04-2025",
+    "price": "Rp 1.536.000"
+  },
+  {
+    "id" : 3,
+    "name": "Tung Tung Sahur",
+    "id_room": 512,
+    "room_type": "Family",
+    "start_date": "21-04-2025",
+    "end_date": "20-04-2025",
+    "price": "Rp 2.500.000"
+  },
+  {
+    "id" : 4,
+    "name": "Ballerina Cappucina",
+    "id_room": 609,
+    "room_type": "Executive",
+    "start_date": "21-04-2025",
+    "end_date": "20-04-2025",
+    "price": "Rp 825.000"
+  }
+]

@@ -244,7 +244,7 @@ const EditSaldoMitraPesawat = ({ isSidebarOpen }) => {
           dispatch(getHotels()).then(() => setIsLoading(false));
         } else if (!hotelsLoading && hotel === undefined) {
             // Jika sudah selesai loading tapi hotel tidak ditemukan
-            console.error("Mitra Hotel tidak ditemukan di Redux store.");
+            console.error("Mitra Pesawat tidak ditemukan di Redux store.");
             alert("Gagal memuat saldo saat ini. Mitra tidak ditemukan.");
             setIsLoading(false);
         } else {
@@ -334,15 +334,15 @@ const EditSaldoMitraPesawat = ({ isSidebarOpen }) => {
       }`}>
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
-            <p className="text-xl">Mitra Hotel Management</p>
+            <p className="text-xl">Mitra Pesawat Management</p>
             <p className="text-xs pt-2 text-gray-600">Edit Saldo</p>
           </div>
           <div className="flex flex-row justify-end">
-            <Link to="/manajemen-mitra-hotel" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link to="/manajemen-mitra-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
-            <Link to={`/edit-saldo-mitra-hotel/${userId}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+            <Link to={`/edit-saldo-mitra-pesawat/${userId}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Edit Saldo</p>
             </Link>
@@ -352,7 +352,7 @@ const EditSaldoMitraPesawat = ({ isSidebarOpen }) => {
         <div className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="flex-col px-4 items-center">
             <div className="text-left md:text-xl mb-6 md:mb-12">
-              <p>Edit Saldo Mitra Hotel</p>
+              <p>Edit Saldo Mitra Pesawat</p>
             </div>
 
             <div className="flex flex-col mb-4 items-center">

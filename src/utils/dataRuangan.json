@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "name": "Superior Suite",
+    "description": "Platinum Hotel & Convention Hall Balikpapan menawarkan kenyamanan dan fasilitas terbaik untuk perjalanan bisnis dan liburan.",
+    "type": "Superior Room",
+    "price": "Rp 1.815.000",
+    "facilities": ["AC", "Smart TV", "Kulkas", "Breakfast", "Free 2 tickets Aquaboom"],
+    "capacity": 4,
+    "status": "Available",
+    "image": "hotel1.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Business Twin Bed",
+    "description": "Platinum Hotel & Convention Hall Balikpapan menghadirkan kamar nyaman untuk perjalanan bisnis dengan tempat tidur ganda.",
+    "type": "Business Room",
+    "price": "Rp 960.000",
+    "facilities": ["AC", "Smart TV", "Kulkas", "Meja Kerja", "Wi-Fi"],
+    "capacity": 2,
+    "status": "Not Available",
+    "image": "hotel2.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Family Suite",
+    "description": "Platinum Hotel & Convention Hall Balikpapan menyediakan Family Suite yang luas untuk mengakomodasi keluarga dengan nyaman.",
+    "type": "Family Room",
+    "price": "Rp 1.230.000",
+    "facilities": ["AC", "Smart TV", "Kulkas", "Extra Bed", "Microwave"],
+    "capacity": 3,
+    "status": "Available",
+    "image": "hotel3.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Executive Deluxe",
+    "description": "Nikmati kemewahan dan layanan premium di kamar Executive Deluxe Platinum Hotel & Convention Hall Balikpapan.",
+    "type": "Deluxe Room",
+    "price": "Rp 1.650.000",
+    "facilities": ["AC", "Smart TV", "Kulkas", "Mini Bar", "Bath Tub"],
+    "capacity": 4,
+    "status": "Available",
+    "image": "hotel4.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Junior Suite King",
+    "description": "Junior Suite King dirancang elegan dengan ruang tamu terpisah untuk kenyamanan maksimal selama menginap.",
+    "type": "Junior Suite",
+    "price": "Rp 2.050.000",
+    "facilities": ["AC", "Smart TV", "Kulkas", "Living Room", "Coffee Maker"],
+    "capacity": 2,
+    "status": "Not Available",
+    "image": "hotel5.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Presidential Suite",
+    "description": "Presidential Suite menawarkan kemewahan tertinggi dengan pemandangan kota dan fasilitas eksklusif.",
+    "type": "Presidential Suite",
+    "price": "Rp 3.500.000",
+    "facilities": ["AC", "Smart TV", "Kulkas", "Private Pool", "Jacuzzi"],
+    "capacity": 3,
+    "status": "Available",
+    "image": "hotel6.jpg"
+  }
+]

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import dataCustomer from "../utils/dataCustomer.json";
+import dataCustomerHotel from "../utils/dataCustomerHotel.json";
 
 
-const Tablecustomer = ({ searchQuery }) => {
+const TableCustomerHotel = ({ searchQuery }) => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
@@ -11,7 +11,7 @@ const Tablecustomer = ({ searchQuery }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setData(dataCustomer); // Use the dummy data
+    setData(dataCustomerHotel); // Use the dummy data
   }, []);
 
   // Function to handle sorting
@@ -34,8 +34,8 @@ const Tablecustomer = ({ searchQuery }) => {
     return 0;
   });
 
-  const filteredData = sortedData.filter((customer) =>
-    customer.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = sortedData.filter((customerHotel) =>
+    customerHotel.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Function to confirm deletion
@@ -46,18 +46,18 @@ const Tablecustomer = ({ searchQuery }) => {
 
   // Handle deletion of data
   const handleDelete = () => {
-    setData((prevData) => prevData.filter((customer) => customer.id !== deleteId));
+    setData((prevData) => prevData.filter((customerHotel) => customerHotel.id !== deleteId));
     setModalOpen(false);
     setDeleteId(null);
   };
 
   return (
     <div className="p-4">
-      <div className="overflow-x-auto shadow-md">
-        <table className="min-w-full bg-white border border-gray-300">
+      <div className="overflow-x-auto shadow-md rounded-2xl">
+        <table className="min-w-full bg-white border roun border-gray-300">
           <thead>
-            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              {["Name", "NIK", "Gender", "Age Category", "Class", "Seat"].map((col) => (
+            <tr className="bg-purple-200  text-gray-700 uppercase text-sm leading-normal">
+              {["Name", "ID Room", "Room Type", "Start Date", "End Date", "Price"].map((col) => (
                 <th
                   key={col}
                   className="py-2 px-3 border cursor-pointer"
@@ -71,15 +71,15 @@ const Tablecustomer = ({ searchQuery }) => {
           </thead>
           <tbody className="text-gray-700">
             {filteredData.length > 0 ? (
-              filteredData.map((customer) => (
-                <tr key={customer.id} className="border-b hover:bg-gray-100">
+              filteredData.map((customerHotel) => (
+                <tr key={customerHotel.id} className="border-b hover:bg-gray-100">
 
-                  <td className="py-2 px-3 border text-center">{customer.name}</td>
-                  <td className="py-2 px-3 border text-center">{customer.nik}</td>
-                  <td className="py-2 px-3 border text-center">{customer.gender}</td>
-                  <td className="py-2 px-3 border text-center">{customer.ageCategory}</td>
-                  <td className="py-2 px-3 border text-center">{customer.class}</td>
-                  <td className="py-2 px-3 border text-center">{customer.seat}</td>
+                  <td className="py-2 px-3 border text-center">{customerHotel.name}</td>
+                  <td className="py-2 px-3 border text-center">{customerHotel.id_room}</td>
+                  <td className="py-2 px-3 border text-center">{customerHotel.room_type}</td>
+                  <td className="py-2 px-3 border text-center">{customerHotel.start_date}</td>
+                  <td className="py-2 px-3 border text-center">{customerHotel.end_date}</td>
+                  <td className="py-2 px-3 border text-center">{customerHotel.price}</td>
 
                 </tr>
               ))
@@ -97,4 +97,4 @@ const Tablecustomer = ({ searchQuery }) => {
   );
 };
 
-export default Tablecustomer
+export default TableCustomerHotel

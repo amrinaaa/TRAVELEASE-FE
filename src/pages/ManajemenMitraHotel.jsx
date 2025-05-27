@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { getHotels } from "../redux/actions/adminHotelActions"; // Import action
 import Searchbar from "../components/Searchbar";
-import TableMitra from "../components/TableMitra";
+import TableMitraHotel from "../components/TableMitraHotel";
 
 const ManajemenMitraHotel = ({ isSidebarOpen }) => {
   const [searchQuery, setSearchQuery] = useState(""); 
@@ -22,7 +22,7 @@ const ManajemenMitraHotel = ({ isSidebarOpen }) => {
             <p className="text-xs pt-2 text-gray-600">Hotel Partner List</p>
           </div>
           <div className="flex flex-row justify-end">
-            <Link to="/manajemen-mitra" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link to="/manajemen-mitra" className="flex items-center gap-1 text-black pt-9 md:pt-0">
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
@@ -47,7 +47,7 @@ const ManajemenMitraHotel = ({ isSidebarOpen }) => {
             </div>
           </div>
           <div>
-            <TableMitra searchQuery={searchQuery} dataType="hotel" />
+            <TableMitraHotel searchQuery={searchQuery} dataType="hotel" />
           </div>
         </div>
       </div>
