@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/actions/authActions";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -20,10 +21,15 @@ const Login = () => {
     if (token) {
       dispatch({ type: "LOGIN_SUCCESS", payload: { data: token } });
     }
-
     // Redirect if login is successful
     if (userInfo) {
-      navigate("/"); // Redirect to the home page
+      const decoded = jwtDecode(userInfo.data);
+      switch (decoded.role) {
+        case "ADMIN": navigate("/admin"); break;
+        case "MITRA_PENERBANGAN": navigate("/mitra-pesawat"); break;
+        case "MITRA_HOTEL": navigate("/mitra-hotel"); break;
+        default: navigate("/"); break;
+      }
     }
   }, [dispatch, userInfo, navigate]); // Add navigate to dependency array
 
