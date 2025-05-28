@@ -303,7 +303,7 @@ const DetailPesawat = () => {
             <div className="w-full col-span-1 md:pl-14 md:ml-8 ml-9 mb-12 md:mb-0">
               <img src="/src/assets/img/head.png" alt="kepala-pesawat" className="pl-8 md:pl-0" />
               <div className="pl-8 md:pl-0 md:pr-0">
-                <div className="bg-ungu10 p-4">
+                <div className="bg-white p-4">
                   {['First', 'Business', 'Economy'].map((classType, i) => {
                     const start = i === 0 ? 0 : i === 1 ? 3 : 8;
                     const end = i === 0 ? 3 : i === 1 ? 8 : 12;
