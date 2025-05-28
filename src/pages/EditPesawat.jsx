@@ -178,7 +178,7 @@ const EditPesawat = ({ isSidebarOpen }) => {
               <p className="text-xs md:text-sm">Home</p>
             </Link>
             {/* Navigasi kembali mungkin perlu airlineId, ini perlu penyesuaian */}
-            <Link to={`/manajemen-pesawat`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+            <Link to={`/manajemen-pesawat/${planeId}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Plane List</p>
             </Link>
