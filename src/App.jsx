@@ -44,6 +44,8 @@ import Hotel from './pages/Hotel';
 import DetailHotel from './pages/DetailHotel';
 import Pesawat from './pages/Pesawat';
 import DetailPesawat from './pages/DetailPesawat';
+import PengaturanAkun from './pages/PengaturanAkun';
+import RiwayatPemesanan from './pages/RiwayatPemesanan';
 import './App.css';
 
 const App = () => {
@@ -57,7 +59,7 @@ const App = () => {
   };
 
   // Show Navbar and Footer only on specific pages
-  const showNavbar = ['/', '/hotel', '/pesawat'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel');
+  const showNavbar = ['/', '/hotel', '/pesawat', '/pengaturan-akun', '/riwayat-pemesanan'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel');
   const showFooter = showNavbar;
 
   // Determine role based on the route path
@@ -93,6 +95,8 @@ const App = () => {
         <Route path="/detail-hotel/:id" element={<DetailHotel />} />
         <Route path="/pesawat" element={<Pesawat />} />
         <Route path="/detail-pesawat/:id" element={<DetailPesawat />} />
+        <Route path="/pengaturan-akun" element={<PengaturanAkun />} />
+        <Route path="/riwayat-pemesanan" element={<RiwayatPemesanan />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<DashboardAdmin isSidebarOpen={isSidebarOpen} />} />
