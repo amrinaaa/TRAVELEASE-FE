@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "hotelId": 1,
     "name": "Superior Suite",
     "description": "Platinum Hotel & Convention Hall Balikpapan menawarkan kenyamanan dan fasilitas terbaik untuk perjalanan bisnis dan liburan.",
     "type": "Superior Room",
@@ -8,10 +9,15 @@
     "facilities": ["AC", "Smart TV", "Kulkas", "Breakfast", "Free 2 tickets Aquaboom"],
     "capacity": 4,
     "status": "Available",
-    "image": "hotel1.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 2,
+    "hotelId": 2,
     "name": "Business Twin Bed",
     "description": "Platinum Hotel & Convention Hall Balikpapan menghadirkan kamar nyaman untuk perjalanan bisnis dengan tempat tidur ganda.",
     "type": "Business Room",
@@ -19,10 +25,15 @@
     "facilities": ["AC", "Smart TV", "Kulkas", "Meja Kerja", "Wi-Fi"],
     "capacity": 2,
     "status": "Not Available",
-    "image": "hotel2.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 3,
+    "hotelId": 3,
     "name": "Family Suite",
     "description": "Platinum Hotel & Convention Hall Balikpapan menyediakan Family Suite yang luas untuk mengakomodasi keluarga dengan nyaman.",
     "type": "Family Room",
@@ -30,10 +41,15 @@
     "facilities": ["AC", "Smart TV", "Kulkas", "Extra Bed", "Microwave"],
     "capacity": 3,
     "status": "Available",
-    "image": "hotel3.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 4,
+    "hotelId": 1,
     "name": "Executive Deluxe",
     "description": "Nikmati kemewahan dan layanan premium di kamar Executive Deluxe Platinum Hotel & Convention Hall Balikpapan.",
     "type": "Deluxe Room",
@@ -41,10 +57,15 @@
     "facilities": ["AC", "Smart TV", "Kulkas", "Mini Bar", "Bath Tub"],
     "capacity": 4,
     "status": "Available",
-    "image": "hotel4.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 5,
+    "hotelId": 1,
     "name": "Junior Suite King",
     "description": "Junior Suite King dirancang elegan dengan ruang tamu terpisah untuk kenyamanan maksimal selama menginap.",
     "type": "Junior Suite",
@@ -52,10 +73,15 @@
     "facilities": ["AC", "Smart TV", "Kulkas", "Living Room", "Coffee Maker"],
     "capacity": 2,
     "status": "Not Available",
-    "image": "hotel5.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 6,
+    "hotelId": 2,
     "name": "Presidential Suite",
     "description": "Presidential Suite menawarkan kemewahan tertinggi dengan pemandangan kota dan fasilitas eksklusif.",
     "type": "Presidential Suite",
@@ -63,6 +89,10 @@
     "facilities": ["AC", "Smart TV", "Kulkas", "Private Pool", "Jacuzzi"],
     "capacity": 3,
     "status": "Available",
-    "image": "hotel6.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   }
 ]

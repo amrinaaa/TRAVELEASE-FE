@@ -6,7 +6,11 @@
     "city": "Balikpapan",
     "address": "Jl. Imam Bonjol Rt. 002 Sungai Wein",
     "contact": "081234567890",
-    "image": "hotel1.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 2,
@@ -15,7 +19,11 @@
     "city": "Jakarta",
     "address": "Jl. Imam Bonjol Rt. 002 Sungai Wein",
     "contact": "082345678901",
-    "image": "hotel2.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 3,
@@ -24,7 +32,11 @@
     "city": "Surabaya",
     "address": "Jl. Imam Bonjol Rt. 002 Sungai Wein",
     "contact": "083456789012",
-    "image": "hotel3.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 4,
@@ -33,7 +45,11 @@
     "city": "Bandung",
     "address": "Jl. Asia Afrika No. 100",
     "contact": "084567890123",
-    "image": "hotel4.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 5,
@@ -42,7 +58,11 @@
     "city": "Medan",
     "address": "Jl. Gatot Subroto No. 45",
     "contact": "085678901234",
-    "image": "hotel5.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   },
   {
     "id": 6,
@@ -51,6 +71,10 @@
     "city": "Makassar",
     "address": "Jl. Pengayoman No. 27",
     "contact": "086789012345",
-    "image": "hotel6.jpg"
+    "image": [
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png",
+      "/src/assets/img/FotoHotel.png"
+    ]
   }
 ]
