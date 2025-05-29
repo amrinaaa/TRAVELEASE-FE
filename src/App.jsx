@@ -42,6 +42,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Hotel from './pages/Hotel';
 import DetailHotel from './pages/DetailHotel';
+import DetailRuangan from './pages/DetailRuangan';
 import Pesawat from './pages/Pesawat';
 import DetailPesawat from './pages/DetailPesawat';
 import PengaturanAkun from './pages/PengaturanAkun';
@@ -59,7 +60,7 @@ const App = () => {
   };
 
   // Show Navbar and Footer only on specific pages
-  const showNavbar = ['/', '/hotel', '/pesawat', '/pengaturan-akun', '/riwayat-pemesanan'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel');
+  const showNavbar = ['/', '/hotel', '/pesawat', '/pengaturan-akun', '/riwayat-pemesanan'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel') || location.pathname.startsWith('/detail-ruangan');
   const showFooter = showNavbar;
 
   // Determine role based on the route path
@@ -93,6 +94,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/hotel" element={<Hotel />} />
         <Route path="/detail-hotel/:id" element={<DetailHotel />} />
+        <Route path="/detail-ruangan/:id" element={<DetailRuangan />} />
         <Route path="/pesawat" element={<Pesawat />} />
         <Route path="/detail-pesawat/:id" element={<DetailPesawat />} />
         <Route path="/pengaturan-akun" element={<PengaturanAkun />} />
