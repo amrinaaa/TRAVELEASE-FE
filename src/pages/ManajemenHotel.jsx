@@ -49,3 +49,4 @@ const ManajemenHotel = ({ isSidebarOpen }) => {
 };
 
 export default ManajemenHotel
+
