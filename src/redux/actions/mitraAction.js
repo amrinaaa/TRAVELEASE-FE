@@ -535,6 +535,8 @@ export const createSeats = (seatData) => async (dispatch) => {
   }
 };
 
+
+
 // --- Seat Category Actions ---
 export const fetchSeatCategoriesRequest = (planeId) => async (dispatch) => {
   dispatch(getSeatCategoriesRequest());
@@ -590,6 +592,10 @@ export const createHotel = (hotelFormData) => async (dispatch) => {
     console.error("Create Hotel Error:", error.response || error);
     dispatch(createHotelFailure(error.response?.data?.message || error.message || "Failed to create hotel"));
   }
+};
+
+export const clearCreateHotelStatus = () => (dispatch) => {
+  dispatch(resetCreateHotelStatus());
 };
 
 export const updateHotel = (hotelFormData) => async (dispatch) => {
