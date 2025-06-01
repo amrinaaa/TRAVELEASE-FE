@@ -1,25 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Memperbarui initialState untuk mencakup detail ruangan tunggal
 const initialState = {
-  hotelRooms: [], // Menyimpan array ruangan untuk hotel tertentu
-  loading: false,    // Status loading untuk daftar hotelRooms
-  error: null,       // Status error untuk daftar hotelRooms
+  hotelRooms: [],
+  loading: false,
+  error: null,
 
-  currentRoomDetails: null, // Menyimpan detail dari satu ruangan yang diambil
-  loadingRoomDetails: false, // Status loading untuk mengambil detail satu ruangan
-  errorRoomDetails: null,    // Status error untuk mengambil detail satu ruangan
+  currentRoomDetails: null,
+  loadingRoomDetails: false,
+  errorRoomDetails: null, 
+
+  userBalance: null,
+  loadingUserBalance: false,
+  errorUserBalance: null,
 };
 
 const userHotelSlice = createSlice({
-  name: "userHotel",
+  name: "userHotel", 
   initialState,
   reducers: {
-    // Reducer untuk mengambil daftar ruangan hotel
     getHotelRoomsRequest: (state) => {
       state.loading = true;
       state.error = null;
-      state.hotelRooms = []; // Bersihkan ruangan sebelumnya pada request baru
+      state.hotelRooms = [];
     },
     getHotelRoomsSuccess: (state, action) => {
       state.loading = false;
@@ -32,15 +34,14 @@ const userHotelSlice = createSlice({
       state.hotelRooms = [];
     },
 
-    // Reducer baru untuk mengambil detail satu ruangan
     getRoomDetailRequest: (state) => {
       state.loadingRoomDetails = true;
       state.errorRoomDetails = null;
-      state.currentRoomDetails = null; // Bersihkan detail ruangan sebelumnya
+      state.currentRoomDetails = null;
     },
     getRoomDetailSuccess: (state, action) => {
       state.loadingRoomDetails = false;
-      state.currentRoomDetails = action.payload; // Payload adalah objek detail ruangan
+      state.currentRoomDetails = action.payload;
       state.errorRoomDetails = null;
     },
     getRoomDetailFailure: (state, action) => {
@@ -49,21 +50,38 @@ const userHotelSlice = createSlice({
       state.currentRoomDetails = null;
     },
 
-    // Mereset semua state dalam slice ini ke initialState
+    getUserBalanceRequest: (state) => {
+      state.loadingUserBalance = true;
+      state.errorUserBalance = null;
+      state.userBalance = null;
+    },
+    getUserBalanceSuccess: (state, action) => {
+      state.loadingUserBalance = false;
+      state.userBalance = action.payload; 
+      state.errorUserBalance = null;
+    },
+    getUserBalanceFailure: (state, action) => {
+      state.loadingUserBalance = false;
+      state.errorUserBalance = action.payload;
+      state.userBalance = null;
+    },
+
     resetUserHotelState: (state) => {
-      Object.assign(state, initialState); // initialState sekarang mencakup field baru
+      Object.assign(state, initialState);
     },
   },
 });
 
-// Mengekspor semua action creator, termasuk yang baru
 export const {
   getHotelRoomsRequest,
   getHotelRoomsSuccess,
   getHotelRoomsFailure,
-  getRoomDetailRequest,  // Action creator baru
-  getRoomDetailSuccess, // Action creator baru
-  getRoomDetailFailure, // Action creator baru
+  getRoomDetailRequest,
+  getRoomDetailSuccess,
+  getRoomDetailFailure,
+  getUserBalanceRequest, 
+  getUserBalanceSuccess, 
+  getUserBalanceFailure,
   resetUserHotelState,
 } = userHotelSlice.actions;
 

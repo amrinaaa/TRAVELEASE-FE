@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-// Pastikan path ini benar menuju file actions Anda, sesuaikan jika perlu.
-// Contoh: import { getRoomDetailById } from '../../store/actions/userHotelActions';
-import { getRoomDetailById } from '../redux/actions/userHotelActions';
+import { getRoomDetailById, getUserBalance } from '../redux/actions/userHotelActions';
 
 const DetailRuangan = () => {
-  // Mengambil roomId dari parameter URL. 'id' di sini adalah alias untuk roomId.
   const { id: roomId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // Mengambil state yang relevan dari Redux store (userHotel slice)
   const {
-    currentRoomDetails,    // Akan berisi detail ruangan dari API
-    loadingRoomDetails,    // Status loading untuk pengambilan detail ruangan
-    errorRoomDetails       // Pesan error jika terjadi masalah
+    currentRoomDetails,
+    loadingRoomDetails,
+    errorRoomDetails
   } = useSelector(state => state.userHotel);
 
-  // State lokal untuk fungsionalitas halaman (tanggal check-in/out, harga, modal)
+  const {
+    userBalance,          
+    loadingUserBalance,   
+    errorUserBalance      
+  } = useSelector(state => state.userHotel || {}); 
+
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
@@ -26,31 +26,27 @@ const DetailRuangan = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [orderCode, setOrderCode] = useState('');
 
-  // useEffect untuk melakukan scroll ke atas dan mengambil data detail ruangan saat komponen dimuat atau roomId berubah
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (roomId) {
-      // Dispatch action untuk mengambil detail ruangan berdasarkan roomId
       dispatch(getRoomDetailById(roomId));
     }
-    generateOrderCode(); // Generate kode order saat komponen dimuat
+    dispatch(getUserBalance()); 
+    generateOrderCode(); 
   }, [dispatch, roomId]);
 
-  // useEffect untuk menghitung total harga berdasarkan tanggal check-in/out dan harga ruangan dari API
   useEffect(() => {
     if (checkIn && checkOut && currentRoomDetails?.roomPrice) {
       const start = new Date(checkIn);
       const end = new Date(checkOut);
-      // Menghitung jumlah hari
       const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
       if (days > 0) {
-        // Menggunakan currentRoomDetails.roomPrice dari API (yang seharusnya berupa angka)
         setTotalPrice(days * currentRoomDetails.roomPrice);
       } else {
         setTotalPrice(0);
       }
     } else {
-      setTotalPrice(0); // Reset jika tanggal atau harga tidak valid
+      setTotalPrice(0);
     }
   }, [checkIn, checkOut, currentRoomDetails?.roomPrice]);
 
@@ -64,7 +60,7 @@ const DetailRuangan = () => {
 
   // Fungsi untuk format mata uang
   const formatCurrency = (number) => {
-    if (typeof number !== 'number') {
+    if (typeof number !== 'number' || isNaN(number)) { // Tambahan pengecekan isNaN
       return 'Rp 0';
     }
     return new Intl.NumberFormat('id-ID', {
@@ -74,19 +70,26 @@ const DetailRuangan = () => {
     }).format(number);
   };
 
+  // Fungsi untuk memformat fasilitas menjadi string yang rapi
+  const formatFacilities = (facilitiesArray) => {
+    if (!facilitiesArray || facilitiesArray.length === 0) {
+      return 'Tidak ada fasilitas tercatat';
+    }
+    return facilitiesArray.map(facility => `${facility.name} (${facility.amount})`).join(', ');
+  };
+
   // Fungsi untuk generate PDF (data diambil dari currentRoomDetails)
   const generatePDF = () => {
     const bookingDate = new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
-    // CATATAN: Informasi hotel (hotelNameFromAPI) tidak tersedia dari endpoint /user/detail-room/:roomId
-    // Anda mungkin perlu mengambilnya secara terpisah atau melewatkannya sebagai props.
-    const hotelNameFromAPI = 'Informasi Hotel Tidak Tersedia dari API';
+    // Menggunakan hotelName dari currentRoomDetails jika ada
+    const hotelNameFromAPI = currentRoomDetails?.hotelName || 'Informasi Hotel Tidak Tersedia';
     const roomNameFromAPI = currentRoomDetails?.roomName || 'N/A';
     const roomTypeFromAPI = currentRoomDetails?.roomTypeName || 'N/A';
-    // CATATAN: Kapasitas (capacityFromAPI) tidak tersedia dari endpoint /user/detail-room/:roomId saat ini.
-    const capacityFromAPI = 'N/A';
-    const facilitiesFromAPI = currentRoomDetails?.facilities?.join(', ') || 'Tidak ada fasilitas tercatat';
+    const capacityFromAPI = currentRoomDetails?.capacity ? `${currentRoomDetails.capacity} orang` : 'N/A';
+    const facilitiesFromAPI = formatFacilities(currentRoomDetails?.facilities);
+    const customerName = userBalance?.name || 'Budi';
 
-    // Konten HTML untuk PDF
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -117,9 +120,9 @@ const DetailRuangan = () => {
           <div class="field"><div class="field-label">Order Code:</div><div class="field-value">${orderCode}</div></div>
           <div class="field"><div class="field-label">Hotel:</div><div class="field-value">${hotelNameFromAPI}</div></div>
           <div class="field"><div class="field-label">Room:</div><div class="field-value">${roomNameFromAPI} - ${roomTypeFromAPI}</div></div>
-          <div class="field"><div class="field-label">Customer:</div><div class="field-value">Budi</div></div> {/* Nama Customer masih hardcoded */}
-          <div class="field"><div class="field-label">Check-In:</div><div class="field-value">${checkIn}</div></div>
-          <div class="field"><div class="field-label">Check-Out:</div><div class="field-value">${checkOut}</div></div>
+          <div class="field"><div class="field-label">Customer:</div><div class="field-value">${customerName}</div></div>
+          <div class="field"><div class="field-label">Check-In:</div><div class="field-value">${checkIn ? new Date(checkIn).toLocaleDateString('id-ID') : 'N/A'}</div></div>
+          <div class="field"><div class="field-label">Check-Out:</div><div class="field-value">${checkOut ? new Date(checkOut).toLocaleDateString('id-ID') : 'N/A'}</div></div>
           <div class="field"><div class="field-label">Capacity:</div><div class="field-value">${capacityFromAPI}</div></div>
           <div class="field"><div class="field-label">Facilities:</div><div class="field-value">${facilitiesFromAPI}</div></div>
           <div class="total-price">Total Price: ${formatCurrency(totalPrice)}</div>
@@ -134,18 +137,26 @@ const DetailRuangan = () => {
       printWindow.document.write(htmlContent);
       printWindow.document.close();
       printWindow.focus();
-      printWindow.print();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    } else {
+      console.error("Failed to open print window. Please check your pop-up blocker settings.");
+      alert("Gagal membuka jendela cetak. Mohon periksa pengaturan pemblokir pop-up Anda dan coba lagi.");
     }
   };
 
   // Penanganan kondisi loading dan error
-  if (loadingRoomDetails) return <div className="text-center py-20">Loading room details...</div>;
-  if (errorRoomDetails) return <div className="text-center py-20 text-red-500">Error: {errorRoomDetails}</div>;
-  // Jika setelah loading selesai dan tidak ada error, namun currentRoomDetails masih null
-  if (!currentRoomDetails) return <div className="text-center py-20">Room not found or details could not be loaded.</div>;
+  if (loadingRoomDetails || loadingUserBalance) return <div className="text-center py-20">Loading details...</div>;
+  if (errorRoomDetails) return <div className="text-center py-20 text-red-500">Error loading room: {errorRoomDetails}</div>;
+  if (errorUserBalance) return <div className="text-center py-20 text-red-500">Error loading balance: {errorUserBalance}</div>;
+  if (!currentRoomDetails || Object.keys(currentRoomDetails).length === 0) {
+    return <div className="text-center py-20">Room not found or details could not be loaded.</div>;
+  }
 
-  // Placeholder untuk nama hotel karena tidak ada di API detail ruangan
-  const displayHotelName = 'Informasi Hotel Tidak Tersedia';
+  // Menggunakan hotelName dari currentRoomDetails jika ada, jika tidak, tampilkan placeholder
+  const displayHotelName = currentRoomDetails?.hotelName || 'Informasi Hotel Tidak Tersedia';
+  const customerNameToDisplay = userBalance?.name || 'Budi';
 
   // Render JSX
   return (
@@ -153,7 +164,7 @@ const DetailRuangan = () => {
       {/* Bagian header dengan gambar-gambar ruangan */}
       <section
         className="relative bg-cover bg-center pt-16 h-full flex flex-col justify-center"
-        style={{ backgroundImage: `url('/assets/img/bgHome.png')` }} // Pastikan path ini benar
+        style={{ backgroundImage: `url('/assets/img/bgHome.png')` }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
         <div className="mx-auto relative z-10 text-center p-8 max-w-6xl">
@@ -168,6 +179,10 @@ const DetailRuangan = () => {
                     src={imageURL}
                     alt={`${currentRoomDetails.roomName || 'Room'} image ${index + 1}`}
                     className="w-full h-60 object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src="https://placehold.co/600x400/E2E8F0/AAAAAA?text=Image+Not+Available";
+                    }}
                   />
                 </div>
               ))}
@@ -182,37 +197,30 @@ const DetailRuangan = () => {
       <section className='pt-8'>
         <div className='md:ml-48 md:mr-48 mx-8'>
           <div className='flex flex-col text-left pb-8'>
-            {/* Informasi Nama Ruangan, Tipe, dan Hotel */}
             <div className='flex flex-col'>
               <span className='font-bold text-3xl'>{currentRoomDetails.roomName || 'N/A'}</span>
               <span className='text-lg'>{currentRoomDetails.roomTypeName || 'N/A'}</span>
+              {/* Menampilkan nama hotel dari API */}
               <span className='text-gray-600 mt-2'>Hotel: {displayHotelName}</span>
             </div>
-            {/* Deskripsi Ruangan */}
             <div className='flex flex-col mt-8 mb-2'>
               <span className='font-bold text-xl'>Description</span>
               <span className='text-justify'>{currentRoomDetails.roomDescription || 'No description available.'}</span>
             </div>
-            {/* Fasilitas */}
             <div className='flex flex-col mt-2 mb-2'>
               <span className='font-bold text-xl'>Facilities</span>
               <span>
-                {currentRoomDetails.facilities && currentRoomDetails.facilities.length > 0
-                  ? currentRoomDetails.facilities.join(", ")
-                  : 'No specific facilities listed.'}
+                {formatFacilities(currentRoomDetails.facilities)}
               </span>
             </div>
-            {/* Kapasitas (Tidak tersedia dari API) */}
             <div className='flex flex-col mt-2 mb-2'>
               <span className='font-bold text-xl'>Capacity</span>
-              <span>Informasi Kapasitas Tidak Tersedia</span>
+              <span>{currentRoomDetails.capacity ? `${currentRoomDetails.capacity} orang` : 'Informasi tidak tersedia'}</span>
             </div>
-            {/* Harga per Malam */}
             <div className='flex flex-col mt-2 mb-2'>
               <span className='font-bold text-xl'>Price per Night</span>
               <span>{formatCurrency(currentRoomDetails.roomPrice)}</span>
             </div>
-            {/* Peraturan */}
             <div>
               <h2 className="font-bold text-xl mt-8 mb-4">Rules</h2>
               <ul className="list-disc list-inside space-y-2 text-justify">
@@ -224,18 +232,16 @@ const DetailRuangan = () => {
                 <li>Kamar tidak boleh digunakan untuk aktivitas ilegal.</li>
               </ul>
             </div>
-            {/* Input Tanggal Check-in dan Check-out */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 mt-8">
               <div className="flex flex-col">
                 <label className="font-bold text-xl mb-1">Check in</label>
-                <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="px-4 py-2 rounded-full border focus:outline-none focus:ring-2 focus:ring-ungu4" />
+                <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="px-4 py-2 rounded-full border focus:outline-none focus:ring-2 focus:ring-purple-500" />
               </div>
               <div className="flex flex-col">
                 <label className="font-bold text-xl mb-1">Check out</label>
-                <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="px-4 py-2 rounded-full border focus:outline-none focus:ring-2 focus:ring-ungu4" />
+                <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="px-4 py-2 rounded-full border focus:outline-none focus:ring-2 focus:ring-purple-500" />
               </div>
             </div>
-            {/* Total Harga dan Tombol Reservasi */}
             <div className="flex justify-between text-left md:text-lg font-semibold mb-4 mt-4">
               <div className='flex flex-col'>
                 <span className='font-bold text-xl'>Total Price</span>
@@ -243,23 +249,35 @@ const DetailRuangan = () => {
               </div>
               <div className="flex flex-col text-right">
                 <span className='font-bold text-xl'>Your Money</span>
-                <span className="text-black">Rp 0</span> {/* Fungsi "Your Money" belum diimplementasikan */}
+                <span className="text-black">
+                  {userBalance?.currentAmount !== undefined ? formatCurrency(userBalance.currentAmount) : 'Loading saldo...'}
+                </span>
               </div>
             </div>
             <button
               onClick={() => {
                 if (!checkIn || !checkOut) {
+                  console.warn("Silakan pilih tanggal Check-in dan Check-out terlebih dahulu.");
                   alert("Silakan pilih tanggal Check-in dan Check-out terlebih dahulu.");
                   return;
                 }
                 if (new Date(checkOut) <= new Date(checkIn)) {
-                  alert("Tanggal Check-out harus setelah tanggal Check-in.");
+                   console.warn("Tanggal Check-out harus setelah tanggal Check-in.");
+                   alert("Tanggal Check-out harus setelah tanggal Check-in.");
                   return;
+                }
+                if (userBalance?.currentAmount === undefined) {
+                    alert("Informasi saldo belum termuat. Mohon tunggu sebentar.");
+                    return;
+                }
+                if (totalPrice > userBalance.currentAmount) {
+                    alert("Saldo Anda tidak mencukupi untuk melakukan reservasi ini.");
+                    return;
                 }
                 setShowConfirmation(true);
               }}
               className="bg-purple-500 text-white px-6 py-3 rounded-full w-fit self-center mt-4 hover:bg-purple-600 transition-colors text-lg"
-              disabled={loadingRoomDetails}
+              disabled={loadingRoomDetails || loadingUserBalance || totalPrice <= 0}
             >
               Reservasi
             </button>
@@ -270,19 +288,32 @@ const DetailRuangan = () => {
       {/* Modal Konfirmasi Reservasi */}
       {showConfirmation && currentRoomDetails && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
-          <div className="bg-ungu10 rounded-[30px] p-8 w-full max-w-md text-black shadow-lg text-center">
-            <h2 className="text-2xl font-bold mb-6">Confirmation</h2>
+          <div className="bg-white rounded-[30px] p-8 w-full max-w-md text-black shadow-lg text-center">
+            <h2 className="text-2xl font-bold mb-6 text-purple-600">Confirmation</h2>
             <div className="text-left text-sm mb-4 space-y-2">
+              {/* Menampilkan nama hotel dari API */}
               <p><strong>Hotel</strong><br />{displayHotelName}</p>
               <p><strong>Room</strong><br />{currentRoomDetails.roomName} ({currentRoomDetails.roomTypeName})</p>
-              <p><strong>Name</strong><br />Budi</p> {/* Nama Customer masih hardcoded */}
-              <p><strong>Check-in</strong><br />{new Date(checkIn).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-              <p><strong>Check-out</strong><br />{new Date(checkOut).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <p><strong>Name</strong><br />{customerNameToDisplay}</p>
+              <p><strong>Check-in</strong><br />{checkIn ? new Date(checkIn).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p>
+              <p><strong>Check-out</strong><br />{checkOut ? new Date(checkOut).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p>
               <p><strong>Total Price</strong><br />{formatCurrency(totalPrice)}</p>
+              <p><strong>Your Balance After Purchase</strong><br />
+                {userBalance?.currentAmount !== undefined ? formatCurrency(userBalance.currentAmount - totalPrice) : 'N/A'}
+              </p>
             </div>
             <div className="flex justify-around mt-6">
               <button
                 onClick={() => {
+                  if (userBalance?.currentAmount === undefined) {
+                      alert("Informasi saldo belum termuat. Mohon tunggu dan coba lagi.");
+                      return;
+                  }
+                  if (totalPrice > userBalance.currentAmount) {
+                      alert("Transaksi tidak dapat dilanjutkan. Saldo Anda tidak mencukupi.");
+                      setShowConfirmation(false);
+                      return;
+                  }
                   setShowConfirmation(false);
                   setShowSuccess(true);
                 }}
@@ -304,23 +335,24 @@ const DetailRuangan = () => {
       {/* Modal Sukses Reservasi */}
       {showSuccess && currentRoomDetails && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
-          <div className="bg-ungu10 rounded-[30px] p-6 w-full max-w-md text-black shadow-lg text-center">
-            <h2 className="text-xl font-bold mb-1">TravelEase</h2>
+          <div className="bg-white rounded-[30px] p-6 w-full max-w-md text-black shadow-lg text-center">
+            <h2 className="text-xl font-bold mb-1 text-purple-600">TravelEase</h2>
             <p className="text-sm mb-4">Tanggal Pemesanan: {new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}</p>
             <div className="text-5xl text-center mb-4 text-green-500">✔</div>
             <div className="text-left text-sm space-y-2">
               <p><strong>Order Code:</strong><br />{orderCode}</p>
+              {/* Menampilkan nama hotel dari API */}
               <p><strong>Hotel:</strong><br />{displayHotelName}</p>
               <p><strong>Room:</strong><br />{currentRoomDetails.roomName} ({currentRoomDetails.roomTypeName})</p>
-              <p><strong>Name:</strong><br />Budi</p> {/* Nama Customer masih hardcoded */}
-              <p><strong>Check-in:</strong><br />{new Date(checkIn).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-              <p><strong>Check-out:</strong><br />{new Date(checkOut).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <p><strong>Name:</strong><br />{customerNameToDisplay}</p>
+              <p><strong>Check-in:</strong><br />{checkIn ? new Date(checkIn).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p>
+              <p><strong>Check-out:</strong><br />{checkOut ? new Date(checkOut).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p>
               <p><strong>Total Price:</strong><br />{formatCurrency(totalPrice)}</p>
             </div>
             <div className="flex flex-col gap-3 mt-6">
               <button
                 onClick={generatePDF}
-                className="bg-ungu4 text-white font-semibold py-2 px-4 rounded-full hover:bg-purple-700 transition-colors"
+                className="bg-purple-600 text-white font-semibold py-2 px-4 rounded-full hover:bg-purple-700 transition-colors"
               >
                 Print PDF
               </button>

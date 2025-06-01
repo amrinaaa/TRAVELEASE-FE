@@ -1,17 +1,19 @@
 import axios from "axios";
-import Cookies from "js-cookie"; // Impor Cookies untuk mengambil token
+import Cookies from "js-cookie";
 import {
   getHotelRoomsRequest,
   getHotelRoomsSuccess,
   getHotelRoomsFailure,
-  getRoomDetailRequest,  // Impor action creator baru
-  getRoomDetailSuccess, // Impor action creator baru
-  getRoomDetailFailure, // Impor action creator baru
-} from "../reducers/userHotelReducer"; // Pastikan path ini benar
+  getRoomDetailRequest,
+  getRoomDetailSuccess,
+  getRoomDetailFailure,
+  getUserBalanceRequest,
+  getUserBalanceSuccess,
+  getUserBalanceFailure, 
+} from "../reducers/userHotelReducer"; 
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
 
-// Action untuk mengambil daftar ruangan dari sebuah hotel (sudah ada sebelumnya)
 export const getHotelRoomsById = (hotelId) => async (dispatch) => {
   if (!hotelId) {
     dispatch(getHotelRoomsFailure("Hotel ID is required."));
@@ -43,44 +45,71 @@ export const getHotelRoomsById = (hotelId) => async (dispatch) => {
   }
 };
 
-// Action baru untuk mengambil detail satu ruangan berdasarkan ID ruangan
 export const getRoomDetailById = (roomId) => async (dispatch) => {
   if (!roomId) {
     dispatch(getRoomDetailFailure("Room ID is required."));
     return;
   }
 
-  const token = Cookies.get("token"); // Mengambil token dari cookies
+  const token = Cookies.get("token");
   if (!token) {
-    // Jika tidak ada token, dispatch error dan hentikan proses
     dispatch(getRoomDetailFailure("Authentication token not found. Please login."));
     return;
   }
 
   try {
-    dispatch(getRoomDetailRequest()); // Dispatch action request
+    dispatch(getRoomDetailRequest());
 
-    // Melakukan request GET ke API dengan menyertakan token di header Authorization
     const { data } = await axios.get(`${api_url}/user/detail-room/${roomId}`, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // Menyertakan token
+        'Authorization': `Bearer ${token}`
       }
     });
 
-    // Memastikan struktur data respons sesuai (data adalah objek)
     if (data?.message === "success" && typeof data.data === 'object' && data.data !== null) {
-      dispatch(getRoomDetailSuccess(data.data)); // Dispatch action success dengan payload data ruangan
+      dispatch(getRoomDetailSuccess(data.data));
     } else {
-      // Menangani kasus jika data.data adalah null meskipun message "success"
       if (data?.message === "success" && data.data === null) {
-         dispatch(getRoomDetailSuccess(null)); // Atau bisa dianggap error jika data seharusnya selalu ada
+         dispatch(getRoomDetailSuccess(null));
       } else {
         throw new Error(data?.message || "Invalid data format from API or room detail not found");
       }
     }
   } catch (error) {
     console.error(`[ERROR] Fetching detail for room ID ${roomId}:`, error);
-    dispatch(getRoomDetailFailure(error.response?.data?.message || error.message)); // Dispatch action failure
+    dispatch(getRoomDetailFailure(error.response?.data?.message || error.message));
+  }
+};
+
+export const getUserBalance = () => async (dispatch) => {
+  const token = Cookies.get("token");
+  if (!token) {
+    dispatch(getUserBalanceFailure("Authentication token not found. Please login."));
+    return;
+  }
+
+  try {
+    dispatch(getUserBalanceRequest());
+
+    const { data } = await axios.get(`${api_url}/user/saldo`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      }
+    });
+
+    if (data?.message === "success" && typeof data.data === 'object' && data.data !== null) {
+      dispatch(getUserBalanceSuccess(data.data)); 
+    } else {
+      if (data?.message === "success" && data.data === null) {
+        dispatch(getUserBalanceSuccess(null)); 
+      } else {
+        throw new Error(data?.message || "Invalid data format from API or user balance not found");
+      }
+    }
+  } catch (error) {
+    console.error(`[ERROR] Fetching user balance:`, error);
+    dispatch(getUserBalanceFailure(error.response?.data?.message || error.message)); 
   }
 };
