@@ -4,7 +4,8 @@ import { authReducer } from "./authReducer";
 import adminReducer from "./adminReducer";
 import adminHotelReducer from "./adminHotelReducer";
 import adminPesawatReducer from "./adminPesawatReducer";
-import mitraReducer from "../reducers/mitraReducer";
+import mitraReducer from "./mitraReducer";
+import guestReducer from "./guestReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   adminHotel: adminHotelReducer,
   adminPesawat: adminPesawatReducer,
   mitra: mitraReducer,
+  guest: guestReducer,
 });
 
 export default rootReducer;
