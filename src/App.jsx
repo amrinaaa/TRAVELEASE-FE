@@ -130,9 +130,9 @@ const App = () => {
         <Route path="/jadwal-penerbangan" element={<JadwalPenerbangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/list-pengguna-pesawat/:flightId" element={<CustomerPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-hotel" element={<TambahHotel isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-hotel/:userId" element={<EditHotel isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-hotel/:hotelId" element={<EditHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-ruangan/:hotelId" element={<ManajemenRuangan isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/tambah-ruangan/:userId" element={<TambahRuangan isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/tambah-ruangan/:hotelId" element={<TambahRuangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-ruangan/:roomId" element={<EditRuangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/list-pengguna-hotel/:hotelId" element={<CustomerHotel isSidebarOpen={isSidebarOpen} />} />
       </Routes>
