@@ -80,7 +80,9 @@ const DashboardMitraPesawat = ({ isSidebarOpen }) => {
 
   return (
     <div className={`bg-ungu10 pt-16 pb-4 h-full min-h-full transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
-      <h1 className='p-6 text-left text-2xl font-semibold text-gray-800'>Welcome <span className='text-ungu4'>{availableAirplaneData.partnerName}</span>, Mitra Plane!</h1>
+      <h1 className='p-6 text-left text-2xl font-semibold text-gray-800'>
+        Welcome <span className='text-ungu4'>{availableAirplaneData?.partnerName || 'Mitra'}</span>, Mitra Plane!
+      </h1>
       
       {/* Stats Cards */}
       <div className="px-6 mb-6">

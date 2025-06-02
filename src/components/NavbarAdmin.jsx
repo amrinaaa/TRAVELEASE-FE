@@ -6,7 +6,7 @@ import { Button } from "@heroui/react";
 import { jwtDecode } from 'jwt-decode';
 import Cookies from 'js-cookie';
 
-const NavSidebar = ({ toggleSidebar, isSidebarOpen }) => {
+const NavbarAdmin = ({ toggleSidebar, isSidebarOpen }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   
   const location = useLocation();
@@ -82,4 +82,4 @@ const NavSidebar = ({ toggleSidebar, isSidebarOpen }) => {
   );
 };
 
-export default NavSidebar
+export default NavbarAdmin

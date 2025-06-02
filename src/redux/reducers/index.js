@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import { authReducer } from "./authReducer";
 import adminReducer from "./adminReducer";
+import adminDashboardReducer from "./adminDashboardReducer";
 import adminHotelReducer from "./adminHotelReducer";
 import adminPesawatReducer from "./adminPesawatReducer";
 import mitraReducer from "../reducers/mitraReducer";
@@ -16,6 +17,7 @@ import userPlaneReducer from "./userPlaneReducer";
 const rootReducer = combineReducers({
   auth: authReducer,
   admin: adminReducer,
+  adminDashboard: adminDashboardReducer,
   adminHotel: adminHotelReducer,
   adminPesawat: adminPesawatReducer,
   mitra: mitraReducer,

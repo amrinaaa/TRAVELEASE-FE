@@ -110,7 +110,7 @@ const TableMitraHotel = ({ searchQuery, dataType }) => {
         <table className="min-w-full bg-white border roun border-gray-300">
           <thead>
             <tr className="bg-purple-200  text-gray-700 uppercase text-sm leading-normal">
-              {["id", "name", "email", "Sign-up date", "saldo", "status"].map((col) => (
+              {["name", "email", "Sign-up date", "saldo"].map((col) => (
                 <th key={col} className="py-2 px-1 border cursor-pointer" onClick={() => handleSort(col)}>
                   {col.charAt(0).toUpperCase() + col.slice(1)}
                   <i className="ml-1 ri-arrow-up-down-line"></i>
@@ -123,7 +123,6 @@ const TableMitraHotel = ({ searchQuery, dataType }) => {
             {filteredData.length > 0 ? (
               filteredData.map((mitra) => (
                 <tr key={mitra.id} className="border-b hover:bg-gray-100">
-                  <td className="py-2 px-3 border text-center">{mitra.id}</td>
                   <td
                     className={`py-2 px-3 border ${editableRow === mitra.id ? "text-blue-500 cursor-pointer underline" : ""}`}
                     onClick={() => handleEditNavigation(mitra)}
@@ -140,7 +139,6 @@ const TableMitraHotel = ({ searchQuery, dataType }) => {
                    >
                      Rp.{(mitra.currentAmount || 0).toLocaleString()}
                    </td>
-                  <td className="py-2 px-3 border">Active</td>
                   <td className="flex py-2 px-3 text-center justify-center">
                     <button
                         onClick={() => handleEditClick(mitra.id)}
@@ -149,6 +147,18 @@ const TableMitraHotel = ({ searchQuery, dataType }) => {
                         }`}
                     >
                       <i className="ri-edit-2-line text-2xl"></i>
+                    </button>
+                    <button
+                      className="ml-1 text-blue1 hover:text-blue-400"
+                      onClick={() => navigate(`/mitra-hotel-admin/${mitra.id}`)}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                        <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                          <path d="m11 17l2 2a1 1 0 1 0 3-3"/>
+                          <path d="m14 14l2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/>
+                          <path d="m21 3l1 11h-2M3 3L2 14l6.5 6.5a1 1 0 1 0 3-3M3 4h8"/>
+                        </g>
+                      </svg>
                     </button>
                     <button
                         className="text-red-500 mx-1 hover:text-red-700 transition-colors"
