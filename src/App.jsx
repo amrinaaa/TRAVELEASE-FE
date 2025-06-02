@@ -139,7 +139,7 @@ const App = () => {
         <Route path="/edit-hotel/:hotelId" element={<EditHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-ruangan/:hotelId" element={<ManajemenRuangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-ruangan/:hotelId" element={<TambahRuangan isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-ruangan/:roomId" element={<EditRuangan isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-ruangan/:hotelId/:roomId" element={<EditRuangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/list-pengguna-hotel/:hotelId" element={<CustomerHotel isSidebarOpen={isSidebarOpen} />} />
       </Routes>
 
