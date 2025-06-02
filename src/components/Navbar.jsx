@@ -276,6 +276,7 @@ import { formatRupiah } from "../utils/formatRupiah";
 
 const Navbar = () => {
     const [active, setActive] = useState(false);
+    const [scroll, setScroll] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const [showTopupModal, setShowTopupModal] = useState(false);
 
@@ -340,7 +341,10 @@ const Navbar = () => {
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 5) {
-                setActive(false); 
+                setScroll(true);
+                setActive(false);
+            } else {
+                setScroll(false);
             }
         };
         window.addEventListener("scroll", handleScroll);
@@ -398,8 +402,8 @@ const Navbar = () => {
     return (
         <div className={`navbar fixed w-full transition-all z-50 bg-ungu4`}>
             <div className="container mx-auto px-4 text-white">
-                <div className="navbar-box flex items-center justify-between h-16 md:h-20">
-                    <div className="flex items-center space-x-3">
+                <div className="navbar-box flex items-center justify-between">
+                    <div className="flex items-center space-x-3 h-16">
                         <Link to="/">
                             <img 
                                 src="/src/assets/img/Logo-w.png" 
@@ -408,26 +412,26 @@ const Navbar = () => {
                             />
                         </Link>
                     </div>
-                    <ul className={`flex lg:gap-10 md:static md:bg-transparent md:flex-row md:shadow-none md:w-auto md:h-full 
-                    md:items-center md:translate-y-0 md:p-0 md:m-0 md:transition-none gap-6 fixed ${menuActive} top-0 right-0 h-screen
-                    flex-col px-8 py-6 pt-24 shadow-lg shadow-slate-500 bg-ungu4 font-medium text-base md:text-sm lg:text-base transition-all md:pt-0 md:h-auto`}>
-                        <li className='flex items-center md:justify-center gap-3'>
-                            <i className="ri-home-line md:hidden block text-xl"></i>
-                            <Link to="/" className={`${isActiveLink('/')}`} onClick={() => setActive(false)}>
+                    <ul className={`flex lg:gap-12 md:static md:bg-transparent md:flex-row md:shadow-none md:w-auto md:h-full 
+                    md:translate-y-0 md:p-0 md:m-0 md:transition-none gap-6 fixed ${menuActive} top-[172px] -translate-y-1/2 
+                    flex-col px-8 py-6 rounded-bl-lg shadow-lg shadow-slate-300 bg-ungu4 font-bold transition-all`}>
+                        <li className='flex items-center justify-center gap-3'>
+                            <i className="ri-home-line md:hidden block"></i>
+                            <Link to="/" className={`font-medium ${isActiveLink('/')}`}>
                                 <span>Home</span>
                             </Link>
                         </li>
-                        <li className='flex items-center md:justify-center gap-3'>
-                            <i className="ri-hotel-line md:hidden block text-xl"></i>
-                            <Link to="/hotel" className={`${isActiveLink('/hotel')}`} onClick={() => setActive(false)}>Hotels</Link>
+                        <li className='flex items-center justify-center gap-3'>
+                            <i className="ri-hotel-line md:hidden block"></i>
+                            <Link to="/hotel" className={`font-medium ${isActiveLink('/hotel')}`}>Hotels</Link>
                         </li>
-                        <li className='flex items-center md:justify-center gap-3'>
-                            <i className="ri-flight-takeoff-line md:hidden block text-xl"></i>
-                            <Link to="/pesawat" className={`${isActiveLink('/pesawat')}`} onClick={() => setActive(false)}>Flights</Link>
+                        <li className='flex items-center justify-center gap-3'>
+                            <i className="ri-flight-takeoff-line md:hidden block"></i>
+                            <Link to="/pesawat" className={`font-medium ${isActiveLink('/pesawat')}`}>Flights</Link>
                         </li>
                         
                         {token && userDisplayInfo ? ( 
-                        <li className="relative group md:ml-6">
+                        <li className="relative group">
                             <button
                                 onClick={() => setShowDropdown(!showDropdown)}
                                 className='flex items-center gap-2 text-white focus:outline-none'
@@ -436,7 +440,7 @@ const Navbar = () => {
                                     // Jika userDisplayInfo.profilePicture ada (bukan null/undefined/""), gunakan itu. Jika tidak, gunakan defaultProfilePic.
                                     src={userDisplayInfo.profilePicture || defaultProfilePic}
                                     alt="User"
-                                    className="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-white object-cover shadow-md"
+                                    className="w-8 h-8 ml-3 md:ml-0 rounded-full border-2 border-white object-cover shadow-md"
                                     onError={handleImageError} // Menggunakan handler baru
                                 />
                                 <span className="hidden lg:block">{userDisplayInfo.name || "User"}</span>
@@ -444,7 +448,7 @@ const Navbar = () => {
                             </button>
 
                             {showDropdown && (
-                                <div className='z-20 absolute bg-white rounded-lg shadow-xl w-52 md:w-60 top-full right-0 mt-2 animate-fadeIn'>
+                                <div className='z-20 absolute bg-white rounded-lg shadow-xl w-52 md:w-50 top-full right-0 mt-2 animate-fadeIn'>
                                     <div className="p-3 border-b border-gray-200">
                                         <p className="text-sm font-semibold text-gray-800 truncate">{userDisplayInfo.name || "User"}</p>
                                         {userDisplayInfo.email && <p className="text-xs text-gray-500 truncate">{userDisplayInfo.email}</p>}
