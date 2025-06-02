@@ -459,10 +459,11 @@ const EditHotel = ({ isSidebarOpen }) => {
     if (hotelId) {
       dispatch(fetchHotelById(hotelId));
     }
+    // Fetch locations only if the list is empty or not yet populated.
     if (!locationList || locationList.length === 0) {
       dispatch(fetchLocations());
     }
-  }, [dispatch, hotelId, locationList]);
+  }, [dispatch, hotelId]); // Removed locationList from dependency to avoid re-fetching if it's already populated.
 
   useEffect(() => {
     if (hotelDetail && hotelDetail.id === hotelId) {
@@ -484,40 +485,10 @@ const EditHotel = ({ isSidebarOpen }) => {
           }
         } else if (loadingLocations) {
           cityDisplayNameForDropdown = `Loading locations to find '${hotelOriginalCityName}'...`;
-        } else {
+        } else { // locationList is empty and not loading
           cityDisplayNameForDropdown = `Cannot match '${hotelOriginalCityName}', location list empty.`;
           console.warn(`EDIT HOTEL - Cannot match city, locationList is empty and not loading.`);
         }
-
-        // Handle existing images - support multiple formats
-        let existingImages = [];
-        if (currentHotel.images && Array.isArray(currentHotel.images)) {
-          // Multiple images array format
-          existingImages = currentHotel.images.map(img => ({
-            id: img.id || Date.now() + Math.random(),
-            url: img.imageUrl || img.url,
-            name: img.name || 'Existing Image'
-          }));
-        } else if (currentHotel.imageUrl || currentHotel.image) {
-          // Single image format
-          existingImages = [{
-            id: Date.now(),
-            url: currentHotel.imageUrl || currentHotel.image,
-            name: 'Existing Image'
-          }];
-        }
-
-        setHotelDetails({
-          id: currentHotel.id,
-          name: currentHotel.name || '',
-          description: currentHotel.description || '',
-          locationId: derivedLocationId, // Gunakan ID lokasi yang berhasil dicocokkan/ditemukan
-          address: currentHotel.address || '',
-          contact: currentHotel.contact || '',
-          currentImages: existingImages
-        });
-        setSelectedCityName(cityDisplayNameForDropdown); // Ini untuk teks yang tampil di opsi default dropdown
-
       } else {
         cityDisplayNameForDropdown = 'No location assigned to hotel';
         console.warn("EDIT HOTEL - No city name (hotelDetail.location.city) found in fetched hotel data.");
@@ -530,7 +501,7 @@ const EditHotel = ({ isSidebarOpen }) => {
           url: img.imageUrl || img.url,
           name: img.name || `Existing Image ${index + 1}`
         }));
-      } else if (hotelDetail.imageUrl || hotelDetail.image) {
+      } else if (hotelDetail.imageUrl || hotelDetail.image) { // Fallback for single image string
         existingImages = [{
           id: `existing-${hotelDetail.id}-0-${Date.now()}`,
           url: hotelDetail.imageUrl || hotelDetail.image,
@@ -549,13 +520,28 @@ const EditHotel = ({ isSidebarOpen }) => {
       });
       setSelectedCityName(cityDisplayNameForDropdown);
 
-    } else if (!loadingHotelDetail && hotelId && !hotelDetail) {
-        console.error("Hotel details not found for ID:", hotelId, "after attempting fetch.");
+    } else if (!loadingHotelDetail && hotelId && !hotelDetail && !errorHotelDetail) {
+        // This case handles when loading is finished, we have an ID, but no hotelDetail, and no explicit error yet.
+        // This might happen if fetchHotelById returns success but data is null or not matching hotelId.
+        console.error("Hotel details not found for ID:", hotelId, "after attempting fetch, or data mismatch.");
         setSelectedCityName('Hotel data not found');
         setHotelDetails(prev => ({
             ...prev,
             id: hotelId,
-            name: 'Error: Hotel not found',
+            name: 'Error: Hotel not found or data mismatch',
+            description: '',
+            locationId: '',
+            address: '',
+            contact: '',
+            currentImages: []
+        }));
+    } else if (errorHotelDetail) { // Explicitly handle error state from fetchHotelById
+        console.error("Error fetching hotel details for ID:", hotelId, errorHotelDetail);
+        setSelectedCityName('Error loading hotel data');
+        setHotelDetails(prev => ({
+            ...prev,
+            id: hotelId,
+            name: 'Error: Could not load hotel data',
             description: '',
             locationId: '',
             address: '',
@@ -563,7 +549,7 @@ const EditHotel = ({ isSidebarOpen }) => {
             currentImages: []
         }));
     }
-  }, [hotelId, hotelDetail, locationList, loadingLocations, loadingHotelDetail]);
+  }, [hotelId, hotelDetail, locationList, loadingLocations, loadingHotelDetail, errorHotelDetail]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -587,18 +573,18 @@ const EditHotel = ({ isSidebarOpen }) => {
 
       if (totalExistingAndStagedNewImages + selectedFiles.length > MAX_IMAGES) {
         alert(`You can only have a maximum of ${MAX_IMAGES} images. You currently have ${totalExistingAndStagedNewImages} and tried to add ${selectedFiles.length}.`);
-        e.target.value = null;
+        e.target.value = null; // Clear the file input
         return;
       }
 
-      const oversizedFiles = selectedFiles.filter(file => file.size > 5 * 1024 * 1024);
+      const oversizedFiles = selectedFiles.filter(file => file.size > 5 * 1024 * 1024); // 5MB
       if (oversizedFiles.length > 0) {
         alert(`Some files are larger than 5MB: ${oversizedFiles.map(f => f.name).join(', ')}`);
-        e.target.value = null;
+        e.target.value = null; // Clear the file input
         return;
       }
       setNewImageFiles(prev => [...prev, ...selectedFiles]);
-      e.target.value = null;
+      e.target.value = null; // Important to allow selecting the same file again if removed
     }
   };
 
@@ -614,7 +600,7 @@ const EditHotel = ({ isSidebarOpen }) => {
   };
 
   const handleRemoveNewImage = (indexToRemove) => {
-     if ((hotelDetails.currentImages.length + newImageFiles.length - 1) < 1 && newImageFiles.length <= 1) {
+      if ((hotelDetails.currentImages.length + newImageFiles.length - 1) < 1 && newImageFiles.length <= 1) {
         alert("You must have at least one image (either existing or new).");
         return;
     }
@@ -630,59 +616,14 @@ const EditHotel = ({ isSidebarOpen }) => {
   };
 
   const handleReset = () => {
-    if (hotelDetail && hotelDetail.id === hotelId) {
-        const hotelOriginalCityName = hotelDetail.location?.city;
-        let derivedLocationId = '';
-        let cityDisplayNameForDropdown = 'Select a city';
-
-        if (hotelOriginalCityName && locationList && locationList.length > 0) {
-            const matchedLocation = locationList.find(
-                (loc) => loc.city.toLowerCase() === hotelOriginalCityName.toLowerCase()
-            );
-            if (matchedLocation) {
-                derivedLocationId = matchedLocation.id;
-                cityDisplayNameForDropdown = matchedLocation.city;
-            } else {
-                cityDisplayNameForDropdown = `City '${hotelOriginalCityName}' not in locations`;
-            }
-        } else if (hotelOriginalCityName) {
-             cityDisplayNameForDropdown = loadingLocations ? `Loading locations...` : `Cannot match '${hotelOriginalCityName}', location list empty.`;
-        } else {
-            cityDisplayNameForDropdown = 'No location assigned to hotel';
-        }
-
-        let existingImages = [];
-        if (hotelDetail.hotelImages && Array.isArray(hotelDetail.hotelImages) && hotelDetail.hotelImages.length > 0) {
-            existingImages = hotelDetail.hotelImages.map((img, index) => ({
-              id: img.id || `existing-${hotelDetail.id}-${index}-${Date.now()}`,
-              url: img.imageUrl || img.url,
-              name: img.name || `Existing Image ${index + 1}`
-            }));
-        } else if (hotelDetail.imageUrl || hotelDetail.image) {
-            existingImages = [{
-              id: `existing-${hotelDetail.id}-0-${Date.now()}`,
-              url: hotelDetail.imageUrl || hotelDetail.image,
-              name: 'Existing Image'
-            }];
-        }
-
-        setHotelDetails({
-            id: hotelDetail.id,
-            name: hotelDetail.name || '',
-            description: hotelDetail.description || '',
-            locationId: derivedLocationId,
-            address: hotelDetail.address || '',
-            contact: hotelDetail.contact || '',
-            currentImages: existingImages
-        });
-        setSelectedCityName(cityDisplayNameForDropdown);
-    } else {
-        setHotelDetails({
-            id: hotelId, name: '', description: '', locationId: '', address: '', contact: '', currentImages: []
-        });
-        setSelectedCityName('Select a city');
+    // Re-populate based on the initially fetched hotelDetail (which should be in Redux store)
+    // This effectively re-runs the population logic from the second useEffect
+    if (hotelId) {
+        dispatch(fetchHotelById(hotelId)); // Re-fetch to ensure freshest data for reset
     }
-    setNewImageFiles([]);
+    // locationList is assumed to be stable or re-fetched by its own effect if needed
+    // setSelectedCityName will be reset by the useEffect when hotelDetail updates
+    setNewImageFiles([]); // Clear any staged new images
   };
 
   const handleSubmit = (e) => {
@@ -704,20 +645,17 @@ const EditHotel = ({ isSidebarOpen }) => {
     formData.append('contact', hotelDetails.contact);
     formData.append('locationId', hotelDetails.locationId);
 
+    // Send IDs of current images that should be kept (those not starting with 'existing-' are actual DB IDs)
     const backendImageIdsToKeep = hotelDetails.currentImages
-                                    .map(img => img.id)
-                                    .filter(id => !id.toString().startsWith('existing-'));
-    if (backendImageIdsToKeep.length > 0) {
-        formData.append('keepImageIds', JSON.stringify(backendImageIdsToKeep));
-    } else if (hotelDetails.currentImages.length > 0 && backendImageIdsToKeep.length === 0){
-        formData.append('keepImageIds', JSON.stringify([]));
-    }
-    if (hotelDetails.currentImages.length === 0) {
-        formData.append('keepImageIds', JSON.stringify([]));
-    }
+                                .map(img => img.id)
+                                .filter(id => id && !id.toString().startsWith('existing-')); // Filter out temp IDs
+
+    // The API needs 'keepImageIds' as an array of strings, even if empty
+    formData.append('keepImageIds', JSON.stringify(backendImageIdsToKeep));
+
 
     newImageFiles.forEach((file) => {
-      formData.append('files', file);
+      formData.append('files', file); // API expects 'files' for new uploads
     });
     dispatch(updateHotel(formData));
   };
@@ -738,18 +676,16 @@ const EditHotel = ({ isSidebarOpen }) => {
     if (updatedHotelData && !loadingUpdateHotel && !errorUpdateHotel) {
       if (updatedHotelData.id === hotelId) {
         openSuccessPopup("Hotel updated successfully!");
-        // Optional: dispatch an action to clear updatedHotelData from Redux store
-        // to prevent the popup from re-appearing if the user navigates back to this page
-        // without a full refresh or if the component re-mounts with old state.
-        // dispatch(clearUpdatedHotelDataStatus()); 
+        // Consider dispatching an action to clear updatedHotelData from Redux store
+        // e.g., dispatch(clearUpdateHotelStatus());
       }
     }
-  }, [updatedHotelData, loadingUpdateHotel, errorUpdateHotel, hotelId]); // Removed navigate from here
+  }, [updatedHotelData, loadingUpdateHotel, errorUpdateHotel, hotelId]);
 
 
   const totalImages = hotelDetails.currentImages.length + newImageFiles.length;
 
-  if (loadingHotelDetail && !hotelDetail) {
+  if (loadingHotelDetail && !hotelDetail) { // Show main loading only if hotelDetail is not yet set
       return (
         <div className={`flex transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
             <div className="bg-ungu10 pt-20 h-full min-h-screen w-full flex justify-center items-center">
@@ -758,9 +694,6 @@ const EditHotel = ({ isSidebarOpen }) => {
         </div>
       );
   }
-
-  const totalImages = hotelDetails.currentImages.length + newImageFiles.length;
-
 
   return (
     <div className="flex transition-all duration-300">
@@ -845,7 +778,7 @@ const EditHotel = ({ isSidebarOpen }) => {
                   required disabled={loadingLocations || loadingHotelDetail || (!locationList && !loadingLocations) || (locationList && locationList.length === 0 && !loadingLocations) }
                 >
                   <option value="">
-                    {loadingLocations ? "Loading cities..." : (!locationList || locationList.length === 0 ? "No locations available" : (selectedCityName || "Select a city"))}
+                    {loadingLocations ? "Loading cities..." : (!locationList || locationList.length === 0 ? "No locations available" : (selectedCityName && selectedCityName !== "Select a city" ? selectedCityName : "Select a city"))}
                   </option>
                   {locationList && locationList.length > 0 && locationList.map((location) => (
                     <option key={location.id} value={location.id}>
@@ -855,12 +788,13 @@ const EditHotel = ({ isSidebarOpen }) => {
                 </select>
                  {hotelDetails.locationId && selectedCityName && !selectedCityName.startsWith("Loading") && !selectedCityName.startsWith("City ") && !selectedCityName.startsWith("Cannot match") && !selectedCityName.startsWith("No location assigned") && selectedCityName !== "Select a city" && (
                     <p className="text-xs text-gray-500 mt-1">Selected: {selectedCityName}</p>
-                 )}
-                 {(!hotelDetails.locationId || selectedCityName.startsWith("City ") || selectedCityName.startsWith("Cannot match") || selectedCityName.startsWith("No location assigned") || (selectedCityName === "Select a city" && !hotelDetails.locationId) ) && !loadingLocations && !loadingHotelDetail && (
+                )}
+                {/* Show warning/prompt if no valid locationId is set OR if selectedCityName indicates an issue */}
+                {(!hotelDetails.locationId || selectedCityName.startsWith("City ") || selectedCityName.startsWith("Cannot match") || selectedCityName.startsWith("No location assigned") || (selectedCityName === "Select a city" && !hotelDetails.locationId) ) && !loadingLocations && !loadingHotelDetail && (
                     <p className="text-xs text-yellow-600 mt-1">
                         {selectedCityName === "Select a city" && !hotelDetails.locationId ? "Please select a city." : selectedCityName}
                     </p>
-                 )}
+                )}
               </div>
 
               {/* Address */}
@@ -892,29 +826,26 @@ const EditHotel = ({ isSidebarOpen }) => {
               </div>
 
               {/* Multiple Images Management */}
-              {/* Multiple Images Management */}
               <div className="text-left w-64 md:w-96">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  <span className="text-red-700 mr-1">*</span>Hotel Images
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="newHotelImages" className="block text-sm font-semibold text-gray-700 mb-2">
                   <span className="text-red-700 mr-1">*</span>Hotel Images
                 </label>
 
                 <div className="mb-2">
-                  <div className="flex justify-between items-center mb-1">
-                     <p className="text-sm text-gray-600">Add New Images ({newImageFiles.length}):</p>
-                    {newImageFiles.length > 0 && (
-                      <button type="button" onClick={handleClearNewImages} className="text-xs text-red-600 hover:text-red-800 underline" disabled={loadingHotelDetail}> Clear New </button>
-                    )}
-                  </div>
-                  <input
-                    id="newHotelImages" type="file"
-                    multiple accept="image/*"
-                    onChange={handleNewImagesChange}
-                    className="w-full bg-gray-100 p-2 rounded border"
-                    disabled={loadingHotelDetail || totalImages >= MAX_IMAGES}
-                  />
-                   <p className="text-xs text-gray-500 mt-1">Max {MAX_IMAGES} total images, 5MB each. ({totalImages}/{MAX_IMAGES} selected)</p>
+                    <div className="flex justify-between items-center mb-1">
+                      <p className="text-sm text-gray-600">Add New Images ({newImageFiles.length}):</p>
+                      {newImageFiles.length > 0 && (
+                        <button type="button" onClick={handleClearNewImages} className="text-xs text-red-600 hover:text-red-800 underline" disabled={loadingHotelDetail}> Clear New </button>
+                      )}
+                    </div>
+                    <input
+                      id="newHotelImages" type="file"
+                      multiple accept="image/*"
+                      onChange={handleNewImagesChange}
+                      className="w-full bg-gray-100 p-2 rounded border"
+                      disabled={loadingHotelDetail || totalImages >= MAX_IMAGES}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Max {MAX_IMAGES} total images, 5MB each. ({totalImages}/{MAX_IMAGES} selected)</p>
                 </div>
 
                 {newImageFiles.length > 0 && (
@@ -923,7 +854,7 @@ const EditHotel = ({ isSidebarOpen }) => {
                       {newImageFiles.map((file, index) => (
                         <div key={`new-${index}`} className="relative group border rounded">
                           <img src={URL.createObjectURL(file)} alt={`New ${index + 1}`} className="w-full h-24 object-cover rounded-t"/>
-                           <p className="text-xs text-gray-500 p-1 truncate" title={file.name}>{file.name}</p>
+                            <p className="text-xs text-gray-500 p-1 truncate" title={file.name}>{file.name}</p>
                           <button
                             type="button"
                             onClick={() => handleRemoveNewImage(index)}
@@ -936,34 +867,37 @@ const EditHotel = ({ isSidebarOpen }) => {
                     </div>
                   </div>
                 )}
-                {totalImages >= MAX_IMAGES && (
-                  <p className="text-xs text-orange-600 mt-1">Maximum number of images reached.</p>
+                 {totalImages >= MAX_IMAGES && !loadingHotelDetail && (
+                    <p className="text-xs text-orange-600 mt-1">Maximum number of images reached.</p>
                 )}
                 {totalImages === 0 && !loadingHotelDetail && (
-                     <p className="text-xs text-red-600 mt-1">Please add at least one image for the hotel.</p>
+                        <p className="text-xs text-red-600 mt-1">Please add at least one image for the hotel.</p>
                 )}
               </div>
 
-                              {hotelDetails.currentImages.length > 0 && (
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-600 mb-1">Current Images ({hotelDetails.currentImages.length}):</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {hotelDetails.currentImages.map((image) => (
-                        <div key={image.id} className="relative group border rounded">
-                          <img src={image.url} alt={image.name || 'Existing image'} className="w-full h-24 object-cover rounded-t"/>
-                          <p className="text-xs text-gray-500 p-1 truncate" title={image.name}>{image.name || 'Existing'}</p>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveExistingImage(image.id)}
-                            className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-70 group-hover:opacity-100 transition-opacity"
-                            title="Remove existing image"
-                            disabled={loadingHotelDetail}
-                          > × </button>
-                        </div>
-                      ))}
+                {hotelDetails.currentImages.length > 0 && (
+                  <div className="text-left w-64 md:w-96"> {/* Ensure this div wraps current images section */}
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-600 mb-1">Current Images ({hotelDetails.currentImages.length}):</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {hotelDetails.currentImages.map((image) => (
+                          <div key={image.id} className="relative group border rounded">
+                            <img src={image.url} alt={image.name || 'Existing image'} className="w-full h-24 object-cover rounded-t"/>
+                            <p className="text-xs text-gray-500 p-1 truncate" title={image.name}>{image.name || 'Existing'}</p>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveExistingImage(image.id)}
+                              className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-70 group-hover:opacity-100 transition-opacity"
+                              title="Remove existing image"
+                              disabled={loadingHotelDetail}
+                            > × </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
+
 
               <div className="flex flex-row justify-center gap-6 text-white font-bold mt-12 mb-10">
                 <Button type="button" text="Reset" bgColor="bg-yellow1" onClick={handleReset} disabled={loadingUpdateHotel || loadingHotelDetail}/>
@@ -979,7 +913,10 @@ const EditHotel = ({ isSidebarOpen }) => {
             <div className="bg-white p-6 rounded-lg shadow-xl text-center transform transition-all sm:max-w-xs sm:w-full">
               <div className="mb-4">
                 {/* Ensure Remix Icon is available or replace with another icon solution e.g. FontAwesome */}
-                <i className="ri-checkbox-circle-line text-5xl text-green-500"></i>
+                {/* <i className="ri-checkbox-circle-line text-5xl text-green-500"></i> Using a simple checkmark for now */}
+                <svg className="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">
                 Success!
@@ -988,8 +925,8 @@ const EditHotel = ({ isSidebarOpen }) => {
                 {successMessage}
               </p>
               <div className="flex justify-center">
-                <button 
-                  onClick={closeSuccessPopup} 
+                <button
+                  onClick={closeSuccessPopup}
                   className="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 >
                   OK
