@@ -497,15 +497,15 @@ const Navbar = () => {
                             )}
                         </li>
                         ) : (
-                        <div className='flex md:flex-row md:gap-3 flex-col gap-4 mt-6 md:mt-0 md:ml-6'>
-                            <li className='flex items-center justify-center'>
-                            <Link to="/login" onClick={() => setActive(false)}>
-                                <HeroButton className='text-white border-white bg-transparent hover:bg-white hover:text-ungu4 w-full md:w-auto px-6 py-2' variant="bordered">Log In</HeroButton>
+                        <div className='flex md:flex-row md:gap-2 flex-col gap-4'>
+                            <li className='flex items-center justify-center gap-3'>
+                            <Link to="/login">
+                                <HeroButton className='text-white border-white bg-ungu4' variant="bordered">Log In</HeroButton>
                             </Link>
                             </li>
-                            <li className='flex items-center justify-center'>
-                            <Link to="/register" onClick={() => setActive(false)}>
-                                <HeroButton className='text-ungu4 bg-white hover:bg-gray-200 w-full md:w-auto px-6 py-2'>Register</HeroButton>
+                            <li className='flex items-center justify-center gap-3'>
+                            <Link to="/register">
+                                <HeroButton className='text-ungu1 bg-ungu10'>Register</HeroButton>
                             </Link>
                             </li>
                         </div>
