@@ -71,7 +71,7 @@ const Pesawat = () => {
     <div>
       <section
         className="relative bg-cover bg-center pt-24 min-h-[90vh] flex flex-col justify-center"
-        style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }} // Pastikan path gambar ini benar
+        style={{ backgroundImage: `url('src/assets/img/Pesawat.png')` }} // Pastikan path gambar ini benar
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>

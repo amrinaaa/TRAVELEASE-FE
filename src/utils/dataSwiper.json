@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "image": "/src/assets/img/Home1.png",
+    "heading": "TravelEase",
+    "subheading": "Booking Hotel & Pesawat",
+    "description": "Pesan tiket pesawat dan kamar hotel dengan mudah, cepat, dan praktis!"
+  },
+  {
+    "id": 2,
+    "image": "/src/assets/img/Home2.png",
+    "heading": "Jelajahi Destinasi Impian",
+    "subheading": "Pilih Tujuan Favoritmu",
+    "description": "Temukan berbagai destinasi menarik dan pesan perjalananmu hanya dalam beberapa klik."
+  },
+  {
+    "id": 3,
+    "image": "/src/assets/img/Home3.png",
+    "heading": "Nikmati Perjalanan Nyaman",
+    "subheading": "Fasilitas Lengkap & Aman",
+    "description": "Dapatkan pengalaman terbaik dengan hotel dan maskapai pilihan berkualitas."
+  },
+  {
+    "id": 4,
+    "image": "/src/assets/img/Home4.png",
+    "heading": "Solusi Perjalanan Praktis",
+    "subheading": "Hotel & Pesawat dalam Satu Aplikasi",
+    "description": "Temukan dan pesan hotel serta tiket pesawat dengan mudah hanya dalam genggaman."
+  }
+]
