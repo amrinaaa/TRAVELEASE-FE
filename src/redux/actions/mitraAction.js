@@ -446,6 +446,12 @@ import {
   createSeatsRequest,
   createSeatsSuccess,
   createSeatsFailure,
+  createFlightRequest, // Import new action type
+  createFlightSuccess, // Import new action type
+  createFlightFailure, // Import new action type
+  getAirportsRequest, // Import new action type
+  getAirportsSuccess, // Import new action type
+  getAirportsFailure, // Import new action type
   getHotelsRequest,
   getHotelsSuccess,
   getHotelsFailure,
@@ -690,6 +696,55 @@ export const fetchSeatCategoriesRequest = (planeId) => async (dispatch) => {
     }
   } catch (error) {
     dispatch(getSeatCategoriesFailure(error.response?.data?.message || error.message || "Failed to fetch seat categories"));
+  }
+};
+
+// --- Flight Actions ---
+export const createFlight = (flightData) => async (dispatch) => {
+  dispatch(createFlightRequest());
+  try {
+    const token = Cookies.get("token");
+    console.log("[DEBUG] Auth Token for Create Flight:", token);
+    console.log("[DEBUG] Sending Flight Data:", flightData);
+
+    const response = await axios.post(`${api_url}/flight`, flightData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("[DEBUG] API Response (Create Flight):", response.data);
+    dispatch(createFlightSuccess(response.data.data));
+  } catch (error) {
+    console.error("[ERROR] Creating flight:", error.response || error);
+    dispatch(createFlightFailure(error.response?.data?.message || error.message));
+  }
+};
+
+// --- Airport Actions ---
+export const fetchAirportsRequest = () => async (dispatch) => {
+  dispatch(getAirportsRequest());
+  try {
+    const token = Cookies.get("token");
+    console.log("[DEBUG] Auth Token for Get Airports:", token);
+
+    const response = await axios.get(`${api_url}/airports`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("[DEBUG] API Response (Get Airports):", response.data);
+    if (response.data?.data && Array.isArray(response.data.data)) {
+      dispatch(getAirportsSuccess(response.data.data));
+    } else {
+      throw new Error("Invalid data format from API");
+    }
+  } catch (error) {
+    console.error("[ERROR] Fetching airports:", error.response || error);
+    dispatch(getAirportsFailure(error.response?.data?.message || error.message));
   }
 };
 
