@@ -359,20 +359,16 @@ const TableRoom = ({ searchQuery }) => {
                   <td className="py-2 px-3 border text-center truncate max-w-xs" title={Array.isArray(room.facilities) ? room.facilities.join(", ") : ""}>
                     {Array.isArray(room.facilities) ? (room.facilities.slice(0, 3).join(", ") + (room.facilities.length > 3 ? ", ..." : "")) : "N/A"}
                   </td>
-                  <td className="py-2 px-3 border text-center">
-                    <select
-                      value={room.status || ''}
-                      onChange={(e) => handleStatusChange(room.id, hotelId, e.target.value)}
-                      disabled={isRoomUpdating(room.id)}
+                  <td className="py-2 border text-center">
+                    <span
                       className={`px-2 py-1 text-xs font-semibold rounded-full ${
                         room.status === "Available"
-                          ? "bg-green-500 text-white"
+                          ? "bg-green-500 text-white px-5"
                           : "bg-red-600 text-white"
                       }`}
                     >
-                      <option value="Available">Available</option>
-                      <option value="Not Available">Not Available</option>
-                    </select>
+                      {room.status || 'N/A'}
+                    </span>
                     {isRoomUpdating(room.id) && <p className="text-xs text-blue-500 mt-1">Updating...</p>}
                     {getRoomUpdateError(room.id) && <p className="text-xs text-red-500 mt-1">Error: {getRoomUpdateError(room.id)}</p>}
                   </td>
