@@ -485,6 +485,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../components/Button";
 import dataRuangan from "../utils/dataRuangan.json";
 
@@ -640,11 +642,15 @@ const EditRuangan = ({ isSidebarOpen }) => {
     }
   };
 
+  // Type management functions
   const handleTypeInputChange = (e) => {
     const { name, value } = e.target;
     setNewType({ ...newType, [name]: value });
   };
 
+  const handleTypeSelect = (e) => {
+    const selectedType = e.target.value;
+    setRoomDetails(prev => ({ ...prev, type: selectedType }));
   const handleTypeSelect = (e) => {
     const selectedType = e.target.value;
     setRoomDetails(prev => ({ ...prev, type: selectedType }));
@@ -692,6 +698,7 @@ const EditRuangan = ({ isSidebarOpen }) => {
     if (isEditingType) {
       setTypes(types.map(type => 
         type.name === roomDetails.type ? newType : type
+        type.name === roomDetails.type ? newType : type
       ));
     } else {
       setTypes([...types, newType]);
@@ -703,6 +710,8 @@ const EditRuangan = ({ isSidebarOpen }) => {
   };
 
   const handleEditType = () => {
+    if (roomDetails.type) {
+      const typeToEdit = types.find(t => t.name === roomDetails.type);
     if (roomDetails.type) {
       const typeToEdit = types.find(t => t.name === roomDetails.type);
       if (typeToEdit) {
@@ -832,6 +841,7 @@ const EditRuangan = ({ isSidebarOpen }) => {
   return (
     <div className="flex transition-all duration-300">
       <div className={`bg-ungu10 pt-20 h-full min-h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
+      <div className={`bg-ungu10 pt-20 h-full min-h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
             <p className="text-xl">Hotel Management</p>
@@ -851,15 +861,19 @@ const EditRuangan = ({ isSidebarOpen }) => {
               <p className="text-xs md:text-sm">Room List</p>
             </Link>
             <span className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1">
+            <span className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Edit Room</p>
+            </span>
             </span>
           </div>
         </div>
         
         <form onSubmit={handleSubmit} className="bg-white m-4 py-4 rounded-lg shadow-md">
+        <form onSubmit={handleSubmit} className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="flex-col px-4 items-center">
             <div className="text-left md:text-xl mb-6 md:mb-12">
+              <p>Edit Room: {roomDetails.name || 'Loading...'}</p>
               <p>Edit Room: {roomDetails.name || 'Loading...'}</p>
             </div>
 
@@ -1004,6 +1018,7 @@ const EditRuangan = ({ isSidebarOpen }) => {
             </div>
           </div>
         </form>
+        </form>
       </div>
       
       {/* Type Modal */}
@@ -1105,4 +1120,5 @@ const EditRuangan = ({ isSidebarOpen }) => {
   );
 };
 
+export default EditRuangan;
 export default EditRuangan;

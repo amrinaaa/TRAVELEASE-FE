@@ -427,6 +427,7 @@ const TambahHotel = ({ isSidebarOpen }) => {
     }
   };
 
+  // Handle multiple image selection
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFiles = Array.from(e.target.files);

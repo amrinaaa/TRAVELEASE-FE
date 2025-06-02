@@ -488,6 +488,36 @@ const EditHotel = ({ isSidebarOpen }) => {
           cityDisplayNameForDropdown = `Cannot match '${hotelOriginalCityName}', location list empty.`;
           console.warn(`EDIT HOTEL - Cannot match city, locationList is empty and not loading.`);
         }
+
+        // Handle existing images - support multiple formats
+        let existingImages = [];
+        if (currentHotel.images && Array.isArray(currentHotel.images)) {
+          // Multiple images array format
+          existingImages = currentHotel.images.map(img => ({
+            id: img.id || Date.now() + Math.random(),
+            url: img.imageUrl || img.url,
+            name: img.name || 'Existing Image'
+          }));
+        } else if (currentHotel.imageUrl || currentHotel.image) {
+          // Single image format
+          existingImages = [{
+            id: Date.now(),
+            url: currentHotel.imageUrl || currentHotel.image,
+            name: 'Existing Image'
+          }];
+        }
+
+        setHotelDetails({
+          id: currentHotel.id,
+          name: currentHotel.name || '',
+          description: currentHotel.description || '',
+          locationId: derivedLocationId, // Gunakan ID lokasi yang berhasil dicocokkan/ditemukan
+          address: currentHotel.address || '',
+          contact: currentHotel.contact || '',
+          currentImages: existingImages
+        });
+        setSelectedCityName(cityDisplayNameForDropdown); // Ini untuk teks yang tampil di opsi default dropdown
+
       } else {
         cityDisplayNameForDropdown = 'No location assigned to hotel';
         console.warn("EDIT HOTEL - No city name (hotelDetail.location.city) found in fetched hotel data.");
@@ -729,6 +759,9 @@ const EditHotel = ({ isSidebarOpen }) => {
       );
   }
 
+  const totalImages = hotelDetails.currentImages.length + newImageFiles.length;
+
+
   return (
     <div className="flex transition-all duration-300">
       <div className={`bg-ungu10 pt-20 h-full min-h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
@@ -859,7 +892,10 @@ const EditHotel = ({ isSidebarOpen }) => {
               </div>
 
               {/* Multiple Images Management */}
+              {/* Multiple Images Management */}
               <div className="text-left w-64 md:w-96">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <span className="text-red-700 mr-1">*</span>Hotel Images
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   <span className="text-red-700 mr-1">*</span>Hotel Images
                 </label>

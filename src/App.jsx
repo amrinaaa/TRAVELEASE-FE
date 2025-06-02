@@ -63,7 +63,7 @@ const App = () => {
   };
 
   // Show Navbar and Footer only on specific pages
-  const showNavbar = ['/', '/hotel', '/pesawat', '/pengaturan-akun', '/riwayat-pemesanan'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel') || location.pathname.startsWith('/detail-ruangan');
+  const showNavbar = ['/', '/login', '/register', '/forgot-password', '/hotel', '/pesawat', '/pengaturan-akun', '/riwayat-pemesanan'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel') || location.pathname.startsWith('/detail-ruangan');
   const showFooter = showNavbar;
 
   // Determine role based on the route path
@@ -100,7 +100,7 @@ const App = () => {
         <Route path="/detail-hotel/:id" element={<DetailHotel />} />
         <Route path="/detail-ruangan/:id" element={<DetailRuangan />} />
         <Route path="/pesawat" element={<Pesawat />} />
-        <Route path="/detail-pesawat/:id" element={<DetailPesawat />} />
+        <Route path="/detail-pesawat/:flightId" element={<DetailPesawat />} />
         <Route path="/pengaturan-akun" element={<PengaturanAkun />} />
         <Route path="/riwayat-pemesanan" element={<RiwayatPemesanan />} />
 
