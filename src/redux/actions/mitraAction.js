@@ -473,70 +473,13 @@
 //       throw new Error(response.data?.message || "Format data tidak valid dari API untuk rooms");
 //     }
 //   } catch (error) {
-//     const errorMessage = error.response?.data?.message || error.message || "Gagal mengambil data kamar";
-//     dispatch(getRoomsFailure(String(errorMessage)));
+//     console.error("mitraAction - fetchRooms: Error di catch block. Error:", error); // LOG 11 (dari instruksi sebelumnya)
+//     console.error("mitraAction - fetchRooms: Error response data (jika ada):", error.response?.data); // LOG 12 (dari instruksi sebelumnya)
+//     console.error("mitraAction - fetchRooms: Error message:", error.message); // LOG 13 (dari instruksi sebelumnya)
+//     dispatch(getRoomsFailure(error.response?.data?.message || error.message || "Gagal mengambil data kamar"));
 //   }
 // };
 
-// export const updateRoomStatus = (roomId, hotelIdForContext, newStatus) => async (dispatch) => {
-//   dispatch(updateRoomStatusRequest({ roomId }));
-//   try {
-//     const token = Cookies.get("token");
-//     const targetUrl = `${api_url}/rooms/${roomId}`;
-//     const response = await axios.patch(targetUrl,
-//       { status: newStatus },
-//       {
-//         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-//       }
-//     );
-//     if (response.data?.message === "Success" && response.data?.data) {
-//       dispatch(updateRoomStatusSuccess(response.data.data));
-//     } else if (response.data?.message === "Success") {
-//         dispatch(updateRoomStatusSuccess({ id: roomId, status: newStatus, hotelId: hotelIdForContext }));
-//     }
-//     else {
-//       throw new Error(response.data?.message || "Gagal memperbarui status kamar dari API");
-//     }
-//   } catch (error) {
-//     const errorMessage = error.response?.data?.message || error.message || "Gagal memperbarui status kamar";
-//     dispatch(updateRoomStatusFailure({ roomId, error: String(errorMessage) }));
-//   }
-// };
-
-// // Action baru untuk delete room
-// export const deleteRoom = (roomId) => async (dispatch) => {
-//   console.log("deleteRoom ACTION FIRED with roomId:", roomId);
-//   dispatch(deleteRoomRequest());
-//   try {
-//     const token = Cookies.get("token");
-//     const payload = { roomId: roomId }; // Sesuai dengan body request yang diminta
-//     console.log("[ACTION] Attempting DELETE /room. roomId:", roomId, "Token present:", !!token);
-//     console.log("[ACTION] Request Body for DELETE /room:", payload);
-
-//     const response = await axios.delete(`${api_url}/room`, { // Endpoint adalah /room
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         "Content-Type": "application/json",
-//       },
-//       data: payload, // Mengirim roomId dalam body
-//     });
-
-//     console.log("[ACTION] Delete room response:", response.data);
-//     if (response.data?.message.toLowerCase() === "success") {
-//       dispatch(deleteRoomSuccess(roomId)); // Mengirim roomId agar reducer tahu kamar mana yang dihapus
-//     } else {
-//       throw new Error(response.data?.message || "Gagal menghapus kamar dari API");
-//     }
-//   } catch (error) {
-//     console.error("Delete Room API Error:", error.response || error);
-//     if (error.response) {
-//       console.error("Delete Room API Error Response Data:", error.response.data);
-//       console.error("Delete Room API Error Response Status:", error.response.status);
-//     }
-//     const errorMessage = error.response?.data?.message || error.message || "Gagal menghapus kamar";
-//     dispatch(deleteRoomFailure(String(errorMessage)));
-//   }
-// };
 
 // // Action baru untuk membersihkan error delete room (opsional)
 // export const clearDeleteRoomError = () => (dispatch) => {
@@ -622,6 +565,13 @@ import {
   deleteRoomSuccess, // <-- Tambahkan ini
   deleteRoomFailure, // <-- Tambahkan ini
   clearDeleteRoomErrorRequest, // <-- Tambahkan ini (opsional, untuk membersihkan error)
+  getRoomTypesRequest,
+  getRoomTypesSuccess,
+  getRoomTypesFailure,
+  createRoomRequest,
+  createRoomSuccess,
+  createRoomFailure,
+  resetCreateRoomStatus,
 } from "../reducers/mitraReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -1003,7 +953,7 @@ export const fetchLocations = () => async (dispatch) => {
   }
 };
 
-// --- Room Actions ---
+// --- Room Actions (Existing: Fetch, Update Status) ---
 export const fetchRooms = (hotelId) => async (dispatch) => {
   dispatch(getRoomsRequest());
   try {
@@ -1047,6 +997,67 @@ export const updateRoomStatus = (roomId, hotelIdForContext, newStatus) => async 
     const errorMessage = error.response?.data?.message || error.message || "Gagal memperbarui status kamar";
     dispatch(updateRoomStatusFailure({ roomId, error: String(errorMessage) }));
   }
+};
+
+// --- Room Type Actions (NEW) ---
+export const fetchRoomTypes = (hotelId) => async (dispatch) => {
+  dispatch(getRoomTypesRequest());
+  try {
+    const token = Cookies.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found.");
+    }
+    const response = await axios.get(`${api_url}/roomType/${hotelId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.data?.message === "Success" && Array.isArray(response.data.data)) {
+      dispatch(getRoomTypesSuccess(response.data.data));
+    } else if (response.data?.message === "Success" && response.data?.data === null) {
+      dispatch(getRoomTypesSuccess([]));
+    } else {
+      throw new Error(response.data?.message || "Invalid data format from API for room types");
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || "Failed to fetch room types";
+    dispatch(getRoomTypesFailure(String(errorMessage)));
+  }
+};
+
+// --- Room (Create) Action (NEW) ---
+export const createRoom = (roomData) => async (dispatch) => {
+  dispatch(createRoomRequest());
+  try {
+    const token = Cookies.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found.");
+    }
+    const headers = { Authorization: `Bearer ${token}` };
+    if (!(roomData instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+    }
+
+    const response = await axios.post(`${api_url}/room`, roomData, { headers });
+
+    if (response.data?.message === "Success" && response.data?.data) {
+      dispatch(createRoomSuccess(response.data.data));
+    } else if (response.data?.data) {
+        dispatch(createRoomSuccess(response.data.data));
+    }
+    else {
+      throw new Error(response.data?.message || "Failed to create room or invalid response format from API");
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || "Failed to create room";
+    dispatch(createRoomFailure(String(errorMessage)));
+  }
+};
+
+// Action to reset create room status
+export const resetCreateRoomState = () => (dispatch) => {
+    dispatch(resetCreateRoomStatus());
 };
 
 // Action baru untuk delete room

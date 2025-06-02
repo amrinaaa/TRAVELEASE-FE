@@ -303,7 +303,7 @@
 
 // export default mitraSlice.reducer;
 
-
+// mitraReducer.js
 // mitraReducer.js
 import { createSlice } from "@reduxjs/toolkit";
 
@@ -382,7 +382,17 @@ const initialState = {
   errorUpdateRoomStatus: {},
   loadingDeleteRoom: false,    // <-- Tambahkan state ini
   errorDeleteRoom: null,       // <-- Tambahkan state ini
-};
+
+    // New states for Room Types
+  roomTypeList: [],
+  loadingRoomTypes: false,
+  errorRoomTypes: null,
+
+  // New states for Creating Room
+  loadingCreateRoom: false,
+  errorCreateRoom: null,
+  createdRoomData: null,
+}; //
 
 const mitraSlice = createSlice({
   name: "mitra",
@@ -511,7 +521,7 @@ const mitraSlice = createSlice({
     getLocationsSuccess: (state, action) => { state.loadingLocations = false; state.locationList = action.payload; state.errorLocations = null; },
     getLocationsFailure: (state, action) => { state.loadingLocations = false; state.errorLocations = action.payload; state.locationList = []; },
 
-    // --- Room Reducers ---
+    // --- Room Reducers (Existing: Fetch, Update Status) ---
     getRoomsRequest: (state) => {
       state.loadingRooms = true; state.errorRooms = null; state.roomList = [];
     },
@@ -535,8 +545,6 @@ const mitraSlice = createSlice({
         if (index !== -1) {
           state.roomList[index] = { ...state.roomList[index], ...updatedRoom };
         }
-      } else {
-        console.error("mitraReducer: updateRoomStatusSuccess - updatedRoom atau updatedRoom.id tidak valid:", updatedRoom);
       }
     },
     updateRoomStatusFailure: (state, action) => {
@@ -563,10 +571,55 @@ const mitraSlice = createSlice({
         state.errorDeleteRoom = null;
     },
 
+    // --- Room Type Reducers (NEW) ---
+    getRoomTypesRequest: (state) => {
+      state.loadingRoomTypes = true;
+      state.errorRoomTypes = null;
+      state.roomTypeList = [];
+    }, //
+    getRoomTypesSuccess: (state, action) => {
+      state.loadingRoomTypes = false;
+      state.roomTypeList = action.payload;
+      state.errorRoomTypes = null;
+    }, //
+    getRoomTypesFailure: (state, action) => {
+      state.loadingRoomTypes = false;
+      state.errorRoomTypes = action.payload;
+      state.roomTypeList = [];
+    }, //
+
+    // --- Room (Create) Reducers (NEW) ---
+    createRoomRequest: (state) => {
+      state.loadingCreateRoom = true;
+      state.errorCreateRoom = null;
+      state.createdRoomData = null;
+    }, //
+    createRoomSuccess: (state, action) => {
+      state.loadingCreateRoom = false;
+      state.createdRoomData = action.payload;
+      state.errorCreateRoom = null;
+      // Optionally, add the new room to the roomList if it's being displayed immediately
+      if (state.roomList && Array.isArray(state.roomList)) {
+         state.roomList.push(action.payload);
+      } else {
+         state.roomList = [action.payload]; // Initialize if not an array or doesn't exist
+      }
+    }, //
+    createRoomFailure: (state, action) => {
+      state.loadingCreateRoom = false;
+      state.errorCreateRoom = action.payload;
+      state.createdRoomData = null;
+    }, //
+    resetCreateRoomStatus: (state) => {
+        state.loadingCreateRoom = false;
+        state.errorCreateRoom = null;
+        state.createdRoomData = null;
+    }, //
+
     resetMitraState: (state) => {
       return initialState;
     },
-  },
+  }, //
 });
 
 export const {
@@ -604,7 +657,10 @@ export const {
   deleteRoomSuccess, // <-- Ekspor action ini
   deleteRoomFailure, // <-- Ekspor action ini
   clearDeleteRoomErrorRequest, // <-- Ekspor action ini (opsional)
+  // Export new room and room type actions
+  getRoomTypesRequest, getRoomTypesSuccess, getRoomTypesFailure,
+  createRoomRequest, createRoomSuccess, createRoomFailure, resetCreateRoomStatus,
   resetMitraState,
-} = mitraSlice.actions;
+} = mitraSlice.actions; //
 
-export default mitraSlice.reducer;
+export default mitraSlice.reducer; //
