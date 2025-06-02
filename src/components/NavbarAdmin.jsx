@@ -50,23 +50,17 @@ const NavSidebar = ({ toggleSidebar, isSidebarOpen }) => {
         </button>
 
           {showDropdown && (
-            <div className='absolute bg-white rounded-lg shadow-lg w-44 top-full right-0 mt-2 border z-10'>
+            <div className='absolute bg-white rounded-lg shadow-lg w-40 top-full right-3 border z-10'>
               <ul className='text-left px-3 py-2 text-sm text-gray-950'>
                 <li className='py-2 hover:text-blue-600 border-b border-gray-100'>
                   <Link
-                    to="/pengaturan-akun"
+                    to="/pengaturan-akun-admin"
                     className="flex items-center"
                     onClick={() => setShowDropdown(false)}
                   >
                     <i className="ri-user-settings-line text-md mr-2"></i>
                     Account Settings
                   </Link>
-                </li>
-                <li className='py-2 hover:text-blue-600 border-b border-gray-100'>
-                  <button className="flex items-center w-full text-left">
-                    <i className="ri-wallet-3-line text-md mr-2"></i>
-                    Rp. 90,000
-                  </button>
                 </li>
                 <li className='py-2 hover:text-red-600'>
                   <button
