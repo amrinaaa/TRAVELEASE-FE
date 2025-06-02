@@ -657,7 +657,7 @@ const TableRoom = ({ searchQuery }) => {
         <table className="min-w-full bg-white border roun border-gray-300">
           <thead>
             <tr className="bg-purple-200  text-gray-700 uppercase text-sm leading-normal">
-              {["ID", "Name", "Type", "Price", "Facilities", "Status"].map((col) => (
+              {["Name", "Type", "Price", "Facilities", "Status"].map((col) => (
                 <th
                   key={col}
                   className="py-2 px-3 border cursor-pointer"
@@ -674,7 +674,6 @@ const TableRoom = ({ searchQuery }) => {
             {filteredData && filteredData.length > 0 ? ( // Tambahkan pengecekan filteredData
               filteredData.map((room) => (
                 <tr key={room.id} className="border-b hover:bg-gray-100">
-                  <td className="py-2 px-3 border text-center">{room.id}</td>
                   <td className="py-2 px-3 border text-center">{room.name}</td>
                   <td className="py-2 px-3 border text-center">{room.roomType}</td>
                   <td className="py-2 px-3 border text-center">

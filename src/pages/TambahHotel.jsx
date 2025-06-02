@@ -17,7 +17,10 @@ const TambahHotel = ({ isSidebarOpen }) => {
     address: '',
     contact: '',
   });
-  const [imageFile, setImageFile] = useState(null);
+  
+  // Ubah dari single file menjadi array untuk multiple files
+  const [imageFiles, setImageFiles] = useState([]);
+  const MAX_IMAGES = 10;
 
   const {
     loadingCreateHotel,
@@ -55,12 +58,37 @@ const TambahHotel = ({ isSidebarOpen }) => {
     }
   };
 
+  // Handle multiple image selection
   const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
-    } else {
-      setImageFile(null);
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFiles = Array.from(e.target.files);
+      
+      // Check if total images exceed maximum
+      if (imageFiles.length + selectedFiles.length > MAX_IMAGES) {
+        alert(`You can only upload a maximum of ${MAX_IMAGES} images. Currently you have ${imageFiles.length} images.`);
+        return;
+      }
+      
+      // Validate file sizes (5MB each)
+      const oversizedFiles = selectedFiles.filter(file => file.size > 5 * 1024 * 1024);
+      if (oversizedFiles.length > 0) {
+        alert(`Some files are larger than 5MB: ${oversizedFiles.map(f => f.name).join(', ')}`);
+        return;
+      }
+      
+      // Add new files to existing array
+      setImageFiles(prev => [...prev, ...selectedFiles]);
     }
+  };
+
+  // Remove specific image
+  const handleRemoveImage = (indexToRemove) => {
+    setImageFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  // Clear all images
+  const handleClearAllImages = () => {
+    setImageFiles([]);
   };
 
   const handleReset = () => {
@@ -72,14 +100,14 @@ const TambahHotel = ({ isSidebarOpen }) => {
       address: '',
       contact: '',
     });
-    setImageFile(null);
+    setImageFiles([]); // Reset to empty array
     // dispatch(clearCreateHotelStatus()); // Jika diimplementasikan
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!hotelDetails.name || !hotelDetails.description || !hotelDetails.locationId || !hotelDetails.address || !hotelDetails.contact || !imageFile) {
-      alert("Please fill in all required fields, select a city, and select an image.");
+    if (!hotelDetails.name || !hotelDetails.description || !hotelDetails.locationId || !hotelDetails.address || !hotelDetails.contact || imageFiles.length === 0) {
+      alert("Please fill in all required fields, select a city, and select at least one image.");
       return;
     }
 
@@ -89,9 +117,11 @@ const TambahHotel = ({ isSidebarOpen }) => {
     formData.append('locationId', hotelDetails.locationId); // Kirim locationId
     formData.append('address', hotelDetails.address);
     formData.append('contact', hotelDetails.contact);
-    if (imageFile) {
-      formData.append('files', imageFile);
-    }
+    
+    // Append all image files
+    imageFiles.forEach((file) => {
+      formData.append('files', file);
+    });
 
     dispatch(createHotel(formData));
   };
@@ -244,28 +274,79 @@ const TambahHotel = ({ isSidebarOpen }) => {
                 <p className="text-xs text-gray-500 mt-1">Exp: 0853xxxxxxxx</p>
               </div>
 
-
-              {/* Image */}
+              {/* Multiple Images */}
               <div className="text-left w-64 md:w-96">
-                <label htmlFor="imageFile" className="block text-sm font-semibold text-gray-700">
-                  <span className="text-red-700 mr-1">*</span>Hotel Image
+                <label htmlFor="imageFiles" className="block text-sm font-semibold text-gray-700">
+                  <span className="text-red-700 mr-1">*</span>Hotel Images
                 </label>
+                
+                {/* File Input */}
                 <input
-                  id="imageFile"
+                  id="imageFiles"
                   type="file"
-                  name="imageFile"
+                  name="imageFiles"
                   onChange={handleImageChange}
                   className="w-full bg-gray-100 p-2 rounded border"
-                  required
+                  multiple
+                  accept="image/*"
+                  disabled={imageFiles.length >= MAX_IMAGES}
                 />
-                 {imageFile && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-600">Image Preview:</p>
-                    <img src={URL.createObjectURL(imageFile)} alt="Preview" className="max-w-xs max-h-32 mt-1 border rounded"/>
-                    <p className="text-xs text-gray-500 mt-1">{imageFile.name}</p>
+                
+                {/* Info Text */}
+                <div className="flex justify-between items-center mt-1">
+                  <p className="text-xs text-gray-500">
+                    Maximum {MAX_IMAGES} images, 5MB each ({imageFiles.length}/{MAX_IMAGES} selected)
+                  </p>
+                  {imageFiles.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleClearAllImages}
+                      className="text-xs text-red-600 hover:text-red-800 underline"
+                    >
+                      Clear All
+                    </button>
+                  )}
+                </div>
+
+                {/* Image Preview Grid */}
+                {imageFiles.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-600 mb-2">Image Previews:</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {imageFiles.map((file, index) => (
+                        <div key={index} className="relative group">
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            alt={`Preview ${index + 1}`} 
+                            className="w-full h-24 object-cover border rounded"
+                          />
+                          
+                          {/* Remove button overlay */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(index)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Remove image"
+                          >
+                            ×
+                          </button>
+                          
+                          {/* File name */}
+                          <p className="text-xs text-gray-500 mt-1 truncate" title={file.name}>
+                            {file.name}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
-                <p className="text-xs text-gray-500 mt-1">Maximum file size is 5 MB</p>
+
+                {/* Warning when max reached */}
+                {imageFiles.length >= MAX_IMAGES && (
+                  <p className="text-xs text-orange-600 mt-1">
+                    Maximum number of images reached. Remove some images to add more.
+                  </p>
+                )}
               </div>
 
               {/* Buttons */}
@@ -281,6 +362,4 @@ const TambahHotel = ({ isSidebarOpen }) => {
   );
 };
 
-export default TambahHotel;
-
-
+export default TambahHotel

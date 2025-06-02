@@ -304,10 +304,13 @@ const EditHotel = ({ isSidebarOpen }) => {
     locationId: '', // Akan diisi dengan ID lokasi yang cocok
     address: '',
     contact: '',
-    currentImageUrl: ''
+    currentImages: [] // Array untuk menyimpan gambar yang sudah ada
   });
-  const [imageFile, setImageFile] = useState(null);
+  
+  // Ubah dari single file menjadi array untuk multiple files
+  const [newImageFiles, setNewImageFiles] = useState([]);
   const [selectedCityName, setSelectedCityName] = useState(''); // Untuk tampilan di dropdown
+  const MAX_IMAGES = 10;
 
   useEffect(() => {
     // Selalu fetch lokasi jika belum ada atau kosong, karena penting untuk pencocokan
@@ -359,6 +362,24 @@ const EditHotel = ({ isSidebarOpen }) => {
           console.warn("EDIT HOTEL - No city name (currentHotel.location.city) found in current hotel data.");
         }
 
+        // Handle existing images - support multiple formats
+        let existingImages = [];
+        if (currentHotel.images && Array.isArray(currentHotel.images)) {
+          // Multiple images array format
+          existingImages = currentHotel.images.map(img => ({
+            id: img.id || Date.now() + Math.random(),
+            url: img.imageUrl || img.url,
+            name: img.name || 'Existing Image'
+          }));
+        } else if (currentHotel.imageUrl || currentHotel.image) {
+          // Single image format
+          existingImages = [{
+            id: Date.now(),
+            url: currentHotel.imageUrl || currentHotel.image,
+            name: 'Existing Image'
+          }];
+        }
+
         setHotelDetails({
           id: currentHotel.id,
           name: currentHotel.name || '',
@@ -366,7 +387,7 @@ const EditHotel = ({ isSidebarOpen }) => {
           locationId: derivedLocationId, // Gunakan ID lokasi yang berhasil dicocokkan/ditemukan
           address: currentHotel.address || '',
           contact: currentHotel.contact || '',
-          currentImageUrl: currentHotel.imageUrl || currentHotel.image || (currentHotel.images && currentHotel.images.length > 0 ? currentHotel.images[0].imageUrl : '')
+          currentImages: existingImages
         });
         setSelectedCityName(cityDisplayNameForDropdown); // Ini untuk teks yang tampil di opsi default dropdown
 
@@ -393,13 +414,46 @@ const EditHotel = ({ isSidebarOpen }) => {
     setSelectedCityName(selectedLocationObject ? selectedLocationObject.city : '');
   };
 
-  const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
-      setHotelDetails(prev => ({ ...prev, currentImageUrl: '' }));
-    } else {
-      setImageFile(null);
+  // Handle multiple new image selection
+  const handleNewImagesChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFiles = Array.from(e.target.files);
+      const totalCurrentImages = hotelDetails.currentImages.length + newImageFiles.length;
+      
+      // Check if total images exceed maximum
+      if (totalCurrentImages + selectedFiles.length > MAX_IMAGES) {
+        alert(`You can only have a maximum of ${MAX_IMAGES} images total. Currently you have ${totalCurrentImages} images.`);
+        return;
+      }
+      
+      // Validate file sizes (5MB each)
+      const oversizedFiles = selectedFiles.filter(file => file.size > 5 * 1024 * 1024);
+      if (oversizedFiles.length > 0) {
+        alert(`Some files are larger than 5MB: ${oversizedFiles.map(f => f.name).join(', ')}`);
+        return;
+      }
+      
+      // Add new files to existing array
+      setNewImageFiles(prev => [...prev, ...selectedFiles]);
     }
+  };
+
+  // Remove specific existing image
+  const handleRemoveExistingImage = (imageId) => {
+    setHotelDetails(prev => ({
+      ...prev,
+      currentImages: prev.currentImages.filter(img => img.id !== imageId)
+    }));
+  };
+
+  // Remove specific new image
+  const handleRemoveNewImage = (indexToRemove) => {
+    setNewImageFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  // Clear all new images
+  const handleClearNewImages = () => {
+    setNewImageFiles([]);
   };
 
   const handleReset = () => {
@@ -427,6 +481,22 @@ const EditHotel = ({ isSidebarOpen }) => {
             cityDisplayNameForDropdown = 'No location assigned to hotel';
         }
 
+        // Reset existing images
+        let existingImages = [];
+        if (currentHotel.images && Array.isArray(currentHotel.images)) {
+          existingImages = currentHotel.images.map(img => ({
+            id: img.id || Date.now() + Math.random(),
+            url: img.imageUrl || img.url,
+            name: img.name || 'Existing Image'
+          }));
+        } else if (currentHotel.imageUrl || currentHotel.image) {
+          existingImages = [{
+            id: Date.now(),
+            url: currentHotel.imageUrl || currentHotel.image,
+            name: 'Existing Image'
+          }];
+        }
+
         setHotelDetails({
           id: currentHotel.id,
           name: currentHotel.name || '',
@@ -434,12 +504,12 @@ const EditHotel = ({ isSidebarOpen }) => {
           locationId: derivedLocationId,
           address: currentHotel.address || '',
           contact: currentHotel.contact || '',
-          currentImageUrl: currentHotel.imageUrl || currentHotel.image || (currentHotel.images && currentHotel.images.length > 0 ? currentHotel.images[0].imageUrl : '')
+          currentImages: existingImages
         });
         setSelectedCityName(cityDisplayNameForDropdown);
       }
     }
-    setImageFile(null);
+    setNewImageFiles([]);
   };
 
   const handleSubmit = (e) => {
@@ -447,6 +517,12 @@ const EditHotel = ({ isSidebarOpen }) => {
     if (!hotelDetails.locationId) { // Validasi utama sekarang pada locationId
         alert("Please select a valid city from the list, or ensure the hotel's city can be matched to a location ID.");
         return;
+    }
+
+    // Check if there's at least one image (existing or new)
+    if (hotelDetails.currentImages.length === 0 && newImageFiles.length === 0) {
+      alert("Please keep at least one existing image or add new images.");
+      return;
     }
 
     const formData = new FormData();
@@ -457,9 +533,17 @@ const EditHotel = ({ isSidebarOpen }) => {
     formData.append('contact', hotelDetails.contact);
     formData.append('locationId', hotelDetails.locationId);
 
-    if (imageFile) {
-      formData.append('files', imageFile);
+    // Send existing image IDs that should be kept
+    if (hotelDetails.currentImages.length > 0) {
+      const keepImageIds = hotelDetails.currentImages.map(img => img.id);
+      formData.append('keepImageIds', JSON.stringify(keepImageIds));
     }
+
+    // Append new image files
+    newImageFiles.forEach((file) => {
+      formData.append('files', file);
+    });
+
     dispatch(updateHotel(formData));
   };
 
@@ -475,8 +559,8 @@ const EditHotel = ({ isSidebarOpen }) => {
   if ((!hotelList || hotelList.length === 0) && loadingHotels) {
       return <div className="p-4 text-center">Loading hotel data...</div>;
   }
-  // Tidak perlu loading state khusus untuk locationList di sini karena form bisa ditampilkan sebagian
-  // dan dropdown akan terisi/memperbarui teksnya saat locationList siap.
+
+  const totalImages = hotelDetails.currentImages.length + newImageFiles.length;
 
   return (
     <div className="flex transition-all duration-300">
@@ -584,7 +668,6 @@ const EditHotel = ({ isSidebarOpen }) => {
                  )}
               </div>
 
-
               {/* Address */}
               <div className="text-left w-64 md:w-96">
                 <label htmlFor="address" className="block text-sm font-semibold text-gray-700">
@@ -619,33 +702,125 @@ const EditHotel = ({ isSidebarOpen }) => {
                 <p className="text-xs text-gray-500 mt-1">Exp: 0853xxxxxxxx</p>
               </div>
 
-              {/* Image Upload */}
+              {/* Multiple Images Management */}
               <div className="text-left w-64 md:w-96">
-                <label htmlFor="image" className="block text-sm font-semibold text-gray-700">
-                  Hotel Image (Optional: Upload to change)
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <span className="text-red-700 mr-1">*</span>Hotel Images
                 </label>
-                <input
-                  id="image"
-                  type="file"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="w-full bg-gray-100 p-2 rounded border"
-                />
-                {hotelDetails.currentImageUrl && !imageFile && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-600">Current Image:</p>
-                    <img src={hotelDetails.currentImageUrl} alt="Current hotel" className="max-w-xs max-h-32 mt-1 border rounded"/>
+
+                {/* Current Images Section */}
+                {hotelDetails.currentImages.length > 0 && (
+                  <div className="mb-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-sm text-gray-600">Current Images ({hotelDetails.currentImages.length}):</p>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {hotelDetails.currentImages.map((image) => (
+                        <div key={image.id} className="relative group">
+                          <img 
+                            src={image.url} 
+                            alt={image.name}
+                            className="w-full h-24 object-cover border rounded"
+                          />
+                          
+                          {/* Remove button overlay */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveExistingImage(image.id)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Remove existing image"
+                          >
+                            ×
+                          </button>
+                          
+                          {/* Image name/label */}
+                          <p className="text-xs text-gray-500 mt-1 truncate">
+                            Existing
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
-                {imageFile && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-600">New Image Preview:</p>
-                    <img src={URL.createObjectURL(imageFile)} alt="New preview" className="max-w-xs max-h-32 mt-1 border rounded"/>
-                    <p className="text-xs text-gray-500 mt-1">{imageFile.name}</p>
+
+                {/* Add New Images Section */}
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-sm text-gray-600">Add New Images:</p>
+                    {newImageFiles.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleClearNewImages}
+                        className="text-xs text-red-600 hover:text-red-800 underline"
+                      >
+                        Clear New
+                      </button>
+                    )}
                   </div>
-                )}
-                 <p className="text-xs text-gray-500 mt-1">Maximum file size is 5 MB</p>
+
+                  {/* File Input */}
+                  <input
+                    id="newImages"
+                    type="file"
+                    onChange={handleNewImagesChange}
+                    className="w-full bg-gray-100 p-2 rounded border"
+                    multiple
+                    accept="image/*"
+                    disabled={totalImages >= MAX_IMAGES}
+                  />
+                  
+                  {/* Info Text */}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Maximum {MAX_IMAGES} images total, 5MB each ({totalImages}/{MAX_IMAGES} selected)
+                  </p>
+
+                  {/* New Images Preview */}
+                  {newImageFiles.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-sm text-gray-600 mb-2">New Images Preview ({newImageFiles.length}):</p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {newImageFiles.map((file, index) => (
+                          <div key={index} className="relative group">
+                            <img 
+                              src={URL.createObjectURL(file)} 
+                              alt={`New Preview ${index + 1}`} 
+                              className="w-full h-24 object-cover border rounded"
+                            />
+                            
+                            {/* Remove button overlay */}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveNewImage(index)}
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Remove new image"
+                            >
+                              ×
+                            </button>
+                            
+                            {/* File name */}
+                            <p className="text-xs text-gray-500 mt-1 truncate" title={file.name}>
+                              {file.name}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Warning when max reached */}
+                  {totalImages >= MAX_IMAGES && (
+                    <p className="text-xs text-orange-600 mt-1">
+                      Maximum number of images reached. Remove some images to add more.
+                    </p>
+                  )}
+
+                  {/* Warning when no images */}
+                  {totalImages === 0 && (
+                    <p className="text-xs text-red-600 mt-1">
+                      Please keep at least one existing image or add new images.
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Buttons */}
