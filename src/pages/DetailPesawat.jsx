@@ -494,7 +494,7 @@ import {
 } from '../redux/reducers/userPlaneReducer';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-// Fungsi untuk memformat tanggal dan waktu (mirip seperti di TiketPesawat.jsx)
+// Fungsi untuk memformat tanggal dan waktu
 const formatDateTime = (dateTimeString, type = 'time') => {
   if (!dateTimeString) return 'N/A';
   const date = new Date(dateTimeString);
@@ -504,7 +504,6 @@ const formatDateTime = (dateTimeString, type = 'time') => {
   if (type === 'date') {
     return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
   }
-  // Fallback untuk format lengkap jika tipe tidak dikenali
   return date.toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 };
 
@@ -561,7 +560,7 @@ const DetailPesawat = () => {
   useEffect(() => {
     if (successBooking && bookingResult) {
       setCurrentTransactionId(bookingResult.transaction?.id);
-      setCurrentBookingDetailsForPopup(bookingResult);
+      setCurrentBookingDetailsForPopup(bookingResult); // Simpan detail booking untuk PDF
       setShowBookingConfirmationPopup(true);
       dispatch(resetBookingStatus());
     }
@@ -661,16 +660,161 @@ const DetailPesawat = () => {
   const GENDER_OPTIONS = { MALE: 'Laki-laki', FEMALE: 'Perempuan' };
   const TYPE_OPTIONS = { ADULT: 'Dewasa', CHILD: 'Anak-anak', INFANT: 'Bayi' };
 
+  // Fungsi untuk generate PDF
+  const generatePDF = () => {
+    if (!paymentResult || !flightDetail || !currentBookingDetailsForPopup) {
+      alert("Detail pemesanan tidak lengkap untuk mencetak PDF.");
+      return;
+    }
+
+    const bookingDate = new Date().toLocaleString('id-ID', { 
+      dateStyle: 'long', 
+      timeStyle: 'short' 
+    });
+    
+    const transactionDetails = paymentResult.transaction || currentBookingDetailsForPopup.transaction;
+    const tickets = currentBookingDetailsForPopup.tickets || [];
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>TravelEase - Booking Confirmation</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; color: #333; line-height: 1.6; }
+          .container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #8B5CF6; padding-bottom: 15px; }
+          .company-name { font-size: 26px; font-weight: bold; color: #8B5CF6; margin-bottom: 3px; }
+          .booking-date { font-size: 13px; color: #666; }
+          .success-icon { font-size: 40px; color: #10B981; margin: 15px 0; }
+          .content { margin: 20px 0; }
+          .field { margin-bottom: 12px; }
+          .field-label { font-weight: bold; color: #333; display: block; margin-bottom: 3px; font-size: 14px; }
+          .field-value { color: #555; margin-left: 5px; font-size: 14px; }
+          .passenger-list { margin-left: 0; padding-left: 0; }
+          .passenger-item { margin-bottom: 6px; padding: 8px; border: 1px solid #f0f0f0; border-radius: 4px; background-color: #f9f9f9; }
+          .passenger-item strong { color: #4A5568; }
+          .total-price { font-size: 17px; font-weight: bold; color: #8B5CF6; margin-top: 15px; padding: 12px; background-color: #f3f4f6; border-radius: 6px; text-align: right; }
+          .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #777; border-top: 1px solid #eee; padding-top: 15px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 13px; }
+          th { background-color: #f2f2f2; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="company-name">TravelEase</div>
+            <div class="booking-date">Tanggal Pemesanan: ${bookingDate}</div>
+            <div class="success-icon">✓</div>
+            <div>Pemesanan Berhasil!</div>
+          </div>
+          
+          <div class="content">
+            <div class="field">
+              <div class="field-label">ID Transaksi (Booking ID):</div>
+              <div class="field-value">${transactionDetails?.id || 'N/A'}</div>
+            </div>
+            
+            <table>
+              <tr>
+                <th>Maskapai</th>
+                <th>Kode Penerbangan</th>
+              </tr>
+              <tr>
+                <td>${flightDetail.plane?.airline?.name || 'N/A'}</td>
+                <td>${flightDetail.flightCode || 'N/A'}</td>
+              </tr>
+            </table>
+
+            <table>
+              <tr>
+                <th>Keberangkatan</th>
+                <th>Waktu</th>
+                <th>Tanggal</th>
+              </tr>
+              <tr>
+                <td>${flightDetail.departureAirport?.name || 'N/A'} (${flightDetail.departureAirport?.code || 'N/A'})</td>
+                <td>${formatDateTime(flightDetail.departureTime, 'time')}</td>
+                <td>${formatDateTime(flightDetail.departureTime, 'date')}</td>
+              </tr>
+            </table>
+
+            <table>
+              <tr>
+                <th>Kedatangan</th>
+                <th>Waktu</th>
+                <th>Tanggal</th>
+              </tr>
+              <tr>
+                <td>${flightDetail.arrivalAirport?.name || 'N/A'} (${flightDetail.arrivalAirport?.code || 'N/A'})</td>
+                <td>${formatDateTime(flightDetail.arrivalTime, 'time')}</td>
+                <td>${formatDateTime(flightDetail.arrivalTime, 'date')}</td>
+              </tr>
+            </table>
+            
+            <div class="field">
+              <div class="field-label">Detail Penumpang:</div>
+              <div class="passenger-list">
+                ${tickets.map(ticket => {
+                  const seatDetail = selectedSeatsApi.find(s => s.id === ticket.seatId);
+                  const pData = passengerData[ticket.seatId] || {};
+                  return `
+                    <div class="passenger-item">
+                      <strong>Kursi: ${seatDetail?.name || 'N/A'} (${seatDetail?.categoryName || 'N/A'})</strong><br>
+                      Nama: ${ticket.name || pData.name || 'N/A'}<br>
+                      NIK: ${ticket.nik || pData.nik || 'N/A'}<br>
+                      Gender: ${GENDER_OPTIONS[pData.gender] || 'N/A'}<br>
+                      Tipe: ${TYPE_OPTIONS[pData.type] || 'N/A'}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+            
+            <div class="total-price">
+              Total Harga: Rp. ${(transactionDetails?.price || transactionDetails?.totalPrice || 0).toLocaleString('id-ID')}
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p>Terima kasih telah memilih TravelEase!</p>
+            <p>Harap simpan konfirmasi ini untuk catatan Anda.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank', 'height=600,width=800');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      printWindow.focus(); // Fokus ke window baru untuk beberapa browser
+      // Tunggu konten dimuat, lalu print
+      // Untuk beberapa browser, onload mungkin tidak selalu terpicu dengan benar untuk document.write
+      // Memberikan sedikit delay bisa membantu, atau menggunakan cara yang lebih robust jika ini sering gagal
+      setTimeout(() => {
+        printWindow.print();
+        // Opsi: printWindow.close(); setelah print, tapi beberapa browser mungkin menutup sebelum dialog print muncul
+      }, 500); // Delay 500ms
+    } else {
+      alert("Gagal membuka jendela print. Pastikan pop-up tidak diblokir.");
+    }
+  };
+
+
   const renderBookingConfirmationPopup = () => {
     if (!showBookingConfirmationPopup || !currentBookingDetailsForPopup) return null;
     const { transaction, flight, tickets } = currentBookingDetailsForPopup;
 
     const airlineName = flight?.airlineName || flightDetail?.plane?.airline?.name || 'N/A';
-    const flightCodeToDisplay = flight?.flightCode || flightDetail?.flightCode || 'N/A'; // Renamed to avoid conflict
+    const flightCodeToDisplay = flight?.flightCode || flightDetail?.flightCode || 'N/A';
     const departureAirportName = flight?.departureAirport || flightDetail?.departureAirport?.name || 'N/A';
     const arrivalAirportName = flight?.arrivalAirport || flightDetail?.arrivalAirport?.name || 'N/A';
-    const departureTimeToDisplay = flight?.departureTime || flightDetail?.departureTime; // Renamed
-    const arrivalTimeToDisplay = flight?.arrivalTime || flightDetail?.arrivalTime; // Renamed
+    const departureTimeToDisplay = flight?.departureTime || flightDetail?.departureTime;
+    const arrivalTimeToDisplay = flight?.arrivalTime || flightDetail?.arrivalTime;
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4">
@@ -742,16 +886,25 @@ const DetailPesawat = () => {
           <p className="text-sm mb-1"><strong>Status:</strong> {paymentResult.transaction?.status}</p>
           <p className="text-sm mb-1"><strong>Total Dibayar:</strong> Rp. {paymentResult.transaction?.price?.toLocaleString('id-ID')}</p>
           <p className="text-sm mb-4"><strong>Saldo Tersisa:</strong> Rp. {paymentResult.user?.currentBalance?.toLocaleString('id-ID')}</p>
-          <button 
-            onClick={() => {
-              setShowPaymentSuccessPopup(false);
-              dispatch(resetPaymentStatus());
-              navigate('/');
-            }} 
-            className="bg-ungu4 text-white font-semibold py-2 px-8 rounded-full hover:bg-purple-700 transition-colors"
-          >
-            Selesai
-          </button>
+          
+          <div className="flex flex-col gap-2 mt-6">
+            <button 
+              onClick={generatePDF} // Tombol Print PDF ditambahkan di sini
+              className="bg-blue-500 text-white font-semibold py-2 px-8 rounded-full hover:bg-blue-600 transition-colors"
+            >
+              Cetak Bukti (PDF)
+            </button>
+            <button 
+              onClick={() => {
+                setShowPaymentSuccessPopup(false);
+                dispatch(resetPaymentStatus());
+                navigate('/');
+              }} 
+              className="bg-ungu4 text-white font-semibold py-2 px-8 rounded-full hover:bg-purple-700 transition-colors"
+            >
+              Selesai
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -806,14 +959,12 @@ const DetailPesawat = () => {
         style={{ backgroundImage: `url('/src/assets/img/bgDetail.png')` }}
       >
         <div className="md:ml-12 md:mr-12 lg:ml-32 lg:mr-32 xl:ml-52 xl:mr-52">
-          {/* === Bagian Detail Penerbangan Dimodifikasi di Sini === */}
           <div className="mt-4 ml-4 mr-4 text-left mb-8">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center text-white">Detail Penerbangan</h2>
             {flightDetail && (
               <div
                 className={`w-full bg-ungu10 rounded-3xl shadow-lg md:p-8 p-4 flex flex-col md:flex-row md:grid md:grid-cols-6 items-center justify-between gap-4 md:gap-0`}
               >
-                {/* Airline */}
                 <div className="flex flex-col text-center md:text-left">
                   <span className="md:font-bold font-semibold md:text-xl text-sm text-black">
                     Airline
@@ -825,8 +976,6 @@ const DetailPesawat = () => {
                     {flightDetail.flightCode || 'N/A'}
                   </span>
                 </div>
-
-                {/* Departure */}
                 <div className="flex flex-col text-center">
                   <span className="md:font-bold font-semibold md:text-xl text-sm text-black">
                     Departure
@@ -841,15 +990,11 @@ const DetailPesawat = () => {
                     {formatDateTime(flightDetail.departureTime, 'date')}
                   </span>
                 </div>
-
-                {/* Arrow Separator */}
                 <div className="flex items-center justify-center transform md:rotate-0 rotate-90">
                   <span className="md:text-6xl text-3xl font-bold text-purple-500">
                     &rarr;
                   </span>
                 </div>
-
-                {/* Arrival */}
                 <div className="flex flex-col text-center">
                   <span className="md:font-bold font-semibold md:text-xl text-sm text-black">
                     Arrival
@@ -864,20 +1009,15 @@ const DetailPesawat = () => {
                     {formatDateTime(flightDetail.arrivalTime, 'date')}
                   </span>
                 </div>
-
-                {/* Class */}
                 <div className="flex flex-col text-center">
                   <span className="md:font-bold font-semibold md:text-xl text-sm text-black">
                     Class
                   </span>
                   <span className="md:font-semibold md:text-lg text-xs text-black">
-                    {flightDetail.plane?.seatCategories?.[0]?.name || 'N/A'} 
-                    {/* Menampilkan kategori kursi pertama sebagai contoh, atau bisa di-map jika ada beberapa */}
+                    {flightDetail.plane?.seatCategories?.[0]?.name || 'N/A'}
                   </span>
                   <span className="md:font-semibold md:text-lg text-xs text-black invisible">.</span>
                 </div>
-
-                {/* Price Range */}
                 <div className="flex flex-col text-center">
                   <span className="md:font-bold font-semibold md:text-xl text-sm text-black">
                     Price Range
@@ -892,11 +1032,8 @@ const DetailPesawat = () => {
               </div>
             )}
           </div>
-          {/* === Akhir Bagian Detail Penerbangan yang Dimodifikasi === */}
-
 
           <div className="grid md:grid-cols-3 grid-rows-1 pb-12">
-            {/* Pemilihan Kursi */}
             <div className="w-full col-span-1 md:pl-4 md:ml-4 px-2 mb-12 md:mb-0">
               <h3 className="text-lg font-semibold mb-3 text-center md:text-left text-white bg-black bg-opacity-20 p-2 rounded">Pilih Kursi:</h3>
               {loadingSeats && <div className="text-center p-4 bg-white rounded shadow"><LoadingSpinner size="sm" /><p className="text-sm">Memuat kursi...</p></div>}
