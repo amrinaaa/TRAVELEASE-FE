@@ -228,6 +228,13 @@ const initialState = {
   loadingSeatCategories: false,
   errorSeatCategories: null,
 
+  loadingCreateFlight: false, // New state for creating flight
+  errorCreateFlight: null,   // New state for creating flight error
+  createdFlight: null,       // New state for created flight
+  airportList: [], // New state for airports
+  loadingAirports: false, // New state for loading airports
+  errorAirports: null, // New state for airports error
+
   hotelList: [],
   loadingHotels: false,
   errorHotels: null,
@@ -299,6 +306,44 @@ const mitraSlice = createSlice({
     getSeatCategoriesRequest: (state) => { state.loadingSeatCategories = true; state.errorSeatCategories = null; },
     getSeatCategoriesSuccess: (state, action) => { state.loadingSeatCategories = false; state.seatCategoryList = action.payload; },
     getSeatCategoriesFailure: (state, action) => { state.loadingSeatCategories = false; state.errorSeatCategories = action.payload; state.seatCategoryList = []; },
+    createFlightRequest: (state) => {
+      state.loadingCreateFlight = true;
+      state.errorCreateFlight = null;
+      state.createdFlight = null;
+    },
+    createFlightSuccess: (state, action) => {
+      state.loadingCreateFlight = false;
+      state.createdFlight = action.payload; // Menyimpan data penerbangan yang berhasil dibuat
+      state.errorCreateFlight = null;
+      // Anda bisa memilih untuk tidak menambahkan ke daftar lokal dan mengandalkan fetch ulang
+      // Jika ada flightList, tambahkan: state.flightList.push(action.payload);
+    },
+    createFlightFailure: (state, action) => {
+      state.loadingCreateFlight = false;
+      state.errorCreateFlight = action.payload;
+      state.createdFlight = null;
+    },
+    resetCreateFlightStatus: (state) => { // Untuk mereset status setelah operasi
+        state.loadingCreateFlight = false;
+        state.errorCreateFlight = null;
+        state.createdFlight = null;
+    },
+
+    // --- Airport Reducers ---
+    getAirportsRequest: (state) => {
+      state.loadingAirports = true;
+      state.errorAirports = null;
+    },
+    getAirportsSuccess: (state, action) => {
+      state.loadingAirports = false;
+      state.airportList = action.payload;
+      state.errorAirports = null;
+    },
+    getAirportsFailure: (state, action) => {
+      state.loadingAirports = false;
+      state.errorAirports = action.payload;
+      state.airportList = [];
+    },
 
     // --- Hotel Reducers ---
     getHotelsRequest: (state) => {
@@ -398,6 +443,13 @@ export const {
   createSeatsRequest, createSeatsSuccess, createSeatsFailure,
   resetCreateSeatsStatus,
   getSeatCategoriesRequest, getSeatCategoriesSuccess, getSeatCategoriesFailure,
+  createFlightRequest,
+  createFlightSuccess,
+  createFlightFailure,
+  resetCreateFlightStatus,
+  getAirportsRequest,
+  getAirportsSuccess,
+  getAirportsFailure,
   getHotelsRequest, getHotelsSuccess, getHotelsFailure,
   createHotelRequest, createHotelSuccess, createHotelFailure,
   updateHotelRequest, updateHotelSuccess, updateHotelFailure,

@@ -1,13 +1,22 @@
-import React from 'react'
-import TableSearch from '../components/TableSearch'
-import CardReservasi from '../components/CardReservasi'
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import TableSearchHotel from '../components/TableSearchHotel'; // Corrected import
+import CardReservasi from '../components/CardReservasi';
+import { getGuestHotels } from '../redux/actions/guestHotelActions'; // Adjust path if your store structure is different
 
 const Hotel = () => {
+  const dispatch = useDispatch();
+  const { hotels, loading, error } = useSelector(state => state.guestHotel); // Assuming 'guestHotel' is the slice name in your rootReducer
+
+  useEffect(() => {
+    dispatch(getGuestHotels());
+  }, [dispatch]);
+
   return (
     <div>
       <section
         className="relative bg-cover bg-center pt-24 min-h-[90vh] flex flex-col justify-center"
-        style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }}
+        style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }} // Ensure this path is correct
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
@@ -25,9 +34,9 @@ const Hotel = () => {
           </p>
         </div>
 
-        {/* TableSearch di bawah teks */}
+        {/* TableSearchHotel di bawah teks */}
         <div className="relative z-10 mt-6 mx-4 md:mx-80 text-left pb-12">
-          <TableSearch />
+          <TableSearchHotel />
         </div>
       </section>
 
@@ -37,11 +46,13 @@ const Hotel = () => {
           <p className='text-xl font-semibold'>Hotels</p>
         </div>
         <div className='md:ml-48 md:mr-48'>
-          <CardReservasi />
+          {loading && <div className="text-center">Loading hotels...</div>}
+          {error && <div className="text-center text-red-500">Error: {error}</div>}
+          {!loading && !error && <CardReservasi hotels={hotels} />}
         </div>
       </section>
     </div>
-  )
-}
+  );
+};
 
-export default Hotel
+export default Hotel;
