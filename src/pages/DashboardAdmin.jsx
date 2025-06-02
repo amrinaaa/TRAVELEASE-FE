@@ -1,14 +1,136 @@
 import React from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 const DashboardAdmin = ({ isSidebarOpen }) => {
+  const userStats = {
+    totalUsers: 1289,
+    percentageChange: "+ 5.2%"
+  };
+
+  const revenueStats = {
+    totalRevenue: 29500000,
+    percentageChange: "+ 8.4%"
+  };
+
+  const reportStats = {
+    totalReports: 52,
+    percentageChange: "- 2.1%"
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount).replace('IDR', 'Rp');
+  };
+
+  const revenueChartData = [
+    { month: 'Jan', value: 40 },
+    { month: 'Feb', value: 38 },
+    { month: 'Mar', value: 45 },
+    { month: 'Apr', value: 60 },
+    { month: 'May', value: 85 },
+    { month: 'Jun', value: 90 },
+    { month: 'Jul', value: 78 },
+    { month: 'Aug', value: 66 },
+    { month: 'Sep', value: 80 },
+    { month: 'Oct', value: 95 },
+    { month: 'Nov', value: 100 },
+    { month: 'Dec', value: 110 },
+  ];
+
+  const userChartData = [
+    { month: 'Jan', users: 200 },
+    { month: 'Feb', users: 180 },
+    { month: 'Mar', users: 230 },
+    { month: 'Apr', users: 250 },
+    { month: 'May', users: 290 },
+    { month: 'Jun', users: 310 },
+  ];
+
   return (
-    <div className={`bg-ungu10 pt-14 w-full h-full transition-all duration-300 ${isSidebarOpen ? 'ml-16 md:ml-64' : 'ml-0'}`}>
-        <h1 className='p-6 text-left text-2xl'>Welcome, Admin!</h1>
-        <p className='px-6 text-justify'>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nobis tenetur, iure mollitia perspiciatis vero sint ullam aperiam odio autem. Dolorem labore voluptatem deserunt hic facilis perferendis quis quo, assumenda nihil. Corrupti, dolores architecto itaque impedit quasi sint asperiores. Sint quod at eos voluptatum repellat iusto asperiores ipsa minus odio harum eveniet ullam, recusandae maxime, doloremque rerum quae repudiandae quas possimus. Eius ullam, corporis totam exercitationem voluptatibus facere voluptatum maiores soluta, magnam earum tempora reiciendis ratione voluptas rerum asperiores? Repellendus tempora debitis, sequi sed iure placeat odit cupiditate magnam minus quasi eum amet adipisci nobis illo animi error dolorum reprehenderit odio eos repellat, neque maiores, pariatur illum. Deleniti quibusdam mollitia asperiores laudantium soluta aliquid deserunt quisquam dolores voluptatibus perspiciatis similique est, repellat eligendi neque sint velit adipisci reprehenderit obcaecati voluptates. Pariatur ratione corrupti perspiciatis vero maiores facilis repellat nostrum, ipsum eligendi dolor porro quam dicta iusto! Porro, libero id error numquam pariatur quibusdam dolorum praesentium illo doloremque quis, est delectus natus, veritatis cumque! Molestias rem neque vel assumenda cum expedita porro quasi eligendi itaque, provident fugit officia obcaecati aut similique debitis eos tempore, culpa alias! Nesciunt expedita nam beatae dolorum assumenda possimus hic molestiae reiciendis, sed error culpa deleniti non aut facilis nisi quos, dolores quis fugit quod ipsa sapiente iste amet ratione explicabo. Quos architecto dolore repudiandae excepturi nisi optio autem facere cupiditate culpa natus fuga, corporis obcaecati labore adipisci odit quis quasi quidem eveniet iusto accusamus quam eligendi id qui? Ducimus facere perferendis exercitationem nemo. Et ratione, temporibus iusto repellendus atque, eius voluptatibus eveniet voluptates eaque tenetur expedita pariatur esse eos, veniam assumenda recusandae aspernatur sit magni id! Esse at vel explicabo corporis impedit vero rerum, sunt maiores eos minima modi veniam officia sequi ea! Inventore dolore rem officia qui cum repellendus possimus et vel blanditiis at natus ut voluptatem ullam vero nam modi molestiae excepturi nesciunt, minus veniam tempora quia, odit sed! Itaque ratione impedit doloribus suscipit aut excepturi nam alias eligendi, possimus, hic tempore, porro odio animi esse amet sunt et rerum error ea nobis numquam architecto recusandae mollitia. Quas blanditiis, debitis amet est ipsa ratione, nulla praesentium ex dolorum, cumque reprehenderit incidunt hic voluptate consequatur tenetur! Atque quae, totam accusantium quibusdam expedita repudiandae perspiciatis nostrum quod, esse magnam vitae maiores. Fugiat in hic repellat animi, atque et aliquid. Ut saepe quibusdam amet voluptate deleniti fuga suscipit. Aliquid ea consectetur reiciendis obcaecati atque saepe quaerat repellat, ipsum at natus corporis doloribus quidem maiores! Voluptatem minus consequuntur, atque dolorum mollitia quasi quos praesentium natus quibusdam deserunt quas unde dolores suscipit totam eveniet nisi eius dolore odio? Tempora distinctio nemo, nulla neque asperiores blanditiis eligendi enim veniam. Quidem sequi atque iure accusantium, facere veniam unde dolorem iusto, nulla maxime sit impedit magnam cum eligendi omnis in libero veritatis eius possimus voluptatibus architecto repudiandae? Quod, excepturi sequi atque ullam, quibusdam reiciendis velit ea assumenda molestiae neque aliquid laboriosam vitae obcaecati amet recusandae nemo perspiciatis? A nihil rem minima corrupti earum facere consectetur esse quas sed! Deserunt reprehenderit dicta neque, explicabo nemo earum nihil iusto laudantium facere ad voluptatem fuga, reiciendis est? Delectus, maiores pariatur! Rerum, in error, placeat cupiditate repellendus aut, voluptates perspiciatis assumenda harum exercitationem aliquid modi possimus unde labore quaerat quis qui veniam vel sint accusantium autem veritatis ipsa aliquam. Voluptas velit perspiciatis ex iste sapiente impedit saepe, ipsam fuga expedita ad est? Inventore harum quas quidem at similique ipsum. Voluptates magni tenetur inventore quaerat libero perferendis beatae recusandae ut quidem necessitatibus ullam veniam nulla blanditiis, ipsam iure nihil quod pariatur nemo illo accusantium sed tempore nisi labore. Minima vel fuga voluptas, quia suscipit quisquam? Corrupti, inventore porro quidem quis nam sapiente quo delectus, cum non ipsum enim impedit provident vel deleniti magnam perspiciatis reiciendis architecto? Aliquid et excepturi officiis accusamus tempora amet mollitia nesciunt voluptate ex ut provident atque optio voluptatum illum dolor, consectetur assumenda doloribus repellendus blanditiis quia nisi? Porro praesentium aliquam animi, officiis inventore odio quidem ut laudantium provident officia et optio error nesciunt ipsam quos impedit maxime magni quisquam aliquid natus temporibus nulla. Molestias excepturi corporis nesciunt debitis sequi soluta nam ullam illo quibusdam cum iste, nobis possimus commodi cumque atque, blanditiis sapiente fugit nemo dolore fugiat. Commodi, ducimus fuga iusto provident fugit labore ad eos quo voluptates! Reprehenderit impedit molestiae dolorem. Explicabo labore architecto commodi dignissimos doloremque quasi iure, vel, quam fuga molestiae cupiditate deleniti eveniet. Nemo ullam magnam earum eveniet aperiam hic, debitis quos dolorem? In nobis delectus hic! Dolore magni nesciunt doloribus quae neque obcaecati optio velit, dolores architecto quibusdam necessitatibus quam! Ducimus odit, deleniti totam soluta repellendus quibusdam adipisci aliquid illum reiciendis consectetur in, voluptatum cum perferendis natus, cumque sed aspernatur laudantium. Dicta placeat, excepturi facere itaque, modi laboriosam similique unde consequuntur obcaecati delectus eum? Exercitationem, quae voluptate vero quam asperiores, eum expedita voluptatum, laborum ad officia sequi soluta iste ullam dolores rem quasi deleniti. Quasi exercitationem nam, officiis tempore molestias voluptas perspiciatis! Ad quam, veniam beatae excepturi, mollitia repudiandae similique dolore laborum consequuntur error corrupti alias, voluptatem reiciendis! Nulla dolorem incidunt enim ipsa vero aspernatur ipsum eum voluptate id eligendi in, perferendis voluptates quas voluptas molestias cum placeat sapiente quam accusamus pariatur corporis, nesciunt, porro doloremque? Assumenda iste omnis cumque optio sed rerum unde modi aperiam, praesentium cum illo odio repellat harum nulla, deleniti suscipit ratione voluptate repudiandae? Voluptate iure alias saepe similique eligendi dignissimos nostrum quibusdam cum vel voluptatem necessitatibus, quod, possimus exercitationem? Temporibus eius ipsam maxime, quis accusantium, voluptatem veniam tempora laborum sequi amet consequatur iusto enim iste et mollitia. Aut laudantium est itaque excepturi ut eligendi voluptate esse quae ratione ullam ipsam adipisci praesentium aliquid officia magnam nobis, soluta vero assumenda. Optio animi eum adipisci iste iure ducimus quibusdam officia, dolorem quae reprehenderit natus sapiente ea vero, et voluptatibus provident quia! Beatae soluta animi, corporis at totam amet? Eligendi quo sapiente, laborum omnis, nihil provident fugit atque incidunt harum sequi dolore quibusdam esse consequatur error corporis dignissimos id tenetur! Distinctio ducimus, earum natus perspiciatis maxime iusto repellendus vitae eos numquam provident, ratione animi consequatur minus soluta!
-        </p>
+    <div className={`bg-ungu10 pt-16 pb-4 h-full min-h-full transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
+      <h1 className='p-6 text-left text-2xl font-semibold text-gray-800'>Welcome, Admin!</h1>
+
+      {/* Stats Cards */}
+      <div className="px-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Users */}
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <h3 className="text-sm font-medium text-gray-600 mb-2">Total Users</h3>
+            <div className="text-3xl font-bold text-gray-900 mb-1">{userStats.totalUsers}</div>
+            <div className="text-sm">
+              <span className={`${userStats.percentageChange.startsWith('+') ? 'text-green-600' : 'text-red-600'} font-medium`}>
+                {userStats.percentageChange}
+              </span>
+              <span className="text-gray-500 ml-2">Since last week</span>
+            </div>
+          </div>
+
+          {/* Revenue */}
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <h3 className="text-sm font-medium text-gray-600 mb-2">Total Revenue</h3>
+            <div className="text-3xl font-bold text-gray-900 mb-1">{formatCurrency(revenueStats.totalRevenue)}</div>
+            <div className="text-sm">
+              <span className={`${revenueStats.percentageChange.startsWith('+') ? 'text-green-600' : 'text-red-600'} font-medium`}>
+                {revenueStats.percentageChange}
+              </span>
+              <span className="text-gray-500 ml-2">Since last month</span>
+            </div>
+          </div>
+
+          {/* Reports */}
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <h3 className="text-sm font-medium text-gray-600 mb-2">Total Reports</h3>
+            <div className="text-3xl font-bold text-gray-900 mb-1">{reportStats.totalReports}</div>
+            <div className="text-sm">
+              <span className={`${reportStats.percentageChange.startsWith('+') ? 'text-green-600' : 'text-red-600'} font-medium`}>
+                {reportStats.percentageChange}
+              </span>
+              <span className="text-gray-500 ml-2">Since last week</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Charts */}
+      <div className="px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Revenue Chart */}
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Revenue Trend</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={revenueChartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#666' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 12, fill: '#666' }} tickFormatter={(value) => `${value}jt`} axisLine={false} tickLine={false} />
+                  <Line type="monotone" dataKey="value" stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981', r: 4 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* User Growth Chart */}
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">User Growth</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={userChartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#666' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 12, fill: '#666' }} domain={[0, 350]} axisLine={false} tickLine={false} />
+                  <Bar dataKey="users" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default DashboardAdmin
+export default DashboardAdmin;
