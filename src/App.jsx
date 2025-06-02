@@ -20,6 +20,7 @@ import ManajemenMitraPesawat from './pages/ManajemenMitraPesawat';
 import EditMitraPesawat from './pages/EditMitraPesawat';
 import EditSaldoMitraPesawat from './pages/EditSaldoMitraPesawat';
 import TambahMitraPesawat from './pages/TambahMitraPesawat';
+import ManajemenMaskapaiAdmin from './pages/ManajemenMaskapaiAdmin';
 import DashboardMitraHotel from './pages/DashboardMitraHotel';
 import ManajemenHotel from './pages/ManajemenHotel';
 import DashboardMitraPesawat from './pages/DashboardMitraPesawat';
@@ -63,14 +64,14 @@ const App = () => {
   };
 
   // Show Navbar and Footer only on specific pages
-  const showNavbar = ['/', '/hotel', '/pesawat', '/pengaturan-akun', '/riwayat-pemesanan'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel') || location.pathname.startsWith('/detail-ruangan');
+  const showNavbar = ['/', '/login', '/register', '/forgot-password', '/hotel', '/pesawat', '/pengaturan-akun', '/riwayat-pemesanan'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel') || location.pathname.startsWith('/detail-ruangan');
   const showFooter = showNavbar;
 
   // Determine role based on the route path
   let role = null;
 
   // Check if the current path matches the admin or mitra paths
-  if (location.pathname.match(/^\/(admin|manajemen-pengguna|tambah-pengguna|edit-pengguna\/.+|edit-saldo-pengguna\/.+|manajemen-mitra-hotel|tambah-mitra-hotel|edit-mitra-hotel\/.+|edit-saldo-mitra-hotel\/.+|manajemen-mitra-pesawat|tambah-mitra-pesawat|edit-mitra-pesawat\/.+|edit-saldo-mitra-pesawat\/.+)$|\/pengaturan-akun-admin/)) {
+  if (location.pathname.match(/^\/(admin|manajemen-pengguna|tambah-pengguna|edit-pengguna\/.+|edit-saldo-pengguna\/.+|manajemen-mitra-hotel|tambah-mitra-hotel|edit-mitra-hotel\/.+|edit-saldo-mitra-hotel\/.+|manajemen-mitra-pesawat|tambah-mitra-pesawat|edit-mitra-pesawat\/.+|edit-saldo-mitra-pesawat\/.+)$|\/pengaturan-akun-admin|\/mitra-pesawat-admin/)) {
     role = 'admin';
   } else if (location.pathname.match(/^\/mitra-hotel|\/manajemen-hotel|\/tambah-hotel|\/edit-hotel|\/manajemen-ruangan|\/tambah-ruangan|\/edit-ruangan|\/list-pengguna-hotel|\/pengaturan-akun-mitra/)) {
     role = 'mitra-hotel';
@@ -100,7 +101,7 @@ const App = () => {
         <Route path="/detail-hotel/:id" element={<DetailHotel />} />
         <Route path="/detail-ruangan/:id" element={<DetailRuangan />} />
         <Route path="/pesawat" element={<Pesawat />} />
-        <Route path="/detail-pesawat/:id" element={<DetailPesawat />} />
+        <Route path="/detail-pesawat/:flightId" element={<DetailPesawat />} />
         <Route path="/pengaturan-akun" element={<PengaturanAkun />} />
         <Route path="/riwayat-pemesanan" element={<RiwayatPemesanan />} />
 
@@ -119,6 +120,7 @@ const App = () => {
         <Route path="/tambah-mitra-pesawat" element={<TambahMitraPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-mitra-pesawat/:mitraName" element={<EditMitraPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-saldo-mitra-pesawat/:userId" element={<EditSaldoMitraPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/mitra-pesawat-admin/:userId" element={<ManajemenMaskapaiAdmin isSidebarOpen={isSidebarOpen} />} />
 
         {/* Mitra Routes */}
         <Route path="/mitra-hotel" element={<DashboardMitraHotel isSidebarOpen={isSidebarOpen} />} />
@@ -139,7 +141,7 @@ const App = () => {
         <Route path="/edit-hotel/:hotelId" element={<EditHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-ruangan/:hotelId" element={<ManajemenRuangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/tambah-ruangan/:hotelId" element={<TambahRuangan isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/edit-ruangan/:roomId" element={<EditRuangan isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-ruangan/:hotelId/:roomId" element={<EditRuangan isSidebarOpen={isSidebarOpen} />} />
         <Route path="/list-pengguna-hotel/:hotelId" element={<CustomerHotel isSidebarOpen={isSidebarOpen} />} />
       </Routes>
 

@@ -8,8 +8,8 @@
 //   loadingCreate: false,
 //   errorCreate: null,
 //   createdMitra: null,
-//   loadingDelete: false,
-//   errorDelete: null,
+//   loadingDelete: false, // Untuk delete airline
+//   errorDelete: null,    // Untuk delete airline
 //   loadingUpdate: false,
 //   errorUpdate: null,
 //   updatedMitra: null,
@@ -43,9 +43,19 @@
 //   loadingSeatCategories: false,
 //   errorSeatCategories: null,
 
-//   hotelList: [], // State untuk daftar hotel
-//   loadingHotels: false, // State loading untuk hotel
-//   errorHotels: null, // State error untuk hotel
+//   loadingCreateFlight: false,
+//   errorCreateFlight: null,
+//   createdFlight: null,
+//   airportList: [],
+//   loadingAirports: false,
+//   errorAirports: null,
+
+//   hotelList: [],
+//   loadingHotels: false,
+//   errorHotels: null,
+//   hotelDetail: null,
+//   loadingHotelDetail: false,
+//   errorHotelDetail: null,
 //   loadingCreateHotel: false,
 //   errorCreateHotel: null,
 //   createdHotelData: null,
@@ -59,9 +69,13 @@
 //   loadingLocations: false,
 //   errorLocations: null,
 
-//   roomList: [], // State untuk daftar kamar
-//   loadingRooms: false, // State loading untuk kamar
-//   errorRooms: null, // State error untuk kamar
+//   roomList: [],
+//   loadingRooms: false,
+//   errorRooms: null,
+//   loadingUpdateRoomStatus: {},
+//   errorUpdateRoomStatus: {},
+//   loadingDeleteRoom: false,    // <-- Tambahkan state ini
+//   errorDeleteRoom: null,       // <-- Tambahkan state ini
 // };
 
 // const mitraSlice = createSlice({
@@ -75,9 +89,9 @@
 //     createMitraRequest: (state) => { state.loadingCreate = true; state.errorCreate = null; state.createdMitra = null; },
 //     createMitraSuccess: (state, action) => { state.loadingCreate = false; state.createdMitra = action.payload; state.mitraList.push(action.payload); },
 //     createMitraFailure: (state, action) => { state.loadingCreate = false; state.errorCreate = action.payload; },
-//     deleteMitraRequest: (state) => { state.loadingDelete = true; state.errorDelete = null; }, 
-//     deleteMitraSuccess: (state, action) => { state.loadingDelete = false; state.mitraList = state.mitraList.filter( (mitra) => mitra.id !== action.payload ); }, 
-//     deleteMitraFailure: (state, action) => { state.loadingDelete = false; state.errorDelete = action.payload; }, 
+//     deleteMitraRequest: (state) => { state.loadingDelete = true; state.errorDelete = null; },
+//     deleteMitraSuccess: (state, action) => { state.loadingDelete = false; state.mitraList = state.mitraList.filter( (mitra) => mitra.id !== action.payload ); },
+//     deleteMitraFailure: (state, action) => { state.loadingDelete = false; state.errorDelete = action.payload; },
 //     updateMitraRequest: (state) => { state.loadingUpdate = true; state.errorUpdate = null; state.updatedMitra = null; },
 //     updateMitraSuccess: (state, action) => { state.loadingUpdate = false; state.updatedMitra = action.payload; const index = state.mitraList.findIndex( (mitra) => mitra.id === action.payload.id ); if (index !== -1) { state.mitraList[index] = action.payload; } },
 //     updateMitraFailure: (state, action) => { state.loadingUpdate = false; state.errorUpdate = action.payload; },
@@ -112,21 +126,68 @@
 //     getSeatCategoriesSuccess: (state, action) => { state.loadingSeatCategories = false; state.seatCategoryList = action.payload; },
 //     getSeatCategoriesFailure: (state, action) => { state.loadingSeatCategories = false; state.errorSeatCategories = action.payload; state.seatCategoryList = []; },
 
+//     // --- Flight Reducers ---
+//     createFlightRequest: (state) => {
+//       state.loadingCreateFlight = true;
+//       state.errorCreateFlight = null;
+//       state.createdFlight = null;
+//     },
+//     createFlightSuccess: (state, action) => {
+//       state.loadingCreateFlight = false;
+//       state.createdFlight = action.payload;
+//       state.errorCreateFlight = null;
+//     },
+//     createFlightFailure: (state, action) => {
+//       state.loadingCreateFlight = false;
+//       state.errorCreateFlight = action.payload;
+//       state.createdFlight = null;
+//     },
+//     resetCreateFlightStatus: (state) => {
+//         state.loadingCreateFlight = false;
+//         state.errorCreateFlight = null;
+//         state.createdFlight = null;
+//     },
+
+//     // --- Airport Reducers ---
+//     getAirportsRequest: (state) => {
+//       state.loadingAirports = true;
+//       state.errorAirports = null;
+//     },
+//     getAirportsSuccess: (state, action) => {
+//       state.loadingAirports = false;
+//       state.airportList = action.payload;
+//       state.errorAirports = null;
+//     },
+//     getAirportsFailure: (state, action) => {
+//       state.loadingAirports = false;
+//       state.errorAirports = action.payload;
+//       state.airportList = [];
+//     },
+
 //     // --- Hotel Reducers ---
-//     // getHotelsRequest: (state) => { state.loadingHotels = true; state.errorHotels = null; }, // Reducer untuk memulai request hotel
-//     // getHotelsSuccess: (state, action) => { state.loadingHotels = false; state.hotelList = action.payload; state.errorHotels = null; }, // Reducer jika request hotel sukses
-//     // getHotelsFailure: (state, action) => { state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = []; }, // Reducer jika request hotel gagal
-//         getHotelsRequest: (state) => { 
-//       console.log("mitraReducer: getHotelsRequest dieksekusi"); // LOG F.1
-//       state.loadingHotels = true; state.errorHotels = null; 
-//     }, 
-//     getHotelsSuccess: (state, action) => { 
-//       console.log("mitraReducer: getHotelsSuccess dieksekusi, payload length:", action.payload?.length); // LOG F.2
-//       state.loadingHotels = false; state.hotelList = action.payload; state.errorHotels = null; 
-//     }, 
-//     getHotelsFailure: (state, action) => { 
-//       console.log("mitraReducer: getHotelsFailure dieksekusi, error:", action.payload); // LOG F.3
-//       state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = []; 
+//     getHotelsRequest: (state) => {
+//       state.loadingHotels = true; state.errorHotels = null;
+//     },
+//     getHotelsSuccess: (state, action) => {
+//       state.loadingHotels = false; state.hotelList = action.payload; state.errorHotels = null;
+//     },
+//     getHotelsFailure: (state, action) => {
+//       state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = [];
+//     },
+//     getHotelByIdRequest: (state) => {
+//       state.loadingHotelDetail = true;
+//       state.errorHotelDetail = null;
+//       state.hotelDetail = null;
+//     },
+//     getHotelByIdSuccess: (state, action) => {
+//       state.loadingHotelDetail = false;
+//       state.hotelDetail = action.payload;
+//       state.errorHotelDetail = null;
+//     },
+//     getHotelByIdFailure: (state, action) => {
+//       state.loadingHotelDetail = false;
+//       state.errorHotelDetail = action.payload;
+//       state.hotelDetail = null;
 //     },
 //     createHotelRequest: (state) => { state.loadingCreateHotel = true; state.errorCreateHotel = null; state.createdHotelData = null; },
 //     createHotelSuccess: (state, action) => { state.loadingCreateHotel = false; state.createdHotelData = action.payload; state.errorCreateHotel = null; state.hotelList.push(action.payload); },
@@ -145,9 +206,56 @@
 //     getLocationsFailure: (state, action) => { state.loadingLocations = false; state.errorLocations = action.payload; state.locationList = []; },
 
 //     // --- Room Reducers ---
-//     getRoomsRequest: (state) => { state.loadingRooms = true; state.errorRooms = null; state.roomList = []; /* Membersihkan roomList sebelumnya */ }, // Reducer untuk memulai request kamar
-//     getRoomsSuccess: (state, action) => { state.loadingRooms = false; state.roomList = action.payload; state.errorRooms = null; }, // Reducer jika request kamar sukses
-//     getRoomsFailure: (state, action) => { state.loadingRooms = false; state.errorRooms = action.payload; state.roomList = []; }, // Reducer jika request kamar gagal
+//     getRoomsRequest: (state) => {
+//       state.loadingRooms = true; state.errorRooms = null; state.roomList = [];
+//     },
+//     getRoomsSuccess: (state, action) => {
+//       state.loadingRooms = false; state.roomList = action.payload; state.errorRooms = null;
+//     },
+//     getRoomsFailure: (state, action) => {
+//       state.loadingRooms = false; state.errorRooms = action.payload; state.roomList = [];
+//     },
+//     updateRoomStatusRequest: (state, action) => {
+//       const { roomId } = action.payload;
+//       state.loadingUpdateRoomStatus[roomId] = true;
+//       state.errorUpdateRoomStatus[roomId] = null;
+//     },
+//     updateRoomStatusSuccess: (state, action) => {
+//       const updatedRoom = action.payload;
+//       if (updatedRoom && updatedRoom.id) {
+//         state.loadingUpdateRoomStatus[updatedRoom.id] = false;
+//         state.errorUpdateRoomStatus[updatedRoom.id] = null;
+//         const index = state.roomList.findIndex(room => room.id === updatedRoom.id);
+//         if (index !== -1) {
+//           state.roomList[index] = { ...state.roomList[index], ...updatedRoom };
+//         }
+//       } else {
+//         console.error("mitraReducer: updateRoomStatusSuccess - updatedRoom atau updatedRoom.id tidak valid:", updatedRoom);
+//       }
+//     },
+//     updateRoomStatusFailure: (state, action) => {
+//       const { roomId, error } = action.payload;
+//       state.loadingUpdateRoomStatus[roomId] = false;
+//       state.errorUpdateRoomStatus[roomId] = error;
+//     },
+//     // Reducer baru untuk delete room
+//     deleteRoomRequest: (state) => { // <-- Tambahkan reducer ini
+//       state.loadingDeleteRoom = true;
+//       state.errorDeleteRoom = null;
+//     },
+//     deleteRoomSuccess: (state, action) => { // <-- Tambahkan reducer ini
+//       state.loadingDeleteRoom = false;
+//       state.errorDeleteRoom = null;
+//       // Menghapus kamar dari roomList berdasarkan roomId (action.payload)
+//       state.roomList = state.roomList.filter((room) => room.id !== action.payload);
+//     },
+//     deleteRoomFailure: (state, action) => { // <-- Tambahkan reducer ini
+//       state.loadingDeleteRoom = false;
+//       state.errorDeleteRoom = action.payload;
+//     },
+//     clearDeleteRoomErrorRequest: (state) => { // <-- Tambahkan reducer ini (opsional)
+//         state.errorDeleteRoom = null;
+//     },
 
 //     resetMitraState: (state) => {
 //       return initialState;
@@ -170,13 +278,26 @@
 //   createSeatsRequest, createSeatsSuccess, createSeatsFailure,
 //   resetCreateSeatsStatus,
 //   getSeatCategoriesRequest, getSeatCategoriesSuccess, getSeatCategoriesFailure,
-//   getHotelsRequest, getHotelsSuccess, getHotelsFailure, // Ekspor action hotel
+//   createFlightRequest,
+//   createFlightSuccess,
+//   createFlightFailure,
+//   resetCreateFlightStatus,
+//   getAirportsRequest,
+//   getAirportsSuccess,
+//   getAirportsFailure,
+//   getHotelsRequest, getHotelsSuccess, getHotelsFailure,
+//   getHotelByIdRequest, getHotelByIdSuccess, getHotelByIdFailure,
 //   createHotelRequest, createHotelSuccess, createHotelFailure,
 //   updateHotelRequest, updateHotelSuccess, updateHotelFailure,
 //   deleteHotelRequest, deleteHotelSuccess, deleteHotelFailure,
 //   clearDeleteHotelErrorRequest,
 //   getLocationsRequest, getLocationsSuccess, getLocationsFailure,
-//   getRoomsRequest, getRoomsSuccess, getRoomsFailure, // Ekspor action kamar
+//   getRoomsRequest, getRoomsSuccess, getRoomsFailure,
+//   updateRoomStatusRequest, updateRoomStatusSuccess, updateRoomStatusFailure,
+//   deleteRoomRequest, // <-- Ekspor action ini
+//   deleteRoomSuccess, // <-- Ekspor action ini
+//   deleteRoomFailure, // <-- Ekspor action ini
+//   clearDeleteRoomErrorRequest, // <-- Ekspor action ini (opsional)
 //   resetMitraState,
 // } = mitraSlice.actions;
 
@@ -238,14 +359,17 @@ const initialState = {
   hotelList: [],
   loadingHotels: false,
   errorHotels: null,
+  hotelDetail: null,
+  loadingHotelDetail: false,
+  errorHotelDetail: null,
   loadingCreateHotel: false,
   errorCreateHotel: null,
   createdHotelData: null,
   loadingUpdateHotel: false,
   errorUpdateHotel: null,
   updatedHotelData: null,
-  loadingDeleteHotel: false, // Untuk delete hotel
-  errorDeleteHotel: null,    // Untuk delete hotel
+  loadingDeleteHotel: false,
+  errorDeleteHotel: null,
 
   locationList: [],
   loadingLocations: false,
@@ -256,8 +380,10 @@ const initialState = {
   errorRooms: null,
   loadingUpdateRoomStatus: {},
   errorUpdateRoomStatus: {},
+  loadingDeleteRoom: false,    // <-- Tambahkan state ini
+  errorDeleteRoom: null,       // <-- Tambahkan state ini
 
-  // New states for Room Types
+    // New states for Room Types
   roomTypeList: [],
   loadingRoomTypes: false,
   errorRoomTypes: null,
@@ -315,6 +441,8 @@ const mitraSlice = createSlice({
     getSeatCategoriesRequest: (state) => { state.loadingSeatCategories = true; state.errorSeatCategories = null; },
     getSeatCategoriesSuccess: (state, action) => { state.loadingSeatCategories = false; state.seatCategoryList = action.payload; },
     getSeatCategoriesFailure: (state, action) => { state.loadingSeatCategories = false; state.errorSeatCategories = action.payload; state.seatCategoryList = []; },
+
+    // --- Flight Reducers ---
     createFlightRequest: (state) => {
       state.loadingCreateFlight = true;
       state.errorCreateFlight = null;
@@ -362,6 +490,21 @@ const mitraSlice = createSlice({
     getHotelsFailure: (state, action) => {
       state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = [];
     },
+    getHotelByIdRequest: (state) => {
+      state.loadingHotelDetail = true;
+      state.errorHotelDetail = null;
+      state.hotelDetail = null;
+    },
+    getHotelByIdSuccess: (state, action) => {
+      state.loadingHotelDetail = false;
+      state.hotelDetail = action.payload;
+      state.errorHotelDetail = null;
+    },
+    getHotelByIdFailure: (state, action) => {
+      state.loadingHotelDetail = false;
+      state.errorHotelDetail = action.payload;
+      state.hotelDetail = null;
+    },
     createHotelRequest: (state) => { state.loadingCreateHotel = true; state.errorCreateHotel = null; state.createdHotelData = null; },
     createHotelSuccess: (state, action) => { state.loadingCreateHotel = false; state.createdHotelData = action.payload; state.errorCreateHotel = null; state.hotelList.push(action.payload); },
     createHotelFailure: (state, action) => { state.loadingCreateHotel = false; state.errorCreateHotel = action.payload; state.createdHotelData = null; },
@@ -408,6 +551,24 @@ const mitraSlice = createSlice({
       const { roomId, error } = action.payload;
       state.loadingUpdateRoomStatus[roomId] = false;
       state.errorUpdateRoomStatus[roomId] = error;
+    },
+    // Reducer baru untuk delete room
+    deleteRoomRequest: (state) => { // <-- Tambahkan reducer ini
+      state.loadingDeleteRoom = true;
+      state.errorDeleteRoom = null;
+    },
+    deleteRoomSuccess: (state, action) => { // <-- Tambahkan reducer ini
+      state.loadingDeleteRoom = false;
+      state.errorDeleteRoom = null;
+      // Menghapus kamar dari roomList berdasarkan roomId (action.payload)
+      state.roomList = state.roomList.filter((room) => room.id !== action.payload);
+    },
+    deleteRoomFailure: (state, action) => { // <-- Tambahkan reducer ini
+      state.loadingDeleteRoom = false;
+      state.errorDeleteRoom = action.payload;
+    },
+    clearDeleteRoomErrorRequest: (state) => { // <-- Tambahkan reducer ini (opsional)
+        state.errorDeleteRoom = null;
     },
 
     // --- Room Type Reducers (NEW) ---
@@ -484,6 +645,7 @@ export const {
   getAirportsSuccess,
   getAirportsFailure,
   getHotelsRequest, getHotelsSuccess, getHotelsFailure,
+  getHotelByIdRequest, getHotelByIdSuccess, getHotelByIdFailure,
   createHotelRequest, createHotelSuccess, createHotelFailure,
   updateHotelRequest, updateHotelSuccess, updateHotelFailure,
   deleteHotelRequest, deleteHotelSuccess, deleteHotelFailure,
@@ -491,6 +653,10 @@ export const {
   getLocationsRequest, getLocationsSuccess, getLocationsFailure,
   getRoomsRequest, getRoomsSuccess, getRoomsFailure,
   updateRoomStatusRequest, updateRoomStatusSuccess, updateRoomStatusFailure,
+  deleteRoomRequest, // <-- Ekspor action ini
+  deleteRoomSuccess, // <-- Ekspor action ini
+  deleteRoomFailure, // <-- Ekspor action ini
+  clearDeleteRoomErrorRequest, // <-- Ekspor action ini (opsional)
   // Export new room and room type actions
   getRoomTypesRequest, getRoomTypesSuccess, getRoomTypesFailure,
   createRoomRequest, createRoomSuccess, createRoomFailure, resetCreateRoomStatus,
