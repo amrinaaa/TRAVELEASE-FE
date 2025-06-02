@@ -5,7 +5,8 @@ const initialState = {
   bookingResult: null,
   paymentResult: null,
   userSaldo: null,
-  cancelResult: null, // New state for cancellation result
+  cancelResult: null,
+  flightDetail: null, // New state for flight detail
   loadingSeats: false,
   errorSeats: null,
   loadingBooking: false,
@@ -16,9 +17,12 @@ const initialState = {
   successPayment: false,
   loadingSaldo: false,
   errorSaldo: null,
-  loadingCancel: false, // New loading state for cancellation
-  errorCancel: null, // New error state for cancellation
-  successCancel: false, // New success state for cancellation
+  loadingCancel: false,
+  errorCancel: null,
+  successCancel: false,
+  loadingFlightDetail: false, // New loading state for flight detail
+  errorFlightDetail: null, // New error state for flight detail
+  successFlightDetail: false, // New success state for flight detail
 };
 
 const userPlaneSlice = createSlice({
@@ -100,12 +104,28 @@ const userPlaneSlice = createSlice({
       state.loadingCancel = false;
       state.cancelResult = action.payload;
       state.successCancel = true;
-      // Saldo update will be handled by the getUserSaldo action dispatched in userPlaneActions
     },
     cancelPaymentFailure: (state, action) => {
       state.loadingCancel = false;
       state.errorCancel = action.payload;
       state.successCancel = false;
+    },
+    // New reducers for flight detail
+    getFlightDetailRequest: (state) => {
+      state.loadingFlightDetail = true;
+      state.errorFlightDetail = null;
+      state.successFlightDetail = false;
+      state.flightDetail = null;
+    },
+    getFlightDetailSuccess: (state, action) => {
+      state.loadingFlightDetail = false;
+      state.flightDetail = action.payload;
+      state.successFlightDetail = true;
+    },
+    getFlightDetailFailure: (state, action) => {
+      state.loadingFlightDetail = false;
+      state.errorFlightDetail = action.payload;
+      state.successFlightDetail = false;
     },
     resetUserPlaneState: (state) => {
       Object.assign(state, initialState);
@@ -113,14 +133,23 @@ const userPlaneSlice = createSlice({
     resetBookingStatus: (state) => {
         state.successBooking = false;
         state.errorBooking = null;
+        state.loadingBooking = false; // Also reset loading
     },
     resetPaymentStatus: (state) => {
         state.successPayment = false;
         state.errorPayment = null;
+        state.loadingPayment = false; // Also reset loading
     },
-    resetCancelStatus: (state) => { // New helper to reset cancel status
+    resetCancelStatus: (state) => {
         state.successCancel = false;
         state.errorCancel = null;
+        state.loadingCancel = false; // Also reset loading
+    },
+    resetFlightDetailStatus: (state) => { // New helper to reset flight detail status
+        state.successFlightDetail = false;
+        state.errorFlightDetail = null;
+        state.loadingFlightDetail = false;
+        state.flightDetail = null;
     }
   },
 });
@@ -141,10 +170,14 @@ export const {
   cancelPaymentRequest,
   cancelPaymentSuccess,
   cancelPaymentFailure,
+  getFlightDetailRequest, // Export new action
+  getFlightDetailSuccess, // Export new action
+  getFlightDetailFailure, // Export new action
   resetUserPlaneState,
   resetBookingStatus,
   resetPaymentStatus,
-  resetCancelStatus, // Export new helper
+  resetCancelStatus,
+  resetFlightDetailStatus, // Export new helper
 } = userPlaneSlice.actions;
 
 export default userPlaneSlice.reducer;

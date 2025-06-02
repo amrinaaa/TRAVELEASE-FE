@@ -379,16 +379,38 @@
 
 // export default DetailRuangan;
 
+// src/pages/DetailRuangan.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getRoomDetailById,
   getUserBalance,
-  bookRoom, // <-- Import bookRoom
-  processRoomPayment, // <-- Import processRoomPayment
-  cancelPayment, // <-- Import cancelPayment
+  bookRoom,
+  processRoomPayment,
+  cancelPayment,
 } from '../redux/actions/userHotelActions';
+// Impor reset actions jika diperlukan, misalnya resetBookingStatusHotel, dll.
+// import { resetBookingStatusHotel, resetPaymentStatusHotel, resetCancellationStatusHotel } from '../redux/reducers/userHotelReducer';
+
+
+// Fungsi untuk memformat tanggal dan waktu (agar konsisten dengan DetailPesawat.jsx)
+const formatDateTimeForPdf = (dateTimeString, type = 'full') => {
+  if (!dateTimeString) return 'N/A';
+  const date = new Date(dateTimeString);
+  if (type === 'time') {
+    return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+  if (type === 'date_short') { // Format tanggal pendek seperti DD Mon YYYY
+    return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  if (type === 'date_full') { // Format tanggal panjang
+    return date.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  // Fallback untuk format lengkap (tanggal dan waktu)
+  return date.toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+};
+
 
 const DetailRuangan = () => {
   const { id: roomId } = useParams();
@@ -402,15 +424,15 @@ const DetailRuangan = () => {
     userBalance,
     loadingUserBalance,
     errorUserBalance,
-    booking, // <-- Access booking state
-    loadingBooking, // <-- Access loadingBooking state
-    errorBooking, // <-- Access errorBooking state
-    paymentDetails, // <-- Access paymentDetails state
-    loadingPayment, // <-- Access loadingPayment state
-    errorPayment, // <-- Access errorPayment state
-    cancellationDetails, // <-- Access cancellationDetails state
-    loadingCancellation, // <-- Access loadingCancellation state
-    errorCancellation, // <-- Access errorCancellation state
+    booking, 
+    loadingBooking, 
+    errorBooking, 
+    paymentDetails, 
+    loadingPayment, 
+    errorPayment, 
+    cancellationDetails, 
+    loadingCancellation, 
+    errorCancellation, 
   } = useSelector(state => state.userHotel || {});
 
   const [checkIn, setCheckIn] = useState('');
@@ -418,11 +440,13 @@ const DetailRuangan = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [clientOrderCode, setClientOrderCode] = useState(''); // For UI before API call if needed
-  const [currentTransactionId, setCurrentTransactionId] = useState(null); // To store transactionId from booking response
+  const [clientOrderCode, setClientOrderCode] = useState(''); 
+  const [currentTransactionId, setCurrentTransactionId] = useState(null); 
   const [paymentErrorMessage, setPaymentErrorMessage] = useState('');
   const [cancellationErrorMessage, setCancellationErrorMessage] = useState('');
   const [bookingErrorMessage, setBookingErrorMessage] = useState('');
+  const [calculatedNights, setCalculatedNights] = useState(0);
+
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -437,59 +461,63 @@ const DetailRuangan = () => {
     if (checkIn && checkOut && currentRoomDetails?.roomPrice) {
       const start = new Date(checkIn);
       const end = new Date(checkOut);
-      const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-      if (days > 0) {
-        setTotalPrice(days * currentRoomDetails.roomPrice);
+      // Pastikan tanggal valid sebelum kalkulasi
+      if (start instanceof Date && !isNaN(start) && end instanceof Date && !isNaN(end)) {
+          const diffTime = end.getTime() - start.getTime();
+          if (diffTime > 0) {
+            const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            setCalculatedNights(days);
+            setTotalPrice(days * currentRoomDetails.roomPrice);
+          } else {
+            setCalculatedNights(0);
+            setTotalPrice(0);
+          }
       } else {
-        setTotalPrice(0);
+          setCalculatedNights(0);
+          setTotalPrice(0);
       }
     } else {
+      setCalculatedNights(0);
       setTotalPrice(0);
     }
   }, [checkIn, checkOut, currentRoomDetails?.roomPrice]);
 
-  // Effect to handle booking success/error
   useEffect(() => {
     if (booking && booking.id && !loadingBooking && !errorBooking) {
       setCurrentTransactionId(booking.id);
-      setShowConfirmation(true); // Show confirmation modal after successful booking
+      setShowConfirmation(true); 
       setBookingErrorMessage('');
+      // dispatch(resetBookingStatusHotel()); // Jika ada action resetnya
     }
     if (errorBooking && !loadingBooking) {
       setBookingErrorMessage(errorBooking === "Saldo Anda tidak mencukupi." ? "Booking gagal: Saldo tidak mencukupi." : `Booking Error: ${errorBooking}`);
-      // alert(`Booking Error: ${errorBooking}`);
-      setShowConfirmation(false); // Ensure confirmation is not shown on error
+      setShowConfirmation(false); 
     }
   }, [booking, loadingBooking, errorBooking]);
 
-  // Effect to handle payment success/error
   useEffect(() => {
     if (paymentDetails && paymentDetails.transaction?.id && !loadingPayment && !errorPayment) {
       setShowConfirmation(false);
-      setShowSuccess(true); // Show success modal after successful payment
+      setShowSuccess(true); 
       setPaymentErrorMessage('');
+      // dispatch(resetPaymentStatusHotel()); // Jika ada action resetnya
     }
     if (errorPayment && !loadingPayment) {
       setPaymentErrorMessage(`Payment Error: ${errorPayment}`);
-      // alert(`Payment Error: ${errorPayment}`);
-      // Keep confirmation modal open or handle as per UX requirements
     }
   }, [paymentDetails, loadingPayment, errorPayment]);
 
-  // Effect to handle cancellation success/error
   useEffect(() => {
     if (cancellationDetails && cancellationDetails.status === "CANCELED" && !loadingCancellation && !errorCancellation) {
-      alert("Transaction successfully cancelled."); // Or some other UI feedback
+      alert("Transaksi berhasil dibatalkan."); 
       setShowConfirmation(false);
-      setCurrentTransactionId(null); // Clear transaction ID
-      // Optionally, navigate or refresh data
-      dispatch(getUserBalance()); // Refresh balance after cancellation
+      setCurrentTransactionId(null); 
+      dispatch(getUserBalance()); 
       setCancellationErrorMessage('');
+      // dispatch(resetCancellationStatusHotel()); // Jika ada action resetnya
     }
     if (errorCancellation && !loadingCancellation) {
       setCancellationErrorMessage(`Cancellation Error: ${errorCancellation}`);
-      // alert(`Cancellation Error: ${errorCancellation}`);
-      // Keep confirmation modal open or handle
     }
   }, [cancellationDetails, loadingCancellation, errorCancellation, dispatch]);
 
@@ -497,7 +525,7 @@ const DetailRuangan = () => {
   const generateClientOrderCode = () => {
     const timestamp = Date.now().toString().slice(-6);
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    const code = `TTE${timestamp}${random}`;
+    const code = `HTL${timestamp}${random}`; // Ubah prefix untuk hotel
     setClientOrderCode(code);
   };
 
@@ -536,23 +564,17 @@ const DetailRuangan = () => {
         alert("Total harga tidak valid. Silakan periksa tanggal menginap Anda.");
         return;
     }
-    // Client-side check for balance before attempting to book
     if (totalPrice > userBalance.currentAmount) {
         setBookingErrorMessage("Saldo Anda tidak mencukupi untuk melakukan reservasi ini.");
-        // alert("Saldo Anda tidak mencukupi untuk melakukan reservasi ini.");
         return;
     }
-    setBookingErrorMessage(''); // Clear previous error
+    setBookingErrorMessage(''); 
 
-    // Format dates to ISO string with a default time (e.g., 10:00:00Z)
-    // Hotel check-in typically starts in the afternoon, e.g., 14:00.
-    // Hotel check-out typically by noon, e.g., 12:00.
-    // For simplicity, using a fixed time for API. Adjust if backend expects specific times.
-    const startDateISO = `${checkIn}T14:00:00Z`; // Example: Check-in at 2 PM UTC
-    const endDateISO = `${checkOut}T12:00:00Z`; // Example: Check-out at 12 PM UTC
+    const startDateISO = `${checkIn}T14:00:00.000Z`; 
+    const endDateISO = `${checkOut}T12:00:00.000Z`;
 
     const bookingData = {
-      roomId: [roomId], // API expects an array of room IDs
+      roomId: [roomId], 
       startDate: startDateISO,
       endDate: endDateISO,
     };
@@ -564,17 +586,12 @@ const DetailRuangan = () => {
       alert("Transaction ID not found. Booking might have failed.");
       return;
     }
-    // Additional balance check before payment, though server should also validate
     if (userBalance?.currentAmount === undefined) {
         alert("Informasi saldo belum termuat. Mohon tunggu dan coba lagi.");
         return;
     }
     if (totalPrice > userBalance.currentAmount) {
-        // This specific error might be caught by backend, but good to double check.
-        // `processRoomPayment` might not directly check balance but attempts payment.
-        // The backend should reject if balance is insufficient.
         setPaymentErrorMessage("Transaksi tidak dapat dilanjutkan. Saldo Anda tidak mencukupi.");
-        // alert("Transaksi tidak dapat dilanjutkan. Saldo Anda tidak mencukupi.");
         return;
     }
     setPaymentErrorMessage('');
@@ -590,7 +607,6 @@ const DetailRuangan = () => {
     dispatch(cancelPayment(currentTransactionId));
   };
 
-
   const generatePDF = () => {
     const bookingDate = new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
     const hotelNameFromAPI = currentRoomDetails?.hotelName || 'Informasi Hotel Tidak Tersedia';
@@ -598,53 +614,96 @@ const DetailRuangan = () => {
     const roomTypeFromAPI = currentRoomDetails?.roomTypeName || 'N/A';
     const capacityFromAPI = currentRoomDetails?.capacity ? `${currentRoomDetails.capacity} orang` : 'N/A';
     const facilitiesFromAPI = formatFacilities(currentRoomDetails?.facilities);
-    const customerName = userBalance?.name || 'Budi';
-    // Use API transaction ID if available (from payment or booking)
+    const customerName = userBalance?.name || 'Pelanggan Yth.';
     const orderIdToDisplay = paymentDetails?.transaction?.id || booking?.id || currentTransactionId || clientOrderCode;
+    const finalPrice = paymentDetails?.transaction?.price || totalPrice;
 
+    // CSS Styles disamakan dengan PDF DetailPesawat.jsx
     const htmlContent = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
-        <title>TravelEase - Booking Confirmation</title>
+        <title>TravelEase - Hotel Booking Confirmation</title>
         <style>
-          body { font-family: Arial, sans-serif; margin: 40px; color: #333; line-height: 1.6; }
-          .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #8B5CF6; padding-bottom: 20px; }
-          .company-name { font-size: 28px; font-weight: bold; color: #8B5CF6; margin-bottom: 5px; }
-          .booking-date { font-size: 14px; color: #666; }
-          .success-icon { font-size: 48px; color: #10B981; margin: 20px 0; }
-          .content { margin: 30px 0; }
-          .field { margin-bottom: 15px; }
-          .field-label { font-weight: bold; color: #333; margin-bottom: 5px; }
-          .field-value { color: #555; margin-left: 10px; }
-          .total-price { font-size: 18px; font-weight: bold; color: #8B5CF6; margin-top: 20px; padding: 15px; background-color: #f8f9ff; border-radius: 8px; }
-          .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; }
+          body { font-family: Arial, sans-serif; margin: 20px; color: #333; line-height: 1.6; }
+          .container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #8B5CF6; padding-bottom: 15px; }
+          .company-name { font-size: 26px; font-weight: bold; color: #8B5CF6; margin-bottom: 3px; }
+          .booking-date { font-size: 13px; color: #666; }
+          .success-icon { font-size: 40px; color: #10B981; margin: 15px 0; }
+          .content { margin: 20px 0; }
+          .field { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dotted #eee; }
+          .field:last-of-type { border-bottom: none; } /* Perbaikan: last-of-type untuk field terakhir */
+          .field-label { font-weight: bold; color: #333; display: block; margin-bottom: 3px; font-size: 14px; }
+          .field-value { color: #555; margin-left: 10px; font-size: 14px; }
+          /* passenger-details-container & passenger-item tidak relevan untuk hotel, bisa dihilangkan atau diadaptasi jika ada data tamu */
+          .total-price { font-size: 17px; font-weight: bold; color: #8B5CF6; margin-top: 15px; padding: 12px; background-color: #f3f4f6; border-radius: 6px; text-align: right; }
+          .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #777; border-top: 1px solid #eee; padding-top: 15px; }
         </style>
       </head>
       <body>
-        <div class="header">
-          <div class="company-name">TravelEase</div>
-          <div class="booking-date">Tanggal Pemesanan: ${bookingDate}</div>
-          <div class="success-icon">✓</div>
+        <div class="container">
+          <div class="header">
+            <div class="company-name">TravelEase</div>
+            <div class="booking-date">Tanggal Pemesanan: ${bookingDate}</div>
+            <div class="success-icon">✓</div>
+            <div>Pemesanan Hotel Berhasil!</div>
+          </div>
+          
+          <div class="content">
+            <div class="field">
+              <div class="field-label">Kode Booking (ID Transaksi):</div>
+              <div class="field-value">${orderIdToDisplay}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Dipesan Oleh:</div>
+              <div class="field-value">${customerName}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Hotel:</div>
+              <div class="field-value">${hotelNameFromAPI}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Ruangan:</div>
+              <div class="field-value">${roomNameFromAPI} (${roomTypeFromAPI})</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Check-In:</div>
+              <div class="field-value">${checkIn ? formatDateTimeForPdf(checkIn, 'date_full') : 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Check-Out:</div>
+              <div class="field-value">${checkOut ? formatDateTimeForPdf(checkOut, 'date_full') : 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Durasi Menginap:</div>
+              <div class="field-value">${calculatedNights > 0 ? `${calculatedNights} malam` : 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Kapasitas Ruangan:</div>
+              <div class="field-value">${capacityFromAPI}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Fasilitas Utama:</div>
+              <div class="field-value">${facilitiesFromAPI}</div>
+            </div>
+            
+            <div class="total-price">
+              Total Harga: ${formatCurrency(finalPrice)}
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p>Terima kasih telah memilih TravelEase!</p>
+            <p>Harap simpan konfirmasi ini untuk catatan Anda.</p>
+          </div>
         </div>
-        <div class="content">
-          <div class="field"><div class="field-label">Order Code:</div><div class="field-value">${orderIdToDisplay}</div></div>
-          <div class="field"><div class="field-label">Hotel:</div><div class="field-value">${hotelNameFromAPI}</div></div>
-          <div class="field"><div class="field-label">Room:</div><div class="field-value">${roomNameFromAPI} - ${roomTypeFromAPI}</div></div>
-          <div class="field"><div class="field-label">Customer:</div><div class="field-value">${customerName}</div></div>
-          <div class="field"><div class="field-label">Check-In:</div><div class="field-value">${checkIn ? new Date(checkIn).toLocaleDateString('id-ID') : 'N/A'}</div></div>
-          <div class="field"><div class="field-label">Check-Out:</div><div class="field-value">${checkOut ? new Date(checkOut).toLocaleDateString('id-ID') : 'N/A'}</div></div>
-          <div class="field"><div class="field-label">Capacity:</div><div class="field-value">${capacityFromAPI}</div></div>
-          <div class="field"><div class="field-label">Facilities:</div><div class="field-value">${facilitiesFromAPI}</div></div>
-          <div class="total-price">Total Price: ${formatCurrency(totalPrice)}</div>
-        </div>
-        <div class="footer"><p>Thank you for choosing TravelEase!</p><p>Please keep this confirmation for your records.</p></div>
       </body>
       </html>
     `;
 
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open('', '_blank', 'height=600,width=800');
     if (printWindow) {
       printWindow.document.write(htmlContent);
       printWindow.document.close();
@@ -658,7 +717,7 @@ const DetailRuangan = () => {
     }
   };
 
-  if (loadingRoomDetails || loadingUserBalance && userBalance === null) return <div className="text-center py-20">Loading details...</div>;
+  if (loadingRoomDetails || (loadingUserBalance && userBalance === null)) return <div className="text-center py-20">Loading details...</div>;
   if (errorRoomDetails) return <div className="text-center py-20 text-red-500">Error loading room: {errorRoomDetails}</div>;
   if (errorUserBalance && userBalance === null) return <div className="text-center py-20 text-red-500">Error loading balance: {errorUserBalance}</div>;
   if (!currentRoomDetails || Object.keys(currentRoomDetails).length === 0) {
@@ -667,7 +726,6 @@ const DetailRuangan = () => {
 
   const displayHotelName = currentRoomDetails?.hotelName || 'Informasi Hotel Tidak Tersedia';
   const customerNameToDisplay = userBalance?.name || 'Budi';
-  // Use API transaction ID for success modal if payment was made, otherwise booking ID
   const successOrderCode = paymentDetails?.transaction?.id || booking?.id || currentTransactionId || clientOrderCode;
 
 
@@ -749,6 +807,9 @@ const DetailRuangan = () => {
                 <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="px-4 py-2 rounded-full border focus:outline-none focus:ring-2 focus:ring-purple-500" />
               </div>
             </div>
+            {calculatedNights > 0 && (
+                <p className="text-sm text-gray-600 mb-2">Durasi menginap: {calculatedNights} malam</p>
+            )}
             <div className="flex justify-between text-left md:text-lg font-semibold mb-4 mt-4">
               <div className='flex flex-col'>
                 <span className='font-bold text-xl'>Total Price</span>
@@ -773,7 +834,6 @@ const DetailRuangan = () => {
         </div>
       </section>
 
-      {/* Modal Konfirmasi Reservasi */}
       {showConfirmation && currentRoomDetails && currentTransactionId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
           <div className="bg-white rounded-[30px] p-8 w-full max-w-md text-black shadow-lg text-center">
@@ -784,6 +844,7 @@ const DetailRuangan = () => {
               <p><strong>Name</strong><br />{customerNameToDisplay}</p>
               <p><strong>Check-in</strong><br />{checkIn ? new Date(checkIn).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p>
               <p><strong>Check-out</strong><br />{checkOut ? new Date(checkOut).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p>
+              <p><strong>Durasi Menginap:</strong><br />{calculatedNights > 0 ? `${calculatedNights} malam` : 'N/A'}</p>
               <p><strong>Total Price</strong><br />{formatCurrency(totalPrice)}</p>
               <p><strong>Your Balance After Purchase (Estimate)</strong><br />
                 {userBalance?.currentAmount !== undefined ? formatCurrency(userBalance.currentAmount - totalPrice) : 'N/A'}
@@ -810,9 +871,6 @@ const DetailRuangan = () => {
              <button
                 onClick={() => {
                     setShowConfirmation(false);
-                    // If user closes confirmation without purchase/cancel, what happens to the 'ORDERED' booking?
-                    // It remains. User might want to pay/cancel it later from a "My Bookings" page.
-                    // For now, just close the modal.
                     setPaymentErrorMessage('');
                     setCancellationErrorMessage('');
                 }}
@@ -825,7 +883,6 @@ const DetailRuangan = () => {
         </div>
       )}
 
-      {/* Modal Sukses Reservasi (setelah pembayaran berhasil) */}
       {showSuccess && currentRoomDetails && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
           <div className="bg-white rounded-[30px] p-6 w-full max-w-md text-black shadow-lg text-center">
@@ -839,6 +896,7 @@ const DetailRuangan = () => {
               <p><strong>Name:</strong><br />{customerNameToDisplay}</p>
               <p><strong>Check-in:</strong><br />{checkIn ? new Date(checkIn).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p>
               <p><strong>Check-out:</strong><br />{checkOut ? new Date(checkOut).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p>
+              <p><strong>Durasi Menginap:</strong><br />{calculatedNights > 0 ? `${calculatedNights} malam` : 'N/A'}</p>
               <p><strong>Total Price:</strong><br />{formatCurrency(totalPrice)}</p>
             </div>
             <div className="flex flex-col gap-3 mt-6">
@@ -852,7 +910,7 @@ const DetailRuangan = () => {
                 title="Kembali ke halaman utama"
                 onClick={() => {
                   setShowSuccess(false);
-                  setCurrentTransactionId(null); // Reset transaction ID
+                  setCurrentTransactionId(null); 
                   navigate("/");
                 }}
                 className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-gray-600 transition-colors"
@@ -862,7 +920,7 @@ const DetailRuangan = () => {
               <button
                 onClick={() => {
                   setShowSuccess(false);
-                  setCurrentTransactionId(null); // Reset transaction ID
+                  setCurrentTransactionId(null); 
                 }}
                 className="bg-red-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-red-600 transition-colors"
               >

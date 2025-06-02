@@ -13,10 +13,13 @@ import {
   getUserSaldoRequest,
   getUserSaldoSuccess,
   getUserSaldoFailure,
-  resetUserPlaneState, // Added for resetting state
-  cancelPaymentRequest, // New action type
-  cancelPaymentSuccess, // New action type
+  resetUserPlaneState,
+  cancelPaymentRequest,
+  cancelPaymentSuccess,
   cancelPaymentFailure,
+  getFlightDetailRequest, // Import new action type
+  getFlightDetailSuccess, // Import new action type
+  getFlightDetailFailure, // Import new action type
 } from "../reducers/userPlaneReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -69,14 +72,14 @@ export const bookFlight = (flightId, passengers) => async (dispatch) => {
 
     if (data?.data) {
       dispatch(bookFlightSuccess(data.data));
-      return data.data; // Return data for chaining or component use
+      return data.data;
     } else {
       throw new Error("Invalid data format from API for flight booking");
     }
   } catch (error) {
     console.error("[ERROR] Booking flight:", error);
     dispatch(bookFlightFailure(error.response?.data?.message || error.message));
-    throw error; // Re-throw for component error handling
+    throw error;
   }
 };
 
@@ -89,7 +92,7 @@ export const payFlight = (transactionId) => async (dispatch) => {
       throw new Error("Authentication token not found.");
     }
 
-    const { data } = await axios.put(`${api_url}/payment-flight`, // Assuming 'payment-fligt' was a typo
+    const { data } = await axios.put(`${api_url}/payment-flight`,
       { transactionId },
       {
         headers: {
@@ -101,16 +104,15 @@ export const payFlight = (transactionId) => async (dispatch) => {
 
     if (data?.data) {
       dispatch(payFlightSuccess(data.data));
-      // Optionally, refresh user saldo after successful payment
       dispatch(getUserSaldo());
-      return data.data; // Return data for component use
+      return data.data;
     } else {
       throw new Error("Invalid data format from API for flight payment");
     }
   } catch (error) {
     console.error("[ERROR] Paying flight:", error);
     dispatch(payFlightFailure(error.response?.data?.message || error.message));
-    throw error; // Re-throw for component error handling
+    throw error;
   }
 };
 
@@ -162,20 +164,48 @@ export const cancelPayment = (transactionId) => async (dispatch) => {
 
     if (data?.data && data.message === "Transaction successfully cancelled") {
       dispatch(cancelPaymentSuccess(data.data));
-      // After successful cancellation and refund, refresh user's saldo
       dispatch(getUserSaldo());
-      return data; // Return the full response data
+      return data;
     } else {
       throw new Error(data?.message || "Invalid data format from API for cancel payment");
     }
   } catch (error) {
     console.error("[ERROR] Cancelling payment:", error);
     dispatch(cancelPaymentFailure(error.response?.data?.message || error.message));
+    throw error;
+  }
+};
+
+// New action creator for fetching flight detail
+export const getFlightDetail = (flightId) => async (dispatch) => {
+  try {
+    dispatch(getFlightDetailRequest());
+
+    const token = Cookies.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found.");
+    }
+
+    const { data } = await axios.get(`${api_url}/detail-flight?flightId=${flightId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (data?.data) {
+      dispatch(getFlightDetailSuccess(data.data));
+      return data.data; // Return data for component use
+    } else {
+      throw new Error("Invalid data format from API for flight detail");
+    }
+  } catch (error) {
+    console.error("[ERROR] Fetching flight detail:", error);
+    dispatch(getFlightDetailFailure(error.response?.data?.message || error.message));
     throw error; // Re-throw for component error handling
   }
 };
 
-// Action to reset state, can be called on component unmount or specific events
 export const clearUserPlaneState = () => (dispatch) => {
   dispatch(resetUserPlaneState());
 };
