@@ -1,16 +1,15 @@
 import React from 'react';
 
-const Button = ({ text, bgColor, onClick, disabled = false }) => {
+const Button = ({ text, bgColor, onClick, disabled = false, icon = null }) => {
   return (
-    <div className={`rounded-3xl ${bgColor} border p-2 w-24 md:w-40 ${disabled ? 'opacity-50' : ''}`}>
-      <button 
-        className="w-full text-white font-bold text-sm md:text-base" 
-        onClick={onClick}
-        disabled={disabled}
-      >
-        {text}
-      </button>
-    </div>
+    <button
+      className={`flex items-center justify-center rounded-lg ${bgColor} border p-2 px-4 md:px-6 min-w-[120px] md:min-w-[150px] text-white font-bold text-sm md:text-base transition-opacity duration-150 ${disabled ? 'opacity-60 cursor-not-allowed' : 'hover:opacity-90'}`}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {icon}
+      {text}
+    </button>
   );
 };
 
