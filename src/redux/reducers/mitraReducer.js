@@ -182,7 +182,7 @@
 
 // export default mitraSlice.reducer;
 
-
+// mitraReducer.js
 // mitraReducer.js
 import { createSlice } from "@reduxjs/toolkit";
 
@@ -228,12 +228,12 @@ const initialState = {
   loadingSeatCategories: false,
   errorSeatCategories: null,
 
-  loadingCreateFlight: false, // New state for creating flight
-  errorCreateFlight: null,   // New state for creating flight error
-  createdFlight: null,       // New state for created flight
-  airportList: [], // New state for airports
-  loadingAirports: false, // New state for loading airports
-  errorAirports: null, // New state for airports error
+  loadingCreateFlight: false,
+  errorCreateFlight: null,
+  createdFlight: null,
+  airportList: [],
+  loadingAirports: false,
+  errorAirports: null,
 
   hotelList: [],
   loadingHotels: false,
@@ -254,10 +254,19 @@ const initialState = {
   roomList: [],
   loadingRooms: false,
   errorRooms: null,
-  // State baru untuk update status kamar
-  loadingUpdateRoomStatus: {}, // Objek: { roomId: true/false }
-  errorUpdateRoomStatus: {},   // Objek: { roomId: "pesan error" }
-};
+  loadingUpdateRoomStatus: {},
+  errorUpdateRoomStatus: {},
+
+  // New states for Room Types
+  roomTypeList: [],
+  loadingRoomTypes: false,
+  errorRoomTypes: null,
+
+  // New states for Creating Room
+  loadingCreateRoom: false,
+  errorCreateRoom: null,
+  createdRoomData: null,
+}; //
 
 const mitraSlice = createSlice({
   name: "mitra",
@@ -270,9 +279,9 @@ const mitraSlice = createSlice({
     createMitraRequest: (state) => { state.loadingCreate = true; state.errorCreate = null; state.createdMitra = null; },
     createMitraSuccess: (state, action) => { state.loadingCreate = false; state.createdMitra = action.payload; state.mitraList.push(action.payload); },
     createMitraFailure: (state, action) => { state.loadingCreate = false; state.errorCreate = action.payload; },
-    deleteMitraRequest: (state) => { state.loadingDelete = true; state.errorDelete = null; }, // Ini untuk airline
-    deleteMitraSuccess: (state, action) => { state.loadingDelete = false; state.mitraList = state.mitraList.filter( (mitra) => mitra.id !== action.payload ); }, // Ini untuk airline
-    deleteMitraFailure: (state, action) => { state.loadingDelete = false; state.errorDelete = action.payload; }, // Ini untuk airline
+    deleteMitraRequest: (state) => { state.loadingDelete = true; state.errorDelete = null; },
+    deleteMitraSuccess: (state, action) => { state.loadingDelete = false; state.mitraList = state.mitraList.filter( (mitra) => mitra.id !== action.payload ); },
+    deleteMitraFailure: (state, action) => { state.loadingDelete = false; state.errorDelete = action.payload; },
     updateMitraRequest: (state) => { state.loadingUpdate = true; state.errorUpdate = null; state.updatedMitra = null; },
     updateMitraSuccess: (state, action) => { state.loadingUpdate = false; state.updatedMitra = action.payload; const index = state.mitraList.findIndex( (mitra) => mitra.id === action.payload.id ); if (index !== -1) { state.mitraList[index] = action.payload; } },
     updateMitraFailure: (state, action) => { state.loadingUpdate = false; state.errorUpdate = action.payload; },
@@ -313,17 +322,15 @@ const mitraSlice = createSlice({
     },
     createFlightSuccess: (state, action) => {
       state.loadingCreateFlight = false;
-      state.createdFlight = action.payload; // Menyimpan data penerbangan yang berhasil dibuat
+      state.createdFlight = action.payload;
       state.errorCreateFlight = null;
-      // Anda bisa memilih untuk tidak menambahkan ke daftar lokal dan mengandalkan fetch ulang
-      // Jika ada flightList, tambahkan: state.flightList.push(action.payload);
     },
     createFlightFailure: (state, action) => {
       state.loadingCreateFlight = false;
       state.errorCreateFlight = action.payload;
       state.createdFlight = null;
     },
-    resetCreateFlightStatus: (state) => { // Untuk mereset status setelah operasi
+    resetCreateFlightStatus: (state) => {
         state.loadingCreateFlight = false;
         state.errorCreateFlight = null;
         state.createdFlight = null;
@@ -347,15 +354,12 @@ const mitraSlice = createSlice({
 
     // --- Hotel Reducers ---
     getHotelsRequest: (state) => {
-      console.log("mitraReducer: getHotelsRequest dieksekusi"); // LOG F.1 (dari sebelumnya)
       state.loadingHotels = true; state.errorHotels = null;
     },
     getHotelsSuccess: (state, action) => {
-      console.log("mitraReducer: getHotelsSuccess dieksekusi, payload length:", action.payload?.length); // LOG F.2 (dari sebelumnya)
       state.loadingHotels = false; state.hotelList = action.payload; state.errorHotels = null;
     },
     getHotelsFailure: (state, action) => {
-      console.log("mitraReducer: getHotelsFailure dieksekusi, error:", action.payload); // LOG F.3 (dari sebelumnya)
       state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = [];
     },
     createHotelRequest: (state) => { state.loadingCreateHotel = true; state.errorCreateHotel = null; state.createdHotelData = null; },
@@ -364,9 +368,9 @@ const mitraSlice = createSlice({
     updateHotelRequest: (state) => { state.loadingUpdateHotel = true; state.errorUpdateHotel = null; state.updatedHotelData = null; },
     updateHotelSuccess: (state, action) => { state.loadingUpdateHotel = false; state.updatedHotelData = action.payload; state.errorUpdateHotel = null; const index = state.hotelList.findIndex( (hotel) => hotel.id === action.payload.id ); if (index !== -1) { state.hotelList[index] = action.payload; } },
     updateHotelFailure: (state, action) => { state.loadingUpdateHotel = false; state.errorUpdateHotel = action.payload; state.updatedHotelData = null; },
-    deleteHotelRequest: (state) => { state.loadingDeleteHotel = true; state.errorDeleteHotel = null; }, // Ini untuk hotel
-    deleteHotelSuccess: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = null; state.hotelList = state.hotelList.filter( (hotel) => hotel.id !== action.payload ); }, // Ini untuk hotel
-    deleteHotelFailure: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = action.payload; }, // Ini untuk hotel
+    deleteHotelRequest: (state) => { state.loadingDeleteHotel = true; state.errorDeleteHotel = null; },
+    deleteHotelSuccess: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = null; state.hotelList = state.hotelList.filter( (hotel) => hotel.id !== action.payload ); },
+    deleteHotelFailure: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = action.payload; },
     clearDeleteHotelErrorRequest: (state) => { state.errorDeleteHotel = null; },
 
     // --- Location Reducers ---
@@ -374,58 +378,87 @@ const mitraSlice = createSlice({
     getLocationsSuccess: (state, action) => { state.loadingLocations = false; state.locationList = action.payload; state.errorLocations = null; },
     getLocationsFailure: (state, action) => { state.loadingLocations = false; state.errorLocations = action.payload; state.locationList = []; },
 
-    // --- Room Reducers ---
+    // --- Room Reducers (Existing: Fetch, Update Status) ---
     getRoomsRequest: (state) => {
-      console.log("mitraReducer: getRoomsRequest dieksekusi"); // LOG 14
       state.loadingRooms = true; state.errorRooms = null; state.roomList = [];
     },
     getRoomsSuccess: (state, action) => {
-      console.log("mitraReducer: getRoomsSuccess dieksekusi, payload:", action.payload); // LOG 15
       state.loadingRooms = false; state.roomList = action.payload; state.errorRooms = null;
     },
     getRoomsFailure: (state, action) => {
-      console.log("mitraReducer: getRoomsFailure dieksekusi, error:", action.payload); // LOG 16
       state.loadingRooms = false; state.errorRooms = action.payload; state.roomList = [];
     },
-
-    // REDUCER BARU UNTUK UPDATE STATUS KAMAR
     updateRoomStatusRequest: (state, action) => {
       const { roomId } = action.payload;
-      console.log(`mitraReducer: updateRoomStatusRequest untuk roomId: ${roomId}`);
       state.loadingUpdateRoomStatus[roomId] = true;
       state.errorUpdateRoomStatus[roomId] = null;
     },
     updateRoomStatusSuccess: (state, action) => {
       const updatedRoom = action.payload;
-      console.log("mitraReducer: updateRoomStatusSuccess, updatedRoom:", updatedRoom);
       if (updatedRoom && updatedRoom.id) {
         state.loadingUpdateRoomStatus[updatedRoom.id] = false;
         state.errorUpdateRoomStatus[updatedRoom.id] = null;
         const index = state.roomList.findIndex(room => room.id === updatedRoom.id);
         if (index !== -1) {
-          // Merge data lama dengan data baru (terutama status)
-          // Jika API mengembalikan seluruh objek kamar yang diupdate:
           state.roomList[index] = { ...state.roomList[index], ...updatedRoom };
-          // Jika API hanya mengembalikan {id, status, hotelId} dari action:
-          // state.roomList[index].status = updatedRoom.status;
-        } else {
-          console.warn(`mitraReducer: updateRoomStatusSuccess - Kamar dengan ID ${updatedRoom.id} tidak ditemukan di roomList saat ini (hotelId: ${updatedRoom.hotelId}). Mungkin kamar dari hotel lain atau list belum sinkron.`);
         }
-      } else {
-        console.error("mitraReducer: updateRoomStatusSuccess - updatedRoom atau updatedRoom.id tidak valid:", updatedRoom);
       }
     },
     updateRoomStatusFailure: (state, action) => {
       const { roomId, error } = action.payload;
-      console.log(`mitraReducer: updateRoomStatusFailure untuk roomId: ${roomId}, error: ${error}`);
       state.loadingUpdateRoomStatus[roomId] = false;
       state.errorUpdateRoomStatus[roomId] = error;
     },
 
+    // --- Room Type Reducers (NEW) ---
+    getRoomTypesRequest: (state) => {
+      state.loadingRoomTypes = true;
+      state.errorRoomTypes = null;
+      state.roomTypeList = [];
+    }, //
+    getRoomTypesSuccess: (state, action) => {
+      state.loadingRoomTypes = false;
+      state.roomTypeList = action.payload;
+      state.errorRoomTypes = null;
+    }, //
+    getRoomTypesFailure: (state, action) => {
+      state.loadingRoomTypes = false;
+      state.errorRoomTypes = action.payload;
+      state.roomTypeList = [];
+    }, //
+
+    // --- Room (Create) Reducers (NEW) ---
+    createRoomRequest: (state) => {
+      state.loadingCreateRoom = true;
+      state.errorCreateRoom = null;
+      state.createdRoomData = null;
+    }, //
+    createRoomSuccess: (state, action) => {
+      state.loadingCreateRoom = false;
+      state.createdRoomData = action.payload;
+      state.errorCreateRoom = null;
+      // Optionally, add the new room to the roomList if it's being displayed immediately
+      if (state.roomList && Array.isArray(state.roomList)) {
+         state.roomList.push(action.payload);
+      } else {
+         state.roomList = [action.payload]; // Initialize if not an array or doesn't exist
+      }
+    }, //
+    createRoomFailure: (state, action) => {
+      state.loadingCreateRoom = false;
+      state.errorCreateRoom = action.payload;
+      state.createdRoomData = null;
+    }, //
+    resetCreateRoomStatus: (state) => {
+        state.loadingCreateRoom = false;
+        state.errorCreateRoom = null;
+        state.createdRoomData = null;
+    }, //
+
     resetMitraState: (state) => {
-      return initialState; // Atau definisikan ulang state awal jika lebih kompleks
+      return initialState;
     },
-  },
+  }, //
 });
 
 export const {
@@ -457,9 +490,11 @@ export const {
   clearDeleteHotelErrorRequest,
   getLocationsRequest, getLocationsSuccess, getLocationsFailure,
   getRoomsRequest, getRoomsSuccess, getRoomsFailure,
-  // Ekspor action baru
   updateRoomStatusRequest, updateRoomStatusSuccess, updateRoomStatusFailure,
+  // Export new room and room type actions
+  getRoomTypesRequest, getRoomTypesSuccess, getRoomTypesFailure,
+  createRoomRequest, createRoomSuccess, createRoomFailure, resetCreateRoomStatus,
   resetMitraState,
-} = mitraSlice.actions;
+} = mitraSlice.actions; //
 
-export default mitraSlice.reducer;
+export default mitraSlice.reducer; //

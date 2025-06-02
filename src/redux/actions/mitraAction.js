@@ -446,7 +446,6 @@
 
 
 // mitraAction.js
-// mitraAction.js
 import axios from "axios";
 import Cookies from "js-cookie";
 import {
@@ -489,12 +488,12 @@ import {
   createSeatsRequest,
   createSeatsSuccess,
   createSeatsFailure,
-  createFlightRequest, // Import new action type
-  createFlightSuccess, // Import new action type
-  createFlightFailure, // Import new action type
-  getAirportsRequest, // Import new action type
-  getAirportsSuccess, // Import new action type
-  getAirportsFailure, // Import new action type
+  createFlightRequest,
+  createFlightSuccess,
+  createFlightFailure,
+  getAirportsRequest,
+  getAirportsSuccess,
+  getAirportsFailure,
   getHotelsRequest,
   getHotelsSuccess,
   getHotelsFailure,
@@ -517,6 +516,13 @@ import {
   updateRoomStatusRequest,
   updateRoomStatusSuccess,
   updateRoomStatusFailure,
+  getRoomTypesRequest,
+  getRoomTypesSuccess,
+  getRoomTypesFailure,
+  createRoomRequest,
+  createRoomSuccess,
+  createRoomFailure,
+  resetCreateRoomStatus,
 } from "../reducers/mitraReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -743,21 +749,16 @@ export const createFlight = (flightData) => async (dispatch) => {
   dispatch(createFlightRequest());
   try {
     const token = Cookies.get("token");
-    console.log("[DEBUG] Auth Token for Create Flight:", token);
-    console.log("[DEBUG] Sending Flight Data:", flightData);
-
     const response = await axios.post(`${api_url}/flight`, flightData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
-
-    console.log("[DEBUG] API Response (Create Flight):", response.data);
     dispatch(createFlightSuccess(response.data.data));
   } catch (error) {
-    console.error("[ERROR] Creating flight:", error.response || error);
-    dispatch(createFlightFailure(error.response?.data?.message || error.message));
+    const errorMessage = error.response?.data?.message || error.message || "Failed to create flight";
+    dispatch(createFlightFailure(String(errorMessage)));
   }
 };
 
@@ -766,48 +767,39 @@ export const fetchAirportsRequest = () => async (dispatch) => {
   dispatch(getAirportsRequest());
   try {
     const token = Cookies.get("token");
-    console.log("[DEBUG] Auth Token for Get Airports:", token);
-
     const response = await axios.get(`${api_url}/airports`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
-
-    console.log("[DEBUG] API Response (Get Airports):", response.data);
     if (response.data?.data && Array.isArray(response.data.data)) {
       dispatch(getAirportsSuccess(response.data.data));
     } else {
       throw new Error("Invalid data format from API");
     }
   } catch (error) {
-    console.error("[ERROR] Fetching airports:", error.response || error);
-    dispatch(getAirportsFailure(error.response?.data?.message || error.message));
+    const errorMessage = error.response?.data?.message || error.message || "Failed to fetch airports";
+    dispatch(getAirportsFailure(String(errorMessage)));
   }
 };
 
 // --- Hotel Actions ---
 export const fetchHotels = () => async (dispatch) => {
-  console.log("mitraAction: fetchHotels dipanggil");
   dispatch(getHotelsRequest());
   try {
     const token = Cookies.get("token");
-    console.log("mitraAction - fetchHotels: Token:", token ? "Ada" : "TIDAK ADA");
     const response = await axios.get(`${api_url}/hotels`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("mitraAction - fetchHotels: Respons API:", response.data);
     if (response.data?.data && Array.isArray(response.data.data)) {
       dispatch(getHotelsSuccess(response.data.data));
     } else if (response.data?.message === "Success" && response.data?.data === null) {
       dispatch(getHotelsSuccess([]));
     } else {
-      console.error("mitraAction - fetchHotels: Format data tidak valid:", response.data);
       throw new Error("Format data tidak valid dari API untuk hotels");
     }
   } catch (error) {
-    console.error("mitraAction - fetchHotels: Error di catch block:", error);
     const errorMessage = error.response?.data?.message || error.message || "Gagal mengambil data hotel";
     dispatch(getHotelsFailure(String(errorMessage)));
   }
@@ -817,16 +809,19 @@ export const createHotel = (hotelFormData) => async (dispatch) => {
   dispatch(createHotelRequest());
   try {
     const token = Cookies.get("token");
-    const response = await axios.post(`${api_url}/hotel`, hotelFormData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const headers = { Authorization: `Bearer ${token}` };
+    if (hotelFormData instanceof FormData) {
+        // For FormData, axios sets Content-Type automatically with boundary
+    } else {
+        headers['Content-Type'] = 'application/json';
+    }
+    const response = await axios.post(`${api_url}/hotel`, hotelFormData, { headers });
     if (response.data?.data) {
       dispatch(createHotelSuccess(response.data.data));
     } else {
       throw new Error("Invalid data format from API on create hotel");
     }
   } catch (error) {
-    console.error("Create Hotel Error:", error.response || error);
     const errorMessage = error.response?.data?.message || error.message || "Failed to create hotel";
     dispatch(createHotelFailure(String(errorMessage)));
   }
@@ -836,23 +831,25 @@ export const updateHotel = (hotelFormData) => async (dispatch) => {
   dispatch(updateHotelRequest());
   try {
     const token = Cookies.get("token");
-    const response = await axios.patch(`${api_url}/hotel`, hotelFormData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const headers = { Authorization: `Bearer ${token}` };
+    if (hotelFormData instanceof FormData) {
+        // For FormData, axios sets Content-Type automatically with boundary
+    } else {
+        headers['Content-Type'] = 'application/json';
+    }
+    const response = await axios.patch(`${api_url}/hotel`, hotelFormData, { headers });
     if (response.data?.data) {
       dispatch(updateHotelSuccess(response.data.data));
     } else {
       throw new Error("Invalid data format from API on update hotel");
     }
   } catch (error) {
-    console.error("Update Hotel Error:", error.response || error);
     const errorMessage = error.response?.data?.message || error.message || "Failed to update hotel";
     dispatch(updateHotelFailure(String(errorMessage)));
   }
 };
 
 export const deleteHotel = (hotelId) => async (dispatch) => {
-  console.log("deleteHotel ACTION FIRED with hotelId:", hotelId);
   dispatch(deleteHotelRequest());
   try {
     const token = Cookies.get("token");
@@ -866,7 +863,6 @@ export const deleteHotel = (hotelId) => async (dispatch) => {
     });
     dispatch(deleteHotelSuccess(hotelId));
   } catch (error) {
-    console.error("Delete Hotel API Error:", error.response || error);
     const errorMessage = error.response?.data?.message || error.message || "Failed to delete hotel from action";
     dispatch(deleteHotelFailure(String(errorMessage)));
   }
@@ -893,87 +889,117 @@ export const fetchLocations = () => async (dispatch) => {
       throw new Error("Invalid data format from API for locations");
     }
   } catch (error) {
-    console.error("Fetch Locations Error:", error.response || error);
     const errorMessage = error.response?.data?.message || error.message || "Failed to fetch locations";
     dispatch(getLocationsFailure(String(errorMessage)));
   }
 };
 
-// --- Room Actions ---
+// --- Room Actions (Existing: Fetch, Update Status) ---
 export const fetchRooms = (hotelId) => async (dispatch) => {
-  console.log("mitraAction: fetchRooms dipanggil dengan hotelId:", hotelId);
   dispatch(getRoomsRequest());
   try {
     const token = Cookies.get("token");
-    console.log("mitraAction - fetchRooms: Token untuk fetchRooms:", token ? "Ada" : "TIDAK ADA");
     const response = await axios.get(`${api_url}/rooms/${hotelId}`, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
-    console.log("mitraAction - fetchRooms: Respons API mentah untuk /rooms:", response);
-    console.log("mitraAction - fetchRooms: Respons API data untuk /rooms:", response.data);
 
     if (response.data?.message === "Success" && Array.isArray(response.data.data)) {
-      console.log("mitraAction - fetchRooms: Dispatching getRoomsSuccess dengan data:", response.data.data);
       dispatch(getRoomsSuccess(response.data.data));
     } else if (response.data?.message === "Success" && response.data?.data === null) {
-      console.log("mitraAction - fetchRooms: Dispatching getRoomsSuccess dengan array kosong (data dari API null)");
       dispatch(getRoomsSuccess([]));
     } else {
-      console.error("mitraAction - fetchRooms: Respons API /rooms TIDAK SESUAI kondisi sukses. response.data:", response.data);
       throw new Error(response.data?.message || "Format data tidak valid dari API untuk rooms");
     }
   } catch (error) {
-    console.error("mitraAction - fetchRooms: Error di catch block. Error:", error);
-    console.error("mitraAction - fetchRooms: Error response data (jika ada):", error.response?.data);
-    console.error("mitraAction - fetchRooms: Error message:", error.message);
     const errorMessage = error.response?.data?.message || error.message || "Gagal mengambil data kamar";
     dispatch(getRoomsFailure(String(errorMessage)));
   }
 };
 
 export const updateRoomStatus = (roomId, hotelIdForContext, newStatus) => async (dispatch) => {
-  console.log(`mitraAction: updateRoomStatus. roomId: ${roomId}, hotelIdForContext: ${hotelIdForContext}, newStatus: ${newStatus}`);
   dispatch(updateRoomStatusRequest({ roomId }));
   try {
     const token = Cookies.get("token");
-    const targetUrl = `${api_url}/rooms/${roomId}`; // URL yang akan di-PATCH
-    console.log(`mitraAction - updateRoomStatus: Mencoba PATCH ke URL: ${targetUrl} dengan status: ${newStatus}`); // LOG BARU untuk URL dan status
-    
+    const targetUrl = `${api_url}/rooms/${roomId}`;
+
     const response = await axios.patch(targetUrl,
-      { status: newStatus }, // Body request
+      { status: newStatus },
       {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       }
     );
-    console.log("mitraAction - updateRoomStatus: Respons API data:", response.data);
 
     if (response.data?.message === "Success" && response.data?.data) {
-      console.log("mitraAction - updateRoomStatus: Dispatching updateRoomStatusSuccess dengan data:", response.data.data);
       dispatch(updateRoomStatusSuccess(response.data.data));
     } else if (response.data?.message === "Success") {
-        console.log("mitraAction - updateRoomStatus: Sukses, API tidak return data kamar. Membuat data lokal.");
         dispatch(updateRoomStatusSuccess({ id: roomId, status: newStatus, hotelId: hotelIdForContext }));
     }
     else {
-      console.error("mitraAction - updateRoomStatus: Respons API TIDAK SESUAI kondisi sukses. response.data:", response.data);
       throw new Error(response.data?.message || "Gagal memperbarui status kamar dari API");
     }
   } catch (error) {
-    console.error("mitraAction - updateRoomStatus: Error di catch block:", error);
-    // Menambahkan log untuk detail error Axios yang lebih spesifik
-    if (error.response) {
-      // Server merespons dengan status code di luar rentang 2xx
-      console.error("mitraAction - updateRoomStatus: Error data:", error.response.data);
-      console.error("mitraAction - updateRoomStatus: Error status:", error.response.status);
-      console.error("mitraAction - updateRoomStatus: Error headers:", error.response.headers);
-    } else if (error.request) {
-      // Permintaan dibuat tapi tidak ada respons yang diterima
-      console.error("mitraAction - updateRoomStatus: Tidak ada respons dari server:", error.request);
-    } else {
-      // Sesuatu terjadi saat menyiapkan permintaan yang memicu Error
-      console.error("mitraAction - updateRoomStatus: Error saat menyiapkan permintaan:", error.message);
-    }
     const errorMessage = error.response?.data?.message || error.message || "Gagal memperbarui status kamar";
     dispatch(updateRoomStatusFailure({ roomId, error: String(errorMessage) }));
   }
+};
+
+// --- Room Type Actions (NEW) ---
+export const fetchRoomTypes = (hotelId) => async (dispatch) => {
+  dispatch(getRoomTypesRequest());
+  try {
+    const token = Cookies.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found.");
+    }
+    const response = await axios.get(`${api_url}/roomType/${hotelId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.data?.message === "Success" && Array.isArray(response.data.data)) {
+      dispatch(getRoomTypesSuccess(response.data.data));
+    } else if (response.data?.message === "Success" && response.data?.data === null) {
+      dispatch(getRoomTypesSuccess([]));
+    } else {
+      throw new Error(response.data?.message || "Invalid data format from API for room types");
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || "Failed to fetch room types";
+    dispatch(getRoomTypesFailure(String(errorMessage)));
+  }
+};
+
+// --- Room (Create) Action (NEW) ---
+export const createRoom = (roomData) => async (dispatch) => {
+  dispatch(createRoomRequest());
+  try {
+    const token = Cookies.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found.");
+    }
+    const headers = { Authorization: `Bearer ${token}` };
+    if (!(roomData instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+    }
+
+    const response = await axios.post(`${api_url}/room`, roomData, { headers });
+
+    if (response.data?.message === "Success" && response.data?.data) {
+      dispatch(createRoomSuccess(response.data.data));
+    } else if (response.data?.data) {
+        dispatch(createRoomSuccess(response.data.data));
+    }
+    else {
+      throw new Error(response.data?.message || "Failed to create room or invalid response format from API");
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || "Failed to create room";
+    dispatch(createRoomFailure(String(errorMessage)));
+  }
+};
+
+// Action to reset create room status
+export const resetCreateRoomState = () => (dispatch) => {
+    dispatch(resetCreateRoomStatus());
 };
