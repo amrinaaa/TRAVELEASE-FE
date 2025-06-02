@@ -12,8 +12,10 @@ const TambahRuangan = ({ isSidebarOpen }) => {
   const [rooms, setrooms] = useState(dataRuangan);
   const [selectedType, setSelectedType] = useState('');
   const [description, setDescription] = useState('');
-  const [roomImage, setRoomImage] = useState(null);
-  const [capacity, setCapacity] = useState(0); // Changed to simple number
+  // PERUBAHAN: Ganti roomImage menjadi array untuk multiple images (sesuai referensi TambahHotel)
+  const [imageFiles, setImageFiles] = useState([]);
+  const MAX_IMAGES = 10;
+  const [capacity, setCapacity] = useState(0);
   const [price, setPrice] = useState('');
   const [facilities, setFacilities] = useState([]);
   const [showFacilityModal, setShowFacilityModal] = useState(false);
@@ -43,6 +45,39 @@ const TambahRuangan = ({ isSidebarOpen }) => {
     if (name === "name") {
       setName(value);
     }
+  };
+  
+  // PERUBAHAN: Handler untuk multiple image upload (sesuai referensi TambahHotel)
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFiles = Array.from(e.target.files);
+      
+      // Check if total images exceed maximum
+      if (imageFiles.length + selectedFiles.length > MAX_IMAGES) {
+        alert(`You can only upload a maximum of ${MAX_IMAGES} images. Currently you have ${imageFiles.length} images.`);
+        return;
+      }
+      
+      // Validate file sizes (5MB each)
+      const oversizedFiles = selectedFiles.filter(file => file.size > 5 * 1024 * 1024);
+      if (oversizedFiles.length > 0) {
+        alert(`Some files are larger than 5MB: ${oversizedFiles.map(f => f.name).join(', ')}`);
+        return;
+      }
+      
+      // Add new files to existing array
+      setImageFiles(prev => [...prev, ...selectedFiles]);
+    }
+  };
+
+  // Remove specific image (sesuai referensi TambahHotel)
+  const handleRemoveImage = (indexToRemove) => {
+    setImageFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  // Clear all images (sesuai referensi TambahHotel)
+  const handleClearAllImages = () => {
+    setImageFiles([]);
   };
   
   // Handle input changes for the type modal
@@ -131,13 +166,21 @@ const TambahRuangan = ({ isSidebarOpen }) => {
     setName('');
     setDescription('');
     setSelectedType('');
+    // PERUBAHAN: Reset juga array gambar (sesuai referensi TambahHotel)
+    setImageFiles([]);
   };
   
   // Handle Submit button click - add new room to state
   const handleSubmit = () => {
     // Check if fields are empty
-    if (!name || !selectedType ) {
+    if (!name || !selectedType) {
       alert("Please fill in all fields.");
+      return;
+    }
+    
+    // PERUBAHAN: Validasi minimal 1 gambar (sesuai referensi TambahHotel)
+    if (imageFiles.length === 0) {
+      alert("Please upload at least one room image.");
       return;
     }
     
@@ -146,6 +189,8 @@ const TambahRuangan = ({ isSidebarOpen }) => {
       id: `R${(rooms.length + 1).toString().padStart(3, '0')}`,
       name: name,
       type: selectedType,
+      // PERUBAHAN: Simpan array gambar (sesuai referensi TambahHotel)
+      images: imageFiles
     };
     
     // Add the new room to the state
@@ -169,7 +214,6 @@ const TambahRuangan = ({ isSidebarOpen }) => {
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
-            {/* Perbaikan: Tambahkan ID ke link Home List */}
             <Link to={userId ? `/manajemen-ruangan/${userId}` : "/manajemen-pesawat"} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Room List</p>
@@ -263,22 +307,81 @@ const TambahRuangan = ({ isSidebarOpen }) => {
               </div>
             </div>
 
-            {/* Room Image input */}
+            {/* PERUBAHAN: Room Images input - Multiple images (sesuai referensi TambahHotel) */}
             <div className="flex flex-col mb-2 md:mb-4 items-center">
-            <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-700">
-                  <span className="text-red-700 mr-1">*</span>Room Image
+              <div className="text-left w-64 md:w-96">
+                <label htmlFor="imageFiles" className="block text-sm font-semibold text-gray-700">
+                  <span className="text-red-700 mr-1">*</span>Room Images
                 </label>
-                <div className="md:w-96 w-64">
-                <div className="flex w-full items-center border rounded-lg p-2 bg-gray-100">
-                    <input
-                    type="file"
-                    onChange={(e) => setRoomImage(e.target.files[0])}
-                    className="w-full bg-transparent focus:outline-none"
-                    />
+                
+                {/* File Input */}
+                <input
+                  id="imageFiles"
+                  type="file"
+                  name="imageFiles"
+                  onChange={handleImageChange}
+                  className="w-full bg-gray-100 p-2 rounded border"
+                  multiple
+                  accept="image/*"
+                  disabled={imageFiles.length >= MAX_IMAGES}
+                />
+                
+                {/* Info Text */}
+                <div className="flex justify-between items-center mt-1">
+                  <p className="text-xs text-gray-500">
+                    Maximum {MAX_IMAGES} images, 5MB each ({imageFiles.length}/{MAX_IMAGES} selected)
+                  </p>
+                  {imageFiles.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleClearAllImages}
+                      className="text-xs text-red-600 hover:text-red-800 underline"
+                    >
+                      Clear All
+                    </button>
+                  )}
                 </div>
-                </div>
-            </div>
+
+                {/* Image Preview Grid */}
+                {imageFiles.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-600 mb-2">Image Previews:</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {imageFiles.map((file, index) => (
+                        <div key={index} className="relative group">
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            alt={`Preview ${index + 1}`} 
+                            className="w-full h-24 object-cover border rounded"
+                          />
+                          
+                          {/* Remove button overlay */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(index)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Remove image"
+                          >
+                            ×
+                          </button>
+                          
+                          {/* File name */}
+                          <p className="text-xs text-gray-500 mt-1 truncate" title={file.name}>
+                            {file.name}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Warning when max reached */}
+                {imageFiles.length >= MAX_IMAGES && (
+                  <p className="text-xs text-orange-600 mt-1">
+                    Maximum number of images reached. Remove some images to add more.
+                  </p>
+                )}
+              </div>
             </div>
         
             <div className="flex flex-row justify-center gap-6 text-white font-bold mt-12 mb-10">
