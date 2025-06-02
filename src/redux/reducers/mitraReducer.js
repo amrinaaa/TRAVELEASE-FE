@@ -62,8 +62,8 @@
 //   loadingUpdateHotel: false,
 //   errorUpdateHotel: null,
 //   updatedHotelData: null,
-//   loadingDeleteHotel: false, // State untuk loading delete hotel
-//   errorDeleteHotel: null,    // State untuk error delete hotel
+//   loadingDeleteHotel: false,
+//   errorDeleteHotel: null,
 
 //   locationList: [],
 //   loadingLocations: false,
@@ -74,6 +74,8 @@
 //   errorRooms: null,
 //   loadingUpdateRoomStatus: {},
 //   errorUpdateRoomStatus: {},
+//   loadingDeleteRoom: false,    // <-- Tambahkan state ini
+//   errorDeleteRoom: null,       // <-- Tambahkan state ini
 // };
 
 // const mitraSlice = createSlice({
@@ -193,10 +195,10 @@
 //     updateHotelRequest: (state) => { state.loadingUpdateHotel = true; state.errorUpdateHotel = null; state.updatedHotelData = null; },
 //     updateHotelSuccess: (state, action) => { state.loadingUpdateHotel = false; state.updatedHotelData = action.payload; state.errorUpdateHotel = null; const index = state.hotelList.findIndex( (hotel) => hotel.id === action.payload.id ); if (index !== -1) { state.hotelList[index] = action.payload; } },
 //     updateHotelFailure: (state, action) => { state.loadingUpdateHotel = false; state.errorUpdateHotel = action.payload; state.updatedHotelData = null; },
-//     deleteHotelRequest: (state) => { state.loadingDeleteHotel = true; state.errorDeleteHotel = null; }, //
-//     deleteHotelSuccess: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = null; state.hotelList = state.hotelList.filter( (hotel) => hotel.id !== action.payload ); }, //
-//     deleteHotelFailure: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = action.payload; }, //
-//     clearDeleteHotelErrorRequest: (state) => { state.errorDeleteHotel = null; }, //
+//     deleteHotelRequest: (state) => { state.loadingDeleteHotel = true; state.errorDeleteHotel = null; },
+//     deleteHotelSuccess: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = null; state.hotelList = state.hotelList.filter( (hotel) => hotel.id !== action.payload ); },
+//     deleteHotelFailure: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = action.payload; },
+//     clearDeleteHotelErrorRequest: (state) => { state.errorDeleteHotel = null; },
 
 //     // --- Location Reducers ---
 //     getLocationsRequest: (state) => { state.loadingLocations = true; state.errorLocations = null; },
@@ -226,8 +228,6 @@
 //         const index = state.roomList.findIndex(room => room.id === updatedRoom.id);
 //         if (index !== -1) {
 //           state.roomList[index] = { ...state.roomList[index], ...updatedRoom };
-//         } else {
-//            console.warn(`mitraReducer: updateRoomStatusSuccess - Kamar dengan ID ${updatedRoom.id} tidak ditemukan di roomList saat ini (hotelId: ${updatedRoom.hotelId}). Mungkin kamar dari hotel lain atau list belum sinkron.`);
 //         }
 //       } else {
 //         console.error("mitraReducer: updateRoomStatusSuccess - updatedRoom atau updatedRoom.id tidak valid:", updatedRoom);
@@ -237,6 +237,24 @@
 //       const { roomId, error } = action.payload;
 //       state.loadingUpdateRoomStatus[roomId] = false;
 //       state.errorUpdateRoomStatus[roomId] = error;
+//     },
+//     // Reducer baru untuk delete room
+//     deleteRoomRequest: (state) => { // <-- Tambahkan reducer ini
+//       state.loadingDeleteRoom = true;
+//       state.errorDeleteRoom = null;
+//     },
+//     deleteRoomSuccess: (state, action) => { // <-- Tambahkan reducer ini
+//       state.loadingDeleteRoom = false;
+//       state.errorDeleteRoom = null;
+//       // Menghapus kamar dari roomList berdasarkan roomId (action.payload)
+//       state.roomList = state.roomList.filter((room) => room.id !== action.payload);
+//     },
+//     deleteRoomFailure: (state, action) => { // <-- Tambahkan reducer ini
+//       state.loadingDeleteRoom = false;
+//       state.errorDeleteRoom = action.payload;
+//     },
+//     clearDeleteRoomErrorRequest: (state) => { // <-- Tambahkan reducer ini (opsional)
+//         state.errorDeleteRoom = null;
 //     },
 
 //     resetMitraState: (state) => {
@@ -271,11 +289,15 @@
 //   getHotelByIdRequest, getHotelByIdSuccess, getHotelByIdFailure,
 //   createHotelRequest, createHotelSuccess, createHotelFailure,
 //   updateHotelRequest, updateHotelSuccess, updateHotelFailure,
-//   deleteHotelRequest, deleteHotelSuccess, deleteHotelFailure, // Export delete hotel actions
+//   deleteHotelRequest, deleteHotelSuccess, deleteHotelFailure,
 //   clearDeleteHotelErrorRequest,
 //   getLocationsRequest, getLocationsSuccess, getLocationsFailure,
 //   getRoomsRequest, getRoomsSuccess, getRoomsFailure,
 //   updateRoomStatusRequest, updateRoomStatusSuccess, updateRoomStatusFailure,
+//   deleteRoomRequest, // <-- Ekspor action ini
+//   deleteRoomSuccess, // <-- Ekspor action ini
+//   deleteRoomFailure, // <-- Ekspor action ini
+//   clearDeleteRoomErrorRequest, // <-- Ekspor action ini (opsional)
 //   resetMitraState,
 // } = mitraSlice.actions;
 
