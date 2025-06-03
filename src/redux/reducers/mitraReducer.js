@@ -305,6 +305,7 @@
 
 // mitraReducer.js
 // mitraReducer.js
+// mitraReducer.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -380,19 +381,29 @@ const initialState = {
   errorRooms: null,
   loadingUpdateRoomStatus: {},
   errorUpdateRoomStatus: {},
-  loadingDeleteRoom: false,    // <-- Tambahkan state ini
-  errorDeleteRoom: null,       // <-- Tambahkan state ini
+  loadingDeleteRoom: false,
+  errorDeleteRoom: null,
 
-    // New states for Room Types
+  // Existing states for Room Types (fetch)
   roomTypeList: [],
   loadingRoomTypes: false,
   errorRoomTypes: null,
 
-  // New states for Creating Room
+  // Existing states for Creating Room
   loadingCreateRoom: false,
   errorCreateRoom: null,
   createdRoomData: null,
-}; //
+
+  // New states for Creating Room Type
+  loadingCreateRoomType: false,
+  errorCreateRoomType: null,
+  createdRoomTypeData: null,
+
+  // New states for Creating Facility
+  loadingCreateFacility: false,
+  errorCreateFacility: null,
+  createdFacilityData: null,
+};
 
 const mitraSlice = createSlice({
   name: "mitra",
@@ -443,68 +454,23 @@ const mitraSlice = createSlice({
     getSeatCategoriesFailure: (state, action) => { state.loadingSeatCategories = false; state.errorSeatCategories = action.payload; state.seatCategoryList = []; },
 
     // --- Flight Reducers ---
-    createFlightRequest: (state) => {
-      state.loadingCreateFlight = true;
-      state.errorCreateFlight = null;
-      state.createdFlight = null;
-    },
-    createFlightSuccess: (state, action) => {
-      state.loadingCreateFlight = false;
-      state.createdFlight = action.payload;
-      state.errorCreateFlight = null;
-    },
-    createFlightFailure: (state, action) => {
-      state.loadingCreateFlight = false;
-      state.errorCreateFlight = action.payload;
-      state.createdFlight = null;
-    },
-    resetCreateFlightStatus: (state) => {
-        state.loadingCreateFlight = false;
-        state.errorCreateFlight = null;
-        state.createdFlight = null;
-    },
+    createFlightRequest: (state) => { state.loadingCreateFlight = true; state.errorCreateFlight = null; state.createdFlight = null; },
+    createFlightSuccess: (state, action) => { state.loadingCreateFlight = false; state.createdFlight = action.payload; state.errorCreateFlight = null; },
+    createFlightFailure: (state, action) => { state.loadingCreateFlight = false; state.errorCreateFlight = action.payload; state.createdFlight = null; },
+    resetCreateFlightStatus: (state) => { state.loadingCreateFlight = false; state.errorCreateFlight = null; state.createdFlight = null; },
 
     // --- Airport Reducers ---
-    getAirportsRequest: (state) => {
-      state.loadingAirports = true;
-      state.errorAirports = null;
-    },
-    getAirportsSuccess: (state, action) => {
-      state.loadingAirports = false;
-      state.airportList = action.payload;
-      state.errorAirports = null;
-    },
-    getAirportsFailure: (state, action) => {
-      state.loadingAirports = false;
-      state.errorAirports = action.payload;
-      state.airportList = [];
-    },
+    getAirportsRequest: (state) => { state.loadingAirports = true; state.errorAirports = null; },
+    getAirportsSuccess: (state, action) => { state.loadingAirports = false; state.airportList = action.payload; state.errorAirports = null; },
+    getAirportsFailure: (state, action) => { state.loadingAirports = false; state.errorAirports = action.payload; state.airportList = []; },
 
     // --- Hotel Reducers ---
-    getHotelsRequest: (state) => {
-      state.loadingHotels = true; state.errorHotels = null;
-    },
-    getHotelsSuccess: (state, action) => {
-      state.loadingHotels = false; state.hotelList = action.payload; state.errorHotels = null;
-    },
-    getHotelsFailure: (state, action) => {
-      state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = [];
-    },
-    getHotelByIdRequest: (state) => {
-      state.loadingHotelDetail = true;
-      state.errorHotelDetail = null;
-      state.hotelDetail = null;
-    },
-    getHotelByIdSuccess: (state, action) => {
-      state.loadingHotelDetail = false;
-      state.hotelDetail = action.payload;
-      state.errorHotelDetail = null;
-    },
-    getHotelByIdFailure: (state, action) => {
-      state.loadingHotelDetail = false;
-      state.errorHotelDetail = action.payload;
-      state.hotelDetail = null;
-    },
+    getHotelsRequest: (state) => { state.loadingHotels = true; state.errorHotels = null; },
+    getHotelsSuccess: (state, action) => { state.loadingHotels = false; state.hotelList = action.payload; state.errorHotels = null; },
+    getHotelsFailure: (state, action) => { state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = []; },
+    getHotelByIdRequest: (state) => { state.loadingHotelDetail = true; state.errorHotelDetail = null; state.hotelDetail = null; },
+    getHotelByIdSuccess: (state, action) => { state.loadingHotelDetail = false; state.hotelDetail = action.payload; state.errorHotelDetail = null; },
+    getHotelByIdFailure: (state, action) => { state.loadingHotelDetail = false; state.errorHotelDetail = action.payload; state.hotelDetail = null; },
     createHotelRequest: (state) => { state.loadingCreateHotel = true; state.errorCreateHotel = null; state.createdHotelData = null; },
     createHotelSuccess: (state, action) => { state.loadingCreateHotel = false; state.createdHotelData = action.payload; state.errorCreateHotel = null; state.hotelList.push(action.payload); },
     createHotelFailure: (state, action) => { state.loadingCreateHotel = false; state.errorCreateHotel = action.payload; state.createdHotelData = null; },
@@ -521,105 +487,86 @@ const mitraSlice = createSlice({
     getLocationsSuccess: (state, action) => { state.loadingLocations = false; state.locationList = action.payload; state.errorLocations = null; },
     getLocationsFailure: (state, action) => { state.loadingLocations = false; state.errorLocations = action.payload; state.locationList = []; },
 
-    // --- Room Reducers (Existing: Fetch, Update Status) ---
-    getRoomsRequest: (state) => {
-      state.loadingRooms = true; state.errorRooms = null; state.roomList = [];
+    // --- Room Reducers (Existing: Fetch, Update Status, Delete) ---
+    getRoomsRequest: (state) => { state.loadingRooms = true; state.errorRooms = null; state.roomList = []; },
+    getRoomsSuccess: (state, action) => { state.loadingRooms = false; state.roomList = action.payload; state.errorRooms = null; },
+    getRoomsFailure: (state, action) => { state.loadingRooms = false; state.errorRooms = action.payload; state.roomList = []; },
+    updateRoomStatusRequest: (state, action) => { const { roomId } = action.payload; state.loadingUpdateRoomStatus[roomId] = true; state.errorUpdateRoomStatus[roomId] = null; },
+    updateRoomStatusSuccess: (state, action) => { const updatedRoom = action.payload; if (updatedRoom && updatedRoom.id) { state.loadingUpdateRoomStatus[updatedRoom.id] = false; state.errorUpdateRoomStatus[updatedRoom.id] = null; const index = state.roomList.findIndex(room => room.id === updatedRoom.id); if (index !== -1) { state.roomList[index] = { ...state.roomList[index], ...updatedRoom }; } } },
+    updateRoomStatusFailure: (state, action) => { const { roomId, error } = action.payload; state.loadingUpdateRoomStatus[roomId] = false; state.errorUpdateRoomStatus[roomId] = error; },
+    deleteRoomRequest: (state) => { state.loadingDeleteRoom = true; state.errorDeleteRoom = null; },
+    deleteRoomSuccess: (state, action) => { state.loadingDeleteRoom = false; state.errorDeleteRoom = null; state.roomList = state.roomList.filter((room) => room.id !== action.payload); },
+    deleteRoomFailure: (state, action) => { state.loadingDeleteRoom = false; state.errorDeleteRoom = action.payload; },
+    clearDeleteRoomErrorRequest: (state) => { state.errorDeleteRoom = null; },
+
+    // --- Room Type Reducers (Fetch - Existing) ---
+    getRoomTypesRequest: (state) => { state.loadingRoomTypes = true; state.errorRoomTypes = null; state.roomTypeList = []; },
+    getRoomTypesSuccess: (state, action) => { state.loadingRoomTypes = false; state.roomTypeList = action.payload; state.errorRoomTypes = null; },
+    getRoomTypesFailure: (state, action) => { state.loadingRoomTypes = false; state.errorRoomTypes = action.payload; state.roomTypeList = []; },
+
+    // --- Room (Create) Reducers (Existing) ---
+    createRoomRequest: (state) => { state.loadingCreateRoom = true; state.errorCreateRoom = null; state.createdRoomData = null; },
+    createRoomSuccess: (state, action) => { state.loadingCreateRoom = false; state.createdRoomData = action.payload; state.errorCreateRoom = null; if (state.roomList && Array.isArray(state.roomList)) { state.roomList.push(action.payload); } else { state.roomList = [action.payload]; } },
+    createRoomFailure: (state, action) => { state.loadingCreateRoom = false; state.errorCreateRoom = action.payload; state.createdRoomData = null; },
+    resetCreateRoomStatus: (state) => { state.loadingCreateRoom = false; state.errorCreateRoom = null; state.createdRoomData = null; },
+
+    // --- Room Type (Create) Reducers (NEW) ---
+    createRoomTypeRequest: (state) => {
+      state.loadingCreateRoomType = true;
+      state.errorCreateRoomType = null;
+      state.createdRoomTypeData = null;
     },
-    getRoomsSuccess: (state, action) => {
-      state.loadingRooms = false; state.roomList = action.payload; state.errorRooms = null;
+    createRoomTypeSuccess: (state, action) => {
+      state.loadingCreateRoomType = false;
+      state.createdRoomTypeData = action.payload;
+      state.errorCreateRoomType = null;
+      // Optionally, you might want to add the new room type to roomTypeList
+      // However, the API for GET room types is usually by hotelId, so a simple push might not be sufficient
+      // if (state.roomTypeList && Array.isArray(state.roomTypeList)) {
+      //    state.roomTypeList.push(action.payload); // This assumes the created data is the full room type object
+      // } else {
+      //    state.roomTypeList = [action.payload];
+      // }
     },
-    getRoomsFailure: (state, action) => {
-      state.loadingRooms = false; state.errorRooms = action.payload; state.roomList = [];
+    createRoomTypeFailure: (state, action) => {
+      state.loadingCreateRoomType = false;
+      state.errorCreateRoomType = action.payload;
+      state.createdRoomTypeData = null;
     },
-    updateRoomStatusRequest: (state, action) => {
-      const { roomId } = action.payload;
-      state.loadingUpdateRoomStatus[roomId] = true;
-      state.errorUpdateRoomStatus[roomId] = null;
-    },
-    updateRoomStatusSuccess: (state, action) => {
-      const updatedRoom = action.payload;
-      if (updatedRoom && updatedRoom.id) {
-        state.loadingUpdateRoomStatus[updatedRoom.id] = false;
-        state.errorUpdateRoomStatus[updatedRoom.id] = null;
-        const index = state.roomList.findIndex(room => room.id === updatedRoom.id);
-        if (index !== -1) {
-          state.roomList[index] = { ...state.roomList[index], ...updatedRoom };
-        }
-      }
-    },
-    updateRoomStatusFailure: (state, action) => {
-      const { roomId, error } = action.payload;
-      state.loadingUpdateRoomStatus[roomId] = false;
-      state.errorUpdateRoomStatus[roomId] = error;
-    },
-    // Reducer baru untuk delete room
-    deleteRoomRequest: (state) => { // <-- Tambahkan reducer ini
-      state.loadingDeleteRoom = true;
-      state.errorDeleteRoom = null;
-    },
-    deleteRoomSuccess: (state, action) => { // <-- Tambahkan reducer ini
-      state.loadingDeleteRoom = false;
-      state.errorDeleteRoom = null;
-      // Menghapus kamar dari roomList berdasarkan roomId (action.payload)
-      state.roomList = state.roomList.filter((room) => room.id !== action.payload);
-    },
-    deleteRoomFailure: (state, action) => { // <-- Tambahkan reducer ini
-      state.loadingDeleteRoom = false;
-      state.errorDeleteRoom = action.payload;
-    },
-    clearDeleteRoomErrorRequest: (state) => { // <-- Tambahkan reducer ini (opsional)
-        state.errorDeleteRoom = null;
+    resetCreateRoomTypeStatus: (state) => {
+        state.loadingCreateRoomType = false;
+        state.errorCreateRoomType = null;
+        state.createdRoomTypeData = null;
     },
 
-    // --- Room Type Reducers (NEW) ---
-    getRoomTypesRequest: (state) => {
-      state.loadingRoomTypes = true;
-      state.errorRoomTypes = null;
-      state.roomTypeList = [];
-    }, //
-    getRoomTypesSuccess: (state, action) => {
-      state.loadingRoomTypes = false;
-      state.roomTypeList = action.payload;
-      state.errorRoomTypes = null;
-    }, //
-    getRoomTypesFailure: (state, action) => {
-      state.loadingRoomTypes = false;
-      state.errorRoomTypes = action.payload;
-      state.roomTypeList = [];
-    }, //
-
-    // --- Room (Create) Reducers (NEW) ---
-    createRoomRequest: (state) => {
-      state.loadingCreateRoom = true;
-      state.errorCreateRoom = null;
-      state.createdRoomData = null;
-    }, //
-    createRoomSuccess: (state, action) => {
-      state.loadingCreateRoom = false;
-      state.createdRoomData = action.payload;
-      state.errorCreateRoom = null;
-      // Optionally, add the new room to the roomList if it's being displayed immediately
-      if (state.roomList && Array.isArray(state.roomList)) {
-         state.roomList.push(action.payload);
-      } else {
-         state.roomList = [action.payload]; // Initialize if not an array or doesn't exist
-      }
-    }, //
-    createRoomFailure: (state, action) => {
-      state.loadingCreateRoom = false;
-      state.errorCreateRoom = action.payload;
-      state.createdRoomData = null;
-    }, //
-    resetCreateRoomStatus: (state) => {
-        state.loadingCreateRoom = false;
-        state.errorCreateRoom = null;
-        state.createdRoomData = null;
-    }, //
+    // --- Facility (Create) Reducers (NEW) ---
+    createFacilityRequest: (state) => {
+      state.loadingCreateFacility = true;
+      state.errorCreateFacility = null;
+      state.createdFacilityData = null;
+    },
+    createFacilitySuccess: (state, action) => {
+      state.loadingCreateFacility = false;
+      state.createdFacilityData = action.payload;
+      state.errorCreateFacility = null;
+      // Note: There isn't a facilityList in the state to push to.
+      // If you add a facilityList, you would push to it here.
+    },
+    createFacilityFailure: (state, action) => {
+      state.loadingCreateFacility = false;
+      state.errorCreateFacility = action.payload;
+      state.createdFacilityData = null;
+    },
+    resetCreateFacilityStatus: (state) => {
+        state.loadingCreateFacility = false;
+        state.errorCreateFacility = null;
+        state.createdFacilityData = null;
+    },
 
     resetMitraState: (state) => {
       return initialState;
     },
-  }, //
+  },
 });
 
 export const {
@@ -637,13 +584,9 @@ export const {
   createSeatsRequest, createSeatsSuccess, createSeatsFailure,
   resetCreateSeatsStatus,
   getSeatCategoriesRequest, getSeatCategoriesSuccess, getSeatCategoriesFailure,
-  createFlightRequest,
-  createFlightSuccess,
-  createFlightFailure,
+  createFlightRequest, createFlightSuccess, createFlightFailure,
   resetCreateFlightStatus,
-  getAirportsRequest,
-  getAirportsSuccess,
-  getAirportsFailure,
+  getAirportsRequest, getAirportsSuccess, getAirportsFailure,
   getHotelsRequest, getHotelsSuccess, getHotelsFailure,
   getHotelByIdRequest, getHotelByIdSuccess, getHotelByIdFailure,
   createHotelRequest, createHotelSuccess, createHotelFailure,
@@ -653,14 +596,15 @@ export const {
   getLocationsRequest, getLocationsSuccess, getLocationsFailure,
   getRoomsRequest, getRoomsSuccess, getRoomsFailure,
   updateRoomStatusRequest, updateRoomStatusSuccess, updateRoomStatusFailure,
-  deleteRoomRequest, // <-- Ekspor action ini
-  deleteRoomSuccess, // <-- Ekspor action ini
-  deleteRoomFailure, // <-- Ekspor action ini
-  clearDeleteRoomErrorRequest, // <-- Ekspor action ini (opsional)
-  // Export new room and room type actions
+  deleteRoomRequest, deleteRoomSuccess, deleteRoomFailure,
+  clearDeleteRoomErrorRequest,
   getRoomTypesRequest, getRoomTypesSuccess, getRoomTypesFailure,
   createRoomRequest, createRoomSuccess, createRoomFailure, resetCreateRoomStatus,
+  // Export new room type create actions
+  createRoomTypeRequest, createRoomTypeSuccess, createRoomTypeFailure, resetCreateRoomTypeStatus,
+  // Export new facility create actions
+  createFacilityRequest, createFacilitySuccess, createFacilityFailure, resetCreateFacilityStatus,
   resetMitraState,
-} = mitraSlice.actions; //
+} = mitraSlice.actions;
 
-export default mitraSlice.reducer; //
+export default mitraSlice.reducer;
