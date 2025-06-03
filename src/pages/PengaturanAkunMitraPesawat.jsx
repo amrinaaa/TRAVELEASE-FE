@@ -4,7 +4,7 @@ import { Pencil } from "lucide-react";
 import Button from "../components/Button";
 import dataPengguna from "../utils/dataPengguna.json"; 
 
-const PengaturanAkunMitra = ({ isSidebarOpen }) => {
+const PengaturanAkunMitraPesawat = ({ isSidebarOpen }) => {
   const [user, setUser] = useState({
     id: '',
     nama: '',
@@ -73,7 +73,7 @@ const PengaturanAkunMitra = ({ isSidebarOpen }) => {
         </div>
           <div className="flex-col px-4 items-center">
             <div className="text-center md:text-xl mb-6 md:mb-12 font-bold">
-              <p>Edit Profile</p>
+              <p>Edit Profile Pesawat</p>
             </div>
             <div className="flex flex-col md:flex-row items-center md:gap-12 gap-6 justify-center">
               <div className="relative md:w-64 w-32 md:h-64 h-32">
@@ -147,4 +147,4 @@ const PengaturanAkunMitra = ({ isSidebarOpen }) => {
   );
 };
 
-export default PengaturanAkunMitra
+export default PengaturanAkunMitraPesawat

@@ -54,7 +54,7 @@ const NavbarMitraPenerbangan = ({ toggleSidebar, isSidebarOpen }) => {
               <ul className='text-left px-3 py-2 text-sm text-gray-950'>
                 <li className='py-2 hover:text-blue-600 border-b border-gray-100'>
                   <Link
-                    to="/pengaturan-akun-mitra"
+                    to="/pengaturan-akun-mitra-pesawat"
                     className="flex items-center"
                     onClick={() => setShowDropdown(false)}
                   >

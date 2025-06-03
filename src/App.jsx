@@ -49,7 +49,8 @@ import DetailRuangan from './pages/DetailRuangan';
 import Pesawat from './pages/Pesawat';
 import DetailPesawat from './pages/DetailPesawat';
 import PengaturanAkun from './pages/PengaturanAkun';
-import PengaturanAkunMitra from './pages/PengaturanAkunMitra';
+import PengaturanAkunMitraHotel from './pages/PengaturanAkunMitraHotel';
+import PengaturanAkunMitraPesawat from './pages/PengaturanAkunMitraPesawat';
 import PengaturanAkunAdmin from './pages/PengaturanAkunAdmin';
 import RiwayatPemesanan from './pages/RiwayatPemesanan';
 import './App.css';
@@ -127,7 +128,8 @@ const App = () => {
         {/* Mitra Routes */}
         <Route path="/mitra-hotel" element={<DashboardMitraHotel isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-hotel" element={<ManajemenHotel isSidebarOpen={isSidebarOpen} />} />
-        <Route path="/pengaturan-akun-mitra" element={<PengaturanAkunMitra isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/pengaturan-akun-mitra-pesawat" element={<PengaturanAkunMitraPesawat isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/pengaturan-akun-mitra-hotel" element={<PengaturanAkunMitraHotel isSidebarOpen={isSidebarOpen} />} />
 
         <Route path="/mitra-pesawat" element={<DashboardMitraPesawat isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-maskapai" element={<ManajemenMaskapai isSidebarOpen={isSidebarOpen} />} />
