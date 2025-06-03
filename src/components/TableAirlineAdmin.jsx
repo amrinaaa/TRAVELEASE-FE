@@ -1,36 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchMitraRequest, deleteMitra } from "../redux/actions/mitraAction"; // Import deleteMitra
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const TableAirlineAdmin = ({ searchQuery }) => {
+const TableAirlineAdmin = ({ searchQuery, onMitraSelect, selectedMitraId }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { mitraId } = useParams(); // Get mitraId from URL parameters
 
-  const { mitraList, loadingFetch, errorFetch, loadingDelete, errorDelete } = useSelector((state) => state.mitra); // Get loadingDelete and errorDelete
+  // Mengambil data dan status loading/error dari Redux store
+  const { mitraList, loadingFetch, errorFetch, loadingDelete, errorDelete } = useSelector((state) => state.mitra);
+  
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
   const [modalOpen, setModalOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
+  const [deleteId, setDeleteId] = useState(null); // ID yang akan dihapus
+  const [isDeleting, setIsDeleting] = useState(false); // Status untuk tracking delete
 
+  // Fetch data airlines berdasarkan mitraId
   useEffect(() => {
-    dispatch(fetchMitraRequest());
-  }, [dispatch]);
+    if (mitraId) {
+      dispatch(fetchMitraRequest(mitraId));
+    }
+  }, [dispatch, mitraId]);
 
-  // Effect to handle success or error after deleting mitra
+  // Effect untuk menangani hasil delete (sukses atau error)
   useEffect(() => {
-    if (!loadingDelete && !errorDelete && deleteId && !modalOpen) { // Check if delete was successful and modal is closed
-      alert("Airline deleted successfully!");
-      setDeleteId(null); // Clear deleteId after successful deletion
+    // Cek jika proses delete baru saja selesai (loading berubah dari true ke false)
+    if (isDeleting && !loadingDelete) {
+      if (errorDelete) {
+        alert(`Error deleting airline: ${errorDelete}`);
+      } else {
+        alert(`Airline with ID ${deleteId} deleted successfully!`);
+        // Reset ID setelah berhasil
+        setDeleteId(null);
+      }
+      // Reset status tracking
+      setIsDeleting(false);
     }
-    if (errorDelete) {
-      alert(`Error deleting airline: ${errorDelete}`);
-      setDeleteId(null); // Clear deleteId even on error
-    }
-  }, [loadingDelete, errorDelete, deleteId, modalOpen]);
-
+  }, [loadingDelete, errorDelete, isDeleting, deleteId]);
 
   const mitraData = Array.isArray(mitraList) ? mitraList : [];
 
+  // Fungsi sorting
   const handleSort = (key) => {
     setSortConfig((prev) => {
       if (prev.key === key) {
@@ -55,12 +66,31 @@ const TableAirlineAdmin = ({ searchQuery }) => {
     airline.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Fungsi konfirmasi hapus
+  const confirmDelete = (id) => {
+    setDeleteId(id); // Set ID yang akan dihapus
+    setModalOpen(true);
+  };
+
+  // Handle hapus data
+  const handleDelete = () => {
+    if (deleteId) {
+      setIsDeleting(true); // Mulai tracking proses delete
+      dispatch(deleteMitra(deleteId)); // Panggil action deleteMitra dengan airlineId
+      setModalOpen(false); // Tutup modal
+    }
+  };
 
   const handleAirplaneClick = (airline) => {
     console.log("Navigating to planes for airline:", airline.name);
 
     // Store the selected airline in localStorage for persistence
     localStorage.setItem('selectedAirline', JSON.stringify(airline));
+
+    // Call onMitraSelect callback if provided
+    if (onMitraSelect) {
+      onMitraSelect(airline);
+    }
 
     // Navigate to the plane management page with the airline ID
     // Pass the airline object in state for immediate access
@@ -71,6 +101,10 @@ const TableAirlineAdmin = ({ searchQuery }) => {
 
   if (loadingFetch) return <p className="p-4 text-center">Loading airlines...</p>;
   if (errorFetch) return <p className="p-4 text-center text-red-600">Error: {errorFetch}</p>;
+
+  if (!mitraId) {
+    return <p className="p-4 text-center">Please select a mitra first to see its airlines.</p>;
+  }
 
   return (
     <div className="p-4">
@@ -105,41 +139,16 @@ const TableAirlineAdmin = ({ searchQuery }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="text-center py-4 text-gray-500">
-                  No results found.
+                <td colSpan="3" className="text-center py-4 text-gray-500">
+                  No airlines found for this mitra.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-
-      {modalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-          <div className="bg-gray-200 p-6 rounded-md shadow-md">
-            <p className="text-xs md:text-lg font-semibold mb-4">
-              Are you sure you want to delete {deleteId}?
-            </p>
-            <div className="flex justify-center text-xs md:text-base gap-2">
-              <button
-                className="bg-gray-400 text-white px-4 py-2 rounded-md"
-                onClick={() => setModalOpen(false)}
-              >
-                No
-              </button>
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
-                onClick={handleDelete}
-                disabled={loadingDelete} // Disable delete button in modal when loading
-              >
-                {loadingDelete ? "Deleting..." : "Yes"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-export default TableAirlineAdmin;
+export default TableAirlineAdmin

@@ -72,16 +72,20 @@ const EditPesawat = ({ isSidebarOpen }) => {
             <p className="text-xs pt-2 text-gray-600">Seat List</p>
           </div>
           <div className="flex flex-row justify-end">
-            <Link to="/manajemen-maskapai" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link to="/manajemen-mitra-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
             {/* Navigasi kembali mungkin perlu airlineId, ini perlu penyesuaian */}
-            <Link to={`/manajemen-pesawat/${planeId}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+            <Link to={`/mitra-pesawat-admin/${planeId}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+              <p>/</p>
+              <p className="text-xs md:text-sm">Airline List</p>
+            </Link>
+            <Link to={`/manajemen-pesawat-admin/${planeId}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Plane List</p>
             </Link>
-            <Link to={`/edit-pesawat/${planeId}`} className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1">
+            <Link to={`/edit-pesawat-admin/${planeId}`} className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Seat List</p>
             </Link>
