@@ -304,8 +304,6 @@
 // export default mitraSlice.reducer;
 
 // mitraReducer.js
-// mitraReducer.js
-// mitraReducer.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -405,6 +403,11 @@ const initialState = {
   loadingCreateFacility: false,
   errorCreateFacility: null,
   createdFacilityData: null,
+
+  // New states for Customers
+  customerList: [],
+  loadingCustomers: false,
+  errorCustomers: null,
 };
 
 const mitraSlice = createSlice({
@@ -460,15 +463,8 @@ const mitraSlice = createSlice({
     createFlightSuccess: (state, action) => { state.loadingCreateFlight = false; state.createdFlight = action.payload; state.errorCreateFlight = null; },
     createFlightFailure: (state, action) => { state.loadingCreateFlight = false; state.errorCreateFlight = action.payload; state.createdFlight = null; },
     resetCreateFlightStatus: (state) => { state.loadingCreateFlight = false; state.errorCreateFlight = null; state.createdFlight = null; },
-    createFlightRequest: (state) => { state.loadingCreateFlight = true; state.errorCreateFlight = null; state.createdFlight = null; },
-    createFlightSuccess: (state, action) => { state.loadingCreateFlight = false; state.createdFlight = action.payload; state.errorCreateFlight = null; },
-    createFlightFailure: (state, action) => { state.loadingCreateFlight = false; state.errorCreateFlight = action.payload; state.createdFlight = null; },
-    resetCreateFlightStatus: (state) => { state.loadingCreateFlight = false; state.errorCreateFlight = null; state.createdFlight = null; },
 
     // --- Airport Reducers ---
-    getAirportsRequest: (state) => { state.loadingAirports = true; state.errorAirports = null; },
-    getAirportsSuccess: (state, action) => { state.loadingAirports = false; state.airportList = action.payload; state.errorAirports = null; },
-    getAirportsFailure: (state, action) => { state.loadingAirports = false; state.errorAirports = action.payload; state.airportList = []; },
     getAirportsRequest: (state) => { state.loadingAirports = true; state.errorAirports = null; },
     getAirportsSuccess: (state, action) => { state.loadingAirports = false; state.airportList = action.payload; state.errorAirports = null; },
     getAirportsFailure: (state, action) => { state.loadingAirports = false; state.errorAirports = action.payload; state.airportList = []; },
@@ -477,7 +473,7 @@ const mitraSlice = createSlice({
     getHotelsRequest: (state) => { state.loadingHotels = true; state.errorHotels = null; },
     getHotelsSuccess: (state, action) => { state.loadingHotels = false; state.hotelList = action.payload; state.errorHotels = null; },
     getHotelsFailure: (state, action) => { state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = []; },
-    
+
     getHotelByIdRequest: (state) => {
       console.log("[REDUCER] getHotelByIdRequest");
       state.loadingHotelDetail = true;
@@ -605,6 +601,23 @@ const mitraSlice = createSlice({
         state.createdFacilityData = null;
     },
 
+    // --- Customer Reducers (NEW) ---
+    getCustomersRequest: (state) => {
+      state.loadingCustomers = true;
+      state.errorCustomers = null;
+      state.customerList = []; // Reset list on new request
+    },
+    getCustomersSuccess: (state, action) => {
+      state.loadingCustomers = false;
+      state.customerList = action.payload;
+      state.errorCustomers = null;
+    },
+    getCustomersFailure: (state, action) => {
+      state.loadingCustomers = false;
+      state.errorCustomers = action.payload;
+      state.customerList = [];
+    },
+
     resetMitraState: (state) => {
       console.log("[REDUCER] resetMitraState called"); // Tambahkan log jika ada reset state
       return initialState;
@@ -648,6 +661,8 @@ export const {
   createRoomTypeRequest, createRoomTypeSuccess, createRoomTypeFailure, resetCreateRoomTypeStatus,
   // Export new facility create actions
   createFacilityRequest, createFacilitySuccess, createFacilityFailure, resetCreateFacilityStatus,
+  // Export new customer actions
+  getCustomersRequest, getCustomersSuccess, getCustomersFailure,
   resetMitraState,
 } = mitraSlice.actions;
 

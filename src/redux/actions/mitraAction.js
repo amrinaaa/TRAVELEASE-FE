@@ -585,6 +585,10 @@ import {
   createFacilitySuccess,
   createFacilityFailure,
   resetCreateFacilityStatus,
+  // Import new customer actions
+  getCustomersRequest,
+  getCustomersSuccess,
+  getCustomersFailure,
 } from "../reducers/mitraReducer";
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -595,17 +599,17 @@ export const fetchMitraRequest = (mitraId) => async (dispatch) => {
   try {
     const token = Cookies.get("token");
     // Pastikan mitraId tersedia sebelum membuat request
-    const url = mitraId 
-      ? `${api_url}/airlines?mitraId=${mitraId}` 
+    const url = mitraId
+      ? `${api_url}/airlines?mitraId=${mitraId}`
       : `${api_url}/airlines`;
-      
+
     const response = await axios.get(url, {
-      headers: { 
-        Authorization: `Bearer ${token}`, 
-        "Content-Type": "application/json" 
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
       },
     });
-    
+
     if (response.data?.data && Array.isArray(response.data.data)) {
       dispatch(getMitraSuccess(response.data.data));
     } else {
@@ -862,14 +866,14 @@ export const fetchHotels = (mitraId) => async (dispatch) => {
   try {
     const token = Cookies.get("token");
     // Pastikan mitraId tersedia sebelum membuat request
-    const url = mitraId 
-      ? `${api_url}/hotels?mitraId=${mitraId}` 
+    const url = mitraId
+      ? `${api_url}/hotels?mitraId=${mitraId}`
       : `${api_url}/hotels`;
-      
+
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    
+
     if (response.data?.data && Array.isArray(response.data.data)) {
       dispatch(getHotelsSuccess(response.data.data));
     } else if (response.data?.message === "Success" && response.data?.data === null) {
@@ -1080,11 +1084,9 @@ export const deleteRoom = (roomId) => async (dispatch) => {
         "Content-Type": "application/json",
       },
       data: payload,
-      data: payload,
     });
 
     if (response.data?.message.toLowerCase() === "success") {
-      dispatch(deleteRoomSuccess(roomId));
       dispatch(deleteRoomSuccess(roomId));
     } else {
       throw new Error(response.data?.message || "Gagal menghapus kamar dari API");
@@ -1223,4 +1225,35 @@ export const createFacility = (facilityData) => async (dispatch) => {
 // Action to reset create facility status (NEW)
 export const resetCreateFacilityState = () => (dispatch) => {
     dispatch(resetCreateFacilityStatus());
+};
+
+// --- Customer Actions (NEW) ---
+export const fetchCustomers = (hotelId) => async (dispatch) => {
+  dispatch(getCustomersRequest());
+  try {
+    const token = Cookies.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found.");
+    }
+    if (!hotelId) {
+      throw new Error("Hotel ID is required to fetch customers.");
+    }
+    const response = await axios.get(`${api_url}/customers?hotelId=${hotelId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.data?.success && Array.isArray(response.data.data)) {
+      dispatch(getCustomersSuccess(response.data.data));
+    } else if (response.data?.success && response.data.data === null) { // Handle case where data is null but success is true
+      dispatch(getCustomersSuccess([]));
+    }
+    else {
+      throw new Error(response.data?.message || "Invalid data format from API for customers");
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || "Failed to fetch customers";
+    dispatch(getCustomersFailure(String(errorMessage)));
+  }
 };
