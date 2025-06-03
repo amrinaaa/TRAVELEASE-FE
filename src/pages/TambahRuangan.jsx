@@ -127,6 +127,20 @@ const TambahRuangan = ({ isSidebarOpen }) => {
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
       const newPreviews = filesArray.map(file => URL.createObjectURL(file));
+
+      if (roomImages.length + filesArray.length > 10) {
+        alert("You can upload a maximum of 10 images.");
+        return;
+      }
+
+      // Optional: Check individual file sizes (e.g., 5MB)
+      for (let file of filesArray) {
+        if (file.size > 5 * 1024 * 1024) { // 5MB in bytes
+          alert(`File ${file.name} exceeds 5MB limit.`);
+          return;
+        }
+      }
+
       setRoomImages(prevImages => [...prevImages, ...filesArray]);
       setRoomImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
     }
@@ -151,6 +165,10 @@ const TambahRuangan = ({ isSidebarOpen }) => {
     e.preventDefault();
     if (!name || !selectedRoomTypeId || !hotelId || !description || roomImages.length === 0) {
       alert("Please fill in all required fields and select at least one image.");
+      return;
+    }
+    if (roomImages.length > 10) {
+      alert("You can upload a maximum of 10 images.");
       return;
     }
 
@@ -371,6 +389,9 @@ const TambahRuangan = ({ isSidebarOpen }) => {
                         className="w-full bg-transparent focus:outline-none"
                         />
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                        Maximum 10 images total, 5MB each ({roomImages.length}/10 selected)
+                    </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                         {roomImagePreviews.map((previewUrl, index) => (
                         <div key={index} className="relative">

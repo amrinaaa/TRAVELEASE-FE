@@ -303,9 +303,6 @@
 
 // export default mitraSlice.reducer;
 
-// mitraReducer.js
-// mitraReducer.js
-// mitraReducer.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
