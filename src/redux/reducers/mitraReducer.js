@@ -303,6 +303,7 @@
 
 // export default mitraSlice.reducer;
 
+// mitraReducer.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -357,7 +358,7 @@ const initialState = {
   hotelList: [],
   loadingHotels: false,
   errorHotels: null,
-  hotelDetail: null,        // Pastikan ini null secara default
+  hotelDetail: null,
   loadingHotelDetail: false,
   errorHotelDetail: null,
   loadingCreateHotel: false,
@@ -378,10 +379,24 @@ const initialState = {
   roomList: [],
   loadingRooms: false,
   errorRooms: null,
-  loadingUpdateRoomStatus: {},
-  errorUpdateRoomStatus: {},
+  loadingUpdateRoomStatus: {}, // Per-room ID loading for status update
+  errorUpdateRoomStatus: {},   // Per-room ID error for status update
   loadingDeleteRoom: false,
   errorDeleteRoom: null,
+
+  // New states for individual room details
+  roomDetail: null,
+  loadingRoomDetail: false,
+  errorRoomDetail: null,
+
+  // New states for updating a room's general data
+  loadingUpdateRoom: false,
+  errorUpdateRoom: null,
+  updatedRoomData: null,
+
+  // New states for deleting a room image
+  loadingDeleteRoomImage: false,
+  errorDeleteRoomImage: null,
 
   // Existing states for Room Types (fetch)
   roomTypeList: [],
@@ -457,15 +472,8 @@ const mitraSlice = createSlice({
     createFlightSuccess: (state, action) => { state.loadingCreateFlight = false; state.createdFlight = action.payload; state.errorCreateFlight = null; },
     createFlightFailure: (state, action) => { state.loadingCreateFlight = false; state.errorCreateFlight = action.payload; state.createdFlight = null; },
     resetCreateFlightStatus: (state) => { state.loadingCreateFlight = false; state.errorCreateFlight = null; state.createdFlight = null; },
-    createFlightRequest: (state) => { state.loadingCreateFlight = true; state.errorCreateFlight = null; state.createdFlight = null; },
-    createFlightSuccess: (state, action) => { state.loadingCreateFlight = false; state.createdFlight = action.payload; state.errorCreateFlight = null; },
-    createFlightFailure: (state, action) => { state.loadingCreateFlight = false; state.errorCreateFlight = action.payload; state.createdFlight = null; },
-    resetCreateFlightStatus: (state) => { state.loadingCreateFlight = false; state.errorCreateFlight = null; state.createdFlight = null; },
 
     // --- Airport Reducers ---
-    getAirportsRequest: (state) => { state.loadingAirports = true; state.errorAirports = null; },
-    getAirportsSuccess: (state, action) => { state.loadingAirports = false; state.airportList = action.payload; state.errorAirports = null; },
-    getAirportsFailure: (state, action) => { state.loadingAirports = false; state.errorAirports = action.payload; state.airportList = []; },
     getAirportsRequest: (state) => { state.loadingAirports = true; state.errorAirports = null; },
     getAirportsSuccess: (state, action) => { state.loadingAirports = false; state.airportList = action.payload; state.errorAirports = null; },
     getAirportsFailure: (state, action) => { state.loadingAirports = false; state.errorAirports = action.payload; state.airportList = []; },
@@ -474,27 +482,9 @@ const mitraSlice = createSlice({
     getHotelsRequest: (state) => { state.loadingHotels = true; state.errorHotels = null; },
     getHotelsSuccess: (state, action) => { state.loadingHotels = false; state.hotelList = action.payload; state.errorHotels = null; },
     getHotelsFailure: (state, action) => { state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = []; },
-    
-    getHotelByIdRequest: (state) => {
-      console.log("[REDUCER] getHotelByIdRequest");
-      state.loadingHotelDetail = true;
-      state.errorHotelDetail = null;
-      state.hotelDetail = null; // Set to null to indicate loading new detail
-    },
-    getHotelByIdSuccess: (state, action) => {
-      console.log("[REDUCER] getHotelByIdSuccess - payload:", action.payload);
-      state.loadingHotelDetail = false;
-      state.hotelDetail = action.payload; // Ini seharusnya mengisi state.hotelDetail
-      state.errorHotelDetail = null;
-      console.log("[REDUCER] getHotelByIdSuccess - new state.hotelDetail:", JSON.parse(JSON.stringify(state.hotelDetail))); // Log state baru
-    },
-    getHotelByIdFailure: (state, action) => {
-      console.log("[REDUCER] getHotelByIdFailure - error:", action.payload);
-      state.loadingHotelDetail = false;
-      state.errorHotelDetail = action.payload;
-      state.hotelDetail = null; // Pastikan hotelDetail null jika fetch gagal
-    },
-
+    getHotelByIdRequest: (state) => { state.loadingHotelDetail = true; state.errorHotelDetail = null; state.hotelDetail = null; },
+    getHotelByIdSuccess: (state, action) => { state.loadingHotelDetail = false; state.hotelDetail = action.payload; state.errorHotelDetail = null; },
+    getHotelByIdFailure: (state, action) => { state.loadingHotelDetail = false; state.errorHotelDetail = action.payload; state.hotelDetail = null; },
     createHotelRequest: (state) => { state.loadingCreateHotel = true; state.errorCreateHotel = null; state.createdHotelData = null; },
     createHotelSuccess: (state, action) => { state.loadingCreateHotel = false; state.createdHotelData = action.payload; state.errorCreateHotel = null; state.hotelList.push(action.payload); },
     createHotelFailure: (state, action) => { state.loadingCreateHotel = false; state.errorCreateHotel = action.payload; state.createdHotelData = null; },
@@ -526,7 +516,7 @@ const mitraSlice = createSlice({
     getLocationsSuccess: (state, action) => { state.loadingLocations = false; state.locationList = action.payload; state.errorLocations = null; },
     getLocationsFailure: (state, action) => { state.loadingLocations = false; state.errorLocations = action.payload; state.locationList = []; },
 
-    // --- Room Reducers (Existing: Fetch, Update Status, Delete) ---
+    // --- Room Reducers (General List, Status Update, Delete) ---
     getRoomsRequest: (state) => { state.loadingRooms = true; state.errorRooms = null; state.roomList = []; },
     getRoomsSuccess: (state, action) => { state.loadingRooms = false; state.roomList = action.payload; state.errorRooms = null; },
     getRoomsFailure: (state, action) => { state.loadingRooms = false; state.errorRooms = action.payload; state.roomList = []; },
@@ -537,6 +527,65 @@ const mitraSlice = createSlice({
     deleteRoomSuccess: (state, action) => { state.loadingDeleteRoom = false; state.errorDeleteRoom = null; state.roomList = state.roomList.filter((room) => room.id !== action.payload); },
     deleteRoomFailure: (state, action) => { state.loadingDeleteRoom = false; state.errorDeleteRoom = action.payload; },
     clearDeleteRoomErrorRequest: (state) => { state.errorDeleteRoom = null; },
+
+    // --- Room Detail Reducers (NEW) ---
+    getRoomByIdRequest: (state) => { state.loadingRoomDetail = true; state.errorRoomDetail = null; state.roomDetail = null; },
+    getRoomByIdSuccess: (state, action) => { state.loadingRoomDetail = false; state.roomDetail = action.payload; state.errorRoomDetail = null; },
+    getRoomByIdFailure: (state, action) => { state.loadingRoomDetail = false; state.errorRoomDetail = action.payload; state.roomDetail = null; },
+    
+    // --- Update Room Reducers (NEW - for general room data update) ---
+    updateRoomRequest: (state) => { state.loadingUpdateRoom = true; state.errorUpdateRoom = null; state.updatedRoomData = null; },
+    updateRoomSuccess: (state, action) => {
+      state.loadingUpdateRoom = false;
+      state.updatedRoomData = action.payload;
+      state.errorUpdateRoom = null;
+      // Update room in roomList
+      const index = state.roomList.findIndex(room => room.id === action.payload.id);
+      if (index !== -1) {
+        // Merge existing data with new data, as PATCH might not return all fields
+        state.roomList[index] = { ...state.roomList[index], ...action.payload };
+      }
+      // Update roomDetail if it's the same room
+      if (state.roomDetail && state.roomDetail.idRoom === action.payload.id) { // Assuming roomDetail.id is idRoom from response
+        state.roomDetail = { ...state.roomDetail, ...action.payload, idRoom: action.payload.id }; // Keep idRoom consistent if needed
+      }
+    },
+    updateRoomFailure: (state, action) => { state.loadingUpdateRoom = false; state.errorUpdateRoom = action.payload; state.updatedRoomData = null; },
+
+    // --- Room Image Delete Reducers (NEW) ---
+    deleteRoomImageRequest: (state) => { state.loadingDeleteRoomImage = true; state.errorDeleteRoomImage = null; },
+    deleteRoomImageSuccess: (state, action) => {
+      state.loadingDeleteRoomImage = false;
+      const { imageId, roomId } = action.payload; // Assuming imageId from path, roomId for context
+      if (state.roomDetail && state.roomDetail.idRoom === roomId && state.roomDetail.roomImages) {
+        state.roomDetail.roomImages = state.roomDetail.roomImages.filter(
+          // Assuming the image object has a way to identify it, e.g., by its URL or a unique ID if provided by API
+          // The sample response has 'urlImage'. If imageId is the 'id' of the image entity (not in sample), adjust accordingly.
+          // For now, let's assume imageId corresponds to something unique in the roomImages array or the backend handles it.
+          // If imageId is part of the URL or a specific field in roomImages object:
+          // Example: image => image.id !== imageId or image.urlImage !== imageId (if imageId is the URL)
+          // The endpoint is /roomImage/{id} - this `id` is the imageId.
+          // The provided roomDetail.roomImages contains objects like {urlImage: "..."}. It does not contain an 'id' for the image itself.
+          // So we might need to adjust how we filter. If imageId is the URL, filtering is direct.
+          // If imageId is an abstract ID, the roomImages array in state might need that ID.
+          // For now, assuming action.payload contains what's needed to identify and remove.
+          // Let's assume the API deletes it and we just need to reflect this if the imageId is the URL or an ID within the object.
+          // Given `DELETE /roomImage/{id}`, `imageId` is likely the identifier for the image.
+          // We'll filter based on a property that matches `imageId`. If `roomImages` objects don't have a direct `id` field,
+          // this part might need adjustment based on actual data structure of `roomImages` items or how `imageId` relates to them.
+          // For simplicity, if imageId is the URL (less likely for a DELETE endpoint ID):
+          // image => image.urlImage !== imageId
+          // Let's assume for now the `imageId` can be used to find and filter the image.
+          // If the image object has an `id` property that matches `imageId`:
+          image => image.id !== imageId // This is an assumption. Change if structure is different.
+          // If the structure is just {urlImage: "..."} and imageId is that urlImage:
+          // image => image.urlImage !== imageId
+        );
+      }
+      // If room images are also part of roomList items, update there too (not typical)
+    },
+    deleteRoomImageFailure: (state, action) => { state.loadingDeleteRoomImage = false; state.errorDeleteRoomImage = action.payload; },
+
 
     // --- Room Type Reducers (Fetch - Existing) ---
     getRoomTypesRequest: (state) => { state.loadingRoomTypes = true; state.errorRoomTypes = null; state.roomTypeList = []; },
@@ -550,60 +599,18 @@ const mitraSlice = createSlice({
     resetCreateRoomStatus: (state) => { state.loadingCreateRoom = false; state.errorCreateRoom = null; state.createdRoomData = null; },
 
     // --- Room Type (Create) Reducers (NEW) ---
-    createRoomTypeRequest: (state) => {
-      state.loadingCreateRoomType = true;
-      state.errorCreateRoomType = null;
-      state.createdRoomTypeData = null;
-    },
-    createRoomTypeSuccess: (state, action) => {
-      state.loadingCreateRoomType = false;
-      state.createdRoomTypeData = action.payload;
-      state.errorCreateRoomType = null;
-      // Optionally, you might want to add the new room type to roomTypeList
-      // However, the API for GET room types is usually by hotelId, so a simple push might not be sufficient
-      // if (state.roomTypeList && Array.isArray(state.roomTypeList)) {
-      //    state.roomTypeList.push(action.payload); // This assumes the created data is the full room type object
-      // } else {
-      //    state.roomTypeList = [action.payload];
-      // }
-    },
-    createRoomTypeFailure: (state, action) => {
-      state.loadingCreateRoomType = false;
-      state.errorCreateRoomType = action.payload;
-      state.createdRoomTypeData = null;
-    },
-    resetCreateRoomTypeStatus: (state) => {
-        state.loadingCreateRoomType = false;
-        state.errorCreateRoomType = null;
-        state.createdRoomTypeData = null;
-    },
+    createRoomTypeRequest: (state) => { state.loadingCreateRoomType = true; state.errorCreateRoomType = null; state.createdRoomTypeData = null; },
+    createRoomTypeSuccess: (state, action) => { state.loadingCreateRoomType = false; state.createdRoomTypeData = action.payload; state.errorCreateRoomType = null; /* Optionally update roomTypeList if needed */ },
+    createRoomTypeFailure: (state, action) => { state.loadingCreateRoomType = false; state.errorCreateRoomType = action.payload; state.createdRoomTypeData = null; },
+    resetCreateRoomTypeStatus: (state) => { state.loadingCreateRoomType = false; state.errorCreateRoomType = null; state.createdRoomTypeData = null; },
 
     // --- Facility (Create) Reducers (NEW) ---
-    createFacilityRequest: (state) => {
-      state.loadingCreateFacility = true;
-      state.errorCreateFacility = null;
-      state.createdFacilityData = null;
-    },
-    createFacilitySuccess: (state, action) => {
-      state.loadingCreateFacility = false;
-      state.createdFacilityData = action.payload;
-      state.errorCreateFacility = null;
-      // Note: There isn't a facilityList in the state to push to.
-      // If you add a facilityList, you would push to it here.
-    },
-    createFacilityFailure: (state, action) => {
-      state.loadingCreateFacility = false;
-      state.errorCreateFacility = action.payload;
-      state.createdFacilityData = null;
-    },
-    resetCreateFacilityStatus: (state) => {
-        state.loadingCreateFacility = false;
-        state.errorCreateFacility = null;
-        state.createdFacilityData = null;
-    },
+    createFacilityRequest: (state) => { state.loadingCreateFacility = true; state.errorCreateFacility = null; state.createdFacilityData = null; },
+    createFacilitySuccess: (state, action) => { state.loadingCreateFacility = false; state.createdFacilityData = action.payload; state.errorCreateFacility = null; /* Optionally update a facilityList if it exists */ },
+    createFacilityFailure: (state, action) => { state.loadingCreateFacility = false; state.errorCreateFacility = action.payload; state.createdFacilityData = null; },
+    resetCreateFacilityStatus: (state) => { state.loadingCreateFacility = false; state.errorCreateFacility = null; state.createdFacilityData = null; },
 
     resetMitraState: (state) => {
-      console.log("[REDUCER] resetMitraState called"); // Tambahkan log jika ada reset state
       return initialState;
     },
   },
@@ -639,11 +646,19 @@ export const {
   updateRoomStatusRequest, updateRoomStatusSuccess, updateRoomStatusFailure,
   deleteRoomRequest, deleteRoomSuccess, deleteRoomFailure,
   clearDeleteRoomErrorRequest,
+  
+  // Export new room detail actions
+  getRoomByIdRequest, getRoomByIdSuccess, getRoomByIdFailure,
+  
+  // Export new update room actions
+  updateRoomRequest, updateRoomSuccess, updateRoomFailure,
+
+  // Export new room image delete actions
+  deleteRoomImageRequest, deleteRoomImageSuccess, deleteRoomImageFailure,
+
   getRoomTypesRequest, getRoomTypesSuccess, getRoomTypesFailure,
   createRoomRequest, createRoomSuccess, createRoomFailure, resetCreateRoomStatus,
-  // Export new room type create actions
   createRoomTypeRequest, createRoomTypeSuccess, createRoomTypeFailure, resetCreateRoomTypeStatus,
-  // Export new facility create actions
   createFacilityRequest, createFacilitySuccess, createFacilityFailure, resetCreateFacilityStatus,
   resetMitraState,
 } = mitraSlice.actions;
