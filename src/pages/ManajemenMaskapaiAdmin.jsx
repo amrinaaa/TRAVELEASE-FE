@@ -1,10 +1,63 @@
-import React, { useState } from "react";
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useLocation } from 'react-router-dom';
 import Searchbar from "../components/Searchbar";
 import TableAirlineAdmin from "../components/TableAirlineAdmin";
 
 const ManajemenMaskapaiAdmin = ({ isSidebarOpen }) => {
-  const [searchQuery, setSearchQuery] = useState(""); // ⬅️ State untuk pencarian
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMitra, setSelectedMitra] = useState(null);
+  const { mitraId } = useParams(); // Get the mitra ID from URL parameters
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if there's state passed from navigation
+    if (location.state && location.state.mitra) {
+      setSelectedMitra(location.state.mitra);
+      console.log("Mitra from state:", location.state.mitra.name);
+      return;
+    }
+    
+    // Check if there's an ID in the URL parameters
+    if (mitraId) {
+      console.log("Looking for mitra with ID:", mitraId);
+      // Note: You'll need to replace this with actual data source or API call
+      // const mitra = dataMitras.find(m => 
+      //   m.id === parseInt(mitraId) || 
+      //   m.id.toString() === mitraId.toString()
+      // );
+      
+      // For now, create a placeholder mitra object
+      const mitra = { id: mitraId, name: `Mitra ${mitraId}` };
+      
+      if (mitra) {
+        console.log("Found mitra by ID:", mitra.name);
+        setSelectedMitra(mitra);
+      }
+    }
+    
+    // Check if we should load from localStorage (persisted selection)
+    else {
+      const savedMitra = localStorage.getItem('selectedMitra');
+      if (savedMitra) {
+        try {
+          const parsedMitra = JSON.parse(savedMitra);
+          console.log("Loaded mitra from storage:", parsedMitra.name);
+          setSelectedMitra(parsedMitra);
+        } catch (e) {
+          console.error("Error parsing saved mitra:", e);
+        }
+      }
+    }
+  }, [mitraId, location.state]);
+
+  // Handler for when a mitra is selected from the table
+  const handleMitraSelect = (mitra) => {
+    console.log("Mitra selected:", mitra.name);
+    setSelectedMitra(mitra);
+    
+    // Persist the selection to localStorage
+    localStorage.setItem('selectedMitra', JSON.stringify(mitra));
+  };
 
   return (
     <div className="flex transition-all duration-300">
@@ -12,14 +65,17 @@ const ManajemenMaskapaiAdmin = ({ isSidebarOpen }) => {
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
             <p className="text-xl">Partner Management</p>
-            <p className="text-xs pt-2  text-gray-600">Airline List</p>
+            <p className="text-xs pt-2 text-gray-600">Airline List</p>
           </div>
-          <div className="flex flex-row justify-end">
+          <div className="flex flex-row justify-end gap-1">
             <Link to="/manajemen-mitra-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
-              <i class="fa-solid fa-house-chimney text-xs"></i>
-              <p className="text-xs md:text-sm mr-1">Home</p>
+              <i className="fa-solid fa-house-chimney text-xs"></i>
+              <p className="text-xs md:text-sm">Home</p>
             </Link>
-            <Link to="/mitra-pesawat-admin" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link 
+              to={selectedMitra ? `/mitra-pesawat-admin/${selectedMitra.id}` : "/mitra-pesawat-admin"} 
+              className="flex items-center gap-1 text-black pt-9 md:pt-0"
+            >
               <p>/</p>
               <p className="text-xs md:text-sm">Airline List</p>
             </Link>
@@ -27,15 +83,24 @@ const ManajemenMaskapaiAdmin = ({ isSidebarOpen }) => {
         </div>
         <div className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="grid grid-cols-2 px-4 items-center">
-            <div className="text-left md:text-xl">
-              <p>Airline List</p>
+            <div className="flex md:flex-row flex-col text-left md:items-center md:gap-2">
+              <div className="md:text-2xl text-lg text-ungu7">
+                <p>{selectedMitra ? selectedMitra.name : "Nama mitra"}</p>
+              </div>
+              <div className="md:text-xl md:mt-1">
+                <p>Airline List</p>
+              </div>
             </div>
             <div className="flex gap-3 items-center">
               <Searchbar forWhat="airline" onSearch={setSearchQuery} />
             </div>
           </div>
           <div>
-            <TableAirlineAdmin searchQuery={searchQuery} />
+            <TableAirlineAdmin 
+              searchQuery={searchQuery} 
+              onMitraSelect={handleMitraSelect}
+              selectedMitraId={selectedMitra?.id}
+            />
           </div>
         </div>
       </div>
@@ -43,4 +108,4 @@ const ManajemenMaskapaiAdmin = ({ isSidebarOpen }) => {
   );
 };
 
-export default ManajemenMaskapaiAdmin
+export default ManajemenMaskapaiAdmin;

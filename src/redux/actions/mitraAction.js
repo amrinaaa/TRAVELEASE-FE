@@ -590,13 +590,22 @@ import {
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
 
 // --- Airline Actions (Mitra) ---
-export const fetchMitraRequest = () => async (dispatch) => {
+export const fetchMitraRequest = (mitraId) => async (dispatch) => {
   dispatch(getMitraRequest());
   try {
     const token = Cookies.get("token");
-    const response = await axios.get(`${api_url}/airlines`, {
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    // Pastikan mitraId tersedia sebelum membuat request
+    const url = mitraId 
+      ? `${api_url}/airlines?mitraId=${mitraId}` 
+      : `${api_url}/airlines`;
+      
+    const response = await axios.get(url, {
+      headers: { 
+        Authorization: `Bearer ${token}`, 
+        "Content-Type": "application/json" 
+      },
     });
+    
     if (response.data?.data && Array.isArray(response.data.data)) {
       dispatch(getMitraSuccess(response.data.data));
     } else {
