@@ -40,7 +40,7 @@ const Home = () => {
     <div>
       {/* Hero Section */}
       <section>
-        <div className='w-full h-auto px-4 md:px-0 pt-24 md:pt-0 mb-4 md:mb-0'>
+        <div className='w-full h-auto px-4 md:px-0 pt-20 md:pt-0 mb-4 md:mb-0'>
           <Swiper
             spaceBetween={30}
             centeredSlides={true}
@@ -84,7 +84,7 @@ const Home = () => {
                         <Hotel size={16} className="md:w-5 md:h-5" />
                         Booking Hotel
                       </button>
-                      
+                        
                       <button 
                         onClick={handleFlightTicket}
                         className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-xs md:text-base"
@@ -93,7 +93,7 @@ const Home = () => {
                         Pesan Tiket Pesawat
                       </button>
                     </div>
-                  </div>
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
