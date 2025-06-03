@@ -31,6 +31,7 @@
     "recharts": "^2.15.3",
     "remixicon": "^4.6.0",
     "store": "^2.0.12",
+    "swiper": "^11.2.8",
     "travelease-fe": "file:"
   },
   "devDependencies": {
