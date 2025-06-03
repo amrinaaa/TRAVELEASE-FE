@@ -13,6 +13,10 @@ const initialState = {
   loadingDeletePicture: false,
   errorDeletePicture: null,
   deletePictureMessage: null,
+  transactionHistory: [], // Changed from null to [] for easier handling in components
+  loadingGetTransactionHistory: false,
+  errorGetTransactionHistory: null,
+  // getTransactionHistoryMessage: null, // Not needed if we store the data directly
 };
 
 const userAccountSlice = createSlice({
@@ -44,8 +48,6 @@ const userAccountSlice = createSlice({
     },
     updateUserProfileSuccess: (state, action) => {
       state.loadingUpdateProfile = false;
-      // Profile data will be updated by a subsequent getUserProfile call
-      // Or, if API returns updated profile: state.profile = action.payload.updatedProfile;
       state.updateProfileMessage = action.payload; // Success message
       state.errorUpdateProfile = null;
     },
@@ -65,7 +67,6 @@ const userAccountSlice = createSlice({
       state.loadingUploadPicture = false;
       state.uploadPictureMessage = action.payload; // Success message
       state.errorUploadPicture = null;
-      // Profile picture URL will be updated by a subsequent getUserProfile call
     },
     uploadProfilePictureFailure: (state, action) => {
       state.loadingUploadPicture = false;
@@ -83,16 +84,28 @@ const userAccountSlice = createSlice({
       state.loadingDeletePicture = false;
       state.deletePictureMessage = action.payload; // Success message
       state.errorDeletePicture = null;
-      // Profile picture URL will be updated by a subsequent getUserProfile call
-      // or explicitly set to "" or null:
-      // if (state.profile) {
-      //   state.profile.profilePicture = "";
-      // }
     },
     deleteProfilePictureFailure: (state, action) => {
       state.loadingDeletePicture = false;
       state.errorDeletePicture = action.payload;
       state.deletePictureMessage = null;
+    },
+
+    // Get Transaction History
+    getTransactionHistoryRequest: (state) => {
+      state.loadingGetTransactionHistory = true;
+      state.errorGetTransactionHistory = null;
+      state.transactionHistory = []; // Reset on new request
+    },
+    getTransactionHistorySuccess: (state, action) => {
+      state.loadingGetTransactionHistory = false;
+      state.transactionHistory = action.payload;
+      state.errorGetTransactionHistory = null;
+    },
+    getTransactionHistoryFailure: (state, action) => {
+      state.loadingGetTransactionHistory = false;
+      state.errorGetTransactionHistory = action.payload;
+      state.transactionHistory = [];
     },
 
     // Reset state if needed
@@ -115,6 +128,9 @@ export const {
   deleteProfilePictureRequest,
   deleteProfilePictureSuccess,
   deleteProfilePictureFailure,
+  getTransactionHistoryRequest,
+  getTransactionHistorySuccess,
+  getTransactionHistoryFailure,
   resetUserAccountState,
 } = userAccountSlice.actions;
 

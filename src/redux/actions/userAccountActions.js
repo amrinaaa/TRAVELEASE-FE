@@ -13,6 +13,9 @@ import {
   deleteProfilePictureRequest,
   deleteProfilePictureSuccess,
   deleteProfilePictureFailure,
+  getTransactionHistoryRequest, // Added
+  getTransactionHistorySuccess, // Added
+  getTransactionHistoryFailure, // Added
 } from "../reducers/userAccountReducer"; // Pastikan path ini benar
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
@@ -66,9 +69,6 @@ export const updateUserProfile = (newName) => async (dispatch) => {
       }
     );
 
-    // Assuming the API returns the updated profile or a success message
-    // If it returns the updated profile, you might want to dispatch it.
-    // For now, let's assume it returns a message and we refetch the profile.
     dispatch(updateUserProfileSuccess(data.message || "Profile updated successfully"));
     dispatch(getUserProfile()); // Refresh profile data
     return data;
@@ -90,7 +90,6 @@ export const uploadUserProfilePicture = (file) => async (dispatch) => {
     }
 
     if (!file) throw new Error("No file selected");
-    // Add more specific file type and size validation if needed, similar to adminActions
     if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
       throw new Error("Only JPG/JPEG/PNG files allowed");
     }
@@ -99,10 +98,10 @@ export const uploadUserProfilePicture = (file) => async (dispatch) => {
     }
 
     const formData = new FormData();
-    formData.append('file', file); // 'file' is a common key for file uploads
+    formData.append('file', file);
 
     const { data } = await axios.post(
-      `${api_url}/profile`, // Endpoint for uploading profile picture
+      `${api_url}/profile`,
       formData,
       {
         headers: {
@@ -113,7 +112,7 @@ export const uploadUserProfilePicture = (file) => async (dispatch) => {
     );
 
     dispatch(uploadProfilePictureSuccess(data.message || "Upload successful"));
-    dispatch(getUserProfile()); // Refresh profile data to get new picture URL
+    dispatch(getUserProfile());
   } catch (error) {
     console.error("[ERROR] Uploading profile picture:", error);
     dispatch(uploadProfilePictureFailure(error.response?.data?.message || error.message));
@@ -138,10 +137,49 @@ export const deleteUserProfilePicture = () => async (dispatch) => {
     });
 
     dispatch(deleteProfilePictureSuccess(data.message || "Deleted successful"));
-    dispatch(getUserProfile()); // Refresh profile data
+    dispatch(getUserProfile());
   } catch (error) {
     console.error("[ERROR] deleting profile picture:", error);
     dispatch(deleteProfilePictureFailure(error.response?.data?.message || error.message));
     throw error;
+  }
+};
+
+// Action to get transaction history
+export const getTransactionHistory = () => async (dispatch) => {
+  try {
+    dispatch(getTransactionHistoryRequest());
+
+    const token = Cookies.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found.");
+    }
+
+    const { data } = await axios.get(`${api_url}/transaction-history`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json' // Added for consistency, though GET typically doesn't need Content-Type for body
+      }
+    });
+
+    if (data && data.data) {
+      dispatch(getTransactionHistorySuccess(data.data));
+    } else if (data && data.message && Array.isArray(data.data)) { // Handle cases where data might be empty but valid
+        dispatch(getTransactionHistorySuccess(data.data));
+    }
+    else {
+      // If the API returns a message like "Transaction history retrieved successfully" but data is empty,
+      // it's still a success but with no transactions.
+      // The provided example shows data can be an empty array, so this should be handled.
+      throw new Error("Invalid data format from API for transaction history");
+    }
+  } catch (error) {
+    console.error("[ERROR] Fetching transaction history:", error);
+    // Check if the error is due to "Invalid data format" custom error or an API/network error
+    const errorMessage = error.response?.data?.message || error.message;
+    dispatch(getTransactionHistoryFailure(errorMessage));
+    // Optionally, rethrow if you want calling code to also handle it,
+    // but for Redux actions, usually dispatching failure is enough.
+    // throw error;
   }
 };
