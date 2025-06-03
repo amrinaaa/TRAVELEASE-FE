@@ -3,14 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Pencil, Trash2, ImageUp, RotateCcw } from "lucide-react";
 import Button from "../components/Button"; // Asumsi path ini benar
 import {
-  getAdminProfile,
-  updateAdminProfile,
-  uploadAdminProfilePicture,
-  deleteAdminProfilePicture,
-} from "../redux/actions/adminAccountActions"; // Path ke actions admin
+  getMitraHotelProfile,
+  updateMitraHotelProfile,
+  uploadMitraHotelProfilePicture,
+  deleteMitraHotelProfilePicture,
+} from "../redux/actions/mitraHotelAccountActions"; // Path ke actions mitra hotel
 
-// Nama komponen diubah dari PengaturanAkunMitra menjadi PengaturanAkunAdmin
-const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
+const PengaturanAkunMitraHotel = ({ isSidebarOpen }) => {
   const dispatch = useDispatch();
   const {
     profile,
@@ -25,7 +24,7 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
     loadingDeletePicture,
     errorDeletePicture,
     deletePictureMessage,
-  } = useSelector((state) => state.adminAccount); // Menggunakan slice adminAccount
+  } = useSelector((state) => state.mitraHotelAccount); // Menggunakan slice mitraHotelAccount
 
   const [nameInput, setNameInput] = useState("");
   const [currentEmail, setCurrentEmail] = useState("");
@@ -35,7 +34,7 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    dispatch(getAdminProfile());
+    dispatch(getMitraHotelProfile());
   }, [dispatch]);
 
   useEffect(() => {
@@ -76,15 +75,15 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
 
   const handleSubmitName = () => {
     if (nameInput.trim() === "") {
-      alert("Nama tidak boleh kosong.");
+      alert("Nama hotel tidak boleh kosong.");
       return;
     }
-    dispatch(updateAdminProfile(nameInput));
+    dispatch(updateMitraHotelProfile(nameInput));
   };
 
   const handleUploadPicture = () => {
     if (selectedFile) {
-      dispatch(uploadAdminProfilePicture(selectedFile));
+      dispatch(uploadMitraHotelProfilePicture(selectedFile));
     } else {
       alert("Silakan pilih file gambar terlebih dahulu.");
     }
@@ -93,8 +92,8 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
   const handleDeletePicture = () => {
     if (profile && profile.profilePicture) {
       // eslint-disable-next-line no-restricted-globals
-      if (confirm("Apakah Anda yakin ingin menghapus foto profil Anda?")) {
-        dispatch(deleteAdminProfilePicture());
+      if (confirm("Apakah Anda yakin ingin menghapus foto profil hotel Anda?")) {
+        dispatch(deleteMitraHotelProfilePicture());
       }
     } else {
       alert("Tidak ada foto profil untuk dihapus.");
@@ -119,7 +118,7 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
   if (loadingGetProfile && !profile) {
     return (
       <div className={`flex transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"} pt-24 h-screen items-center justify-center`}>
-        <p className="text-xl">Memuat profil admin...</p>
+        <p className="text-xl">Memuat profil...</p>
       </div>
     );
   }
@@ -127,8 +126,8 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
   if (errorGetProfile && !profile) {
     return (
       <div className={`flex flex-col transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"} pt-24 h-screen items-center justify-center`}>
-        <p className="text-xl text-red-500 mb-4">Error memuat profil admin: {errorGetProfile}</p>
-        <Button text="Coba Lagi" bgColor="bg-blue-500 hover:bg-blue-600" onClick={() => dispatch(getAdminProfile())} />
+        <p className="text-xl text-red-500 mb-4">Error memuat profil: {errorGetProfile}</p>
+        <Button text="Coba Lagi" bgColor="bg-blue-500 hover:bg-blue-600" onClick={() => dispatch(getMitraHotelProfile())} />
       </div>
     );
   }
@@ -138,7 +137,7 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
       <div className={`bg-white pt-24 pb-12 min-h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
         <div className="flex-col px-4 items-center">
           <div className="text-center md:text-2xl mb-6 md:mb-10 font-bold text-gray-800">
-            <p>Edit Profil Admin</p>
+            <p>Edit Profil Mitra Hotel</p>
           </div>
 
           {errorGetProfile && profile && <p className="text-red-500 text-center mb-4">Gagal menyegarkan profil: {errorGetProfile}</p>}
@@ -153,7 +152,7 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
             <div className="relative md:w-64 w-40 md:h-64 h-40">
               <img
                 src={imagePreview}
-                alt="Profil Admin"
+                alt="Profil Hotel"
                 className="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-lg"
                 onError={(e) => { e.target.onerror = null; e.target.src = placeholderUrl; }}
               />
@@ -165,7 +164,7 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
                 <input
                   type="file"
                   accept="image/jpeg, image/png, image/jpg"
-                  className="hidden"
+                  className="hidden" //
                   onChange={handleImageChange}
                   ref={fileInputRef}
                   disabled={loadingGetProfile && !profile}
@@ -176,7 +175,7 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
             <div className="md:w-auto w-full px-4 md:px-0">
               <div className="flex flex-col mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  <span className="text-red-700 mr-1">*</span>Nama Admin
+                  <span className="text-red-700 mr-1">*</span>Nama Hotel
                 </label>
                 <input
                   type="text"
@@ -196,10 +195,10 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
                   name="email"
                   value={currentEmail}
                   className="w-full md:max-w-md text-base p-2 border border-gray-300 text-gray-500 bg-gray-200 rounded-lg"
-                  disabled
+                  disabled //
                 />
               </div>
-              {/* Password field removed */}
+              {/* Password field removed as it's usually handled in a separate flow */}
             </div>
           </div>
 
@@ -244,5 +243,4 @@ const PengaturanAkunAdmin = ({ isSidebarOpen }) => {
   );
 };
 
-// Nama export diubah menjadi PengaturanAkunAdmin
-export default PengaturanAkunAdmin;
+export default PengaturanAkunMitraHotel;
