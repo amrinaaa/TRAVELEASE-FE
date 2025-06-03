@@ -13,17 +13,13 @@ const initialState = {
   loadingDeletePicture: false,
   errorDeletePicture: null,
   deletePictureMessage: null,
-  transactionHistory: [], // Changed from null to [] for easier handling in components
-  loadingGetTransactionHistory: false,
-  errorGetTransactionHistory: null,
-  // getTransactionHistoryMessage: null, // Not needed if we store the data directly
 };
 
-const userAccountSlice = createSlice({
-  name: "userAccount",
+const mitraPesawatAccountSlice = createSlice({
+  name: "mitraPesawatAccount", // Updated slice name
   initialState,
   reducers: {
-    // Get User Profile
+    // Get Mitra Pesawat Profile
     getUserProfileRequest: (state) => {
       state.loadingGetProfile = true;
       state.errorGetProfile = null;
@@ -40,7 +36,7 @@ const userAccountSlice = createSlice({
       state.profile = null;
     },
 
-    // Update User Profile
+    // Update Mitra Pesawat Profile
     updateUserProfileRequest: (state) => {
       state.loadingUpdateProfile = true;
       state.errorUpdateProfile = null;
@@ -57,7 +53,7 @@ const userAccountSlice = createSlice({
       state.updateProfileMessage = null;
     },
 
-    // Upload Profile Picture
+    // Upload Mitra Pesawat Profile Picture
     uploadProfilePictureRequest: (state) => {
       state.loadingUploadPicture = true;
       state.errorUploadPicture = null;
@@ -74,7 +70,7 @@ const userAccountSlice = createSlice({
       state.uploadPictureMessage = null;
     },
 
-    // Delete Profile Picture
+    // Delete Mitra Pesawat Profile Picture
     deleteProfilePictureRequest: (state) => {
       state.loadingDeletePicture = true;
       state.errorDeletePicture = null;
@@ -91,25 +87,8 @@ const userAccountSlice = createSlice({
       state.deletePictureMessage = null;
     },
 
-    // Get Transaction History
-    getTransactionHistoryRequest: (state) => {
-      state.loadingGetTransactionHistory = true;
-      state.errorGetTransactionHistory = null;
-      state.transactionHistory = []; // Reset on new request
-    },
-    getTransactionHistorySuccess: (state, action) => {
-      state.loadingGetTransactionHistory = false;
-      state.transactionHistory = action.payload;
-      state.errorGetTransactionHistory = null;
-    },
-    getTransactionHistoryFailure: (state, action) => {
-      state.loadingGetTransactionHistory = false;
-      state.errorGetTransactionHistory = action.payload;
-      state.transactionHistory = [];
-    },
-
     // Reset state if needed
-    resetUserAccountState: (state) => {
+    resetMitraPesawatAccountState: (state) => { // Renamed reset function
       Object.assign(state, initialState);
     },
   },
@@ -128,10 +107,7 @@ export const {
   deleteProfilePictureRequest,
   deleteProfilePictureSuccess,
   deleteProfilePictureFailure,
-  getTransactionHistoryRequest,
-  getTransactionHistorySuccess,
-  getTransactionHistoryFailure,
-  resetUserAccountState,
-} = userAccountSlice.actions;
+  resetMitraPesawatAccountState, // Export renamed reset function
+} = mitraPesawatAccountSlice.actions;
 
-export default userAccountSlice.reducer;
+export default mitraPesawatAccountSlice.reducer;

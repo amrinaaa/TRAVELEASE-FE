@@ -13,15 +13,12 @@ import {
   deleteProfilePictureRequest,
   deleteProfilePictureSuccess,
   deleteProfilePictureFailure,
-  getTransactionHistoryRequest, // Added
-  getTransactionHistorySuccess, // Added
-  getTransactionHistoryFailure, // Added
-} from "../reducers/userAccountReducer"; // Pastikan path ini benar
+} from "../reducers/mitraPesawatAccountReducer"; // Updated import path
 
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
 
-// Action to get user profile
-export const getUserProfile = () => async (dispatch) => {
+// Action to get mitra pesawat profile
+export const getMitraPesawatProfile = () => async (dispatch) => { // Renamed thunk
   try {
     dispatch(getUserProfileRequest());
 
@@ -30,7 +27,7 @@ export const getUserProfile = () => async (dispatch) => {
       throw new Error("Authentication token not found.");
     }
 
-    const { data } = await axios.get(`${api_url}/profile`, {
+    const { data } = await axios.get(`${api_url}/mitra-penerbangan/profile`, { // Updated endpoint
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -40,16 +37,16 @@ export const getUserProfile = () => async (dispatch) => {
     if (data && data.data) {
       dispatch(getUserProfileSuccess(data.data));
     } else {
-      throw new Error("Invalid data format from API for user profile");
+      throw new Error("Invalid data format from API for mitra pesawat profile");
     }
   } catch (error) {
-    console.error("[ERROR] Fetching user profile:", error);
+    console.error("[ERROR] Fetching mitra pesawat profile:", error); // Updated log message
     dispatch(getUserProfileFailure(error.response?.data?.message || error.message));
   }
 };
 
-// Action to update user profile
-export const updateUserProfile = (newName) => async (dispatch) => {
+// Action to update mitra pesawat profile
+export const updateMitraPesawatProfile = (newName) => async (dispatch) => { // Renamed thunk
   try {
     dispatch(updateUserProfileRequest());
 
@@ -59,7 +56,7 @@ export const updateUserProfile = (newName) => async (dispatch) => {
     }
 
     const { data } = await axios.put(
-      `${api_url}/profile`,
+      `${api_url}/mitra-penerbangan/profile`, // Updated endpoint
       { newName },
       {
         headers: {
@@ -70,17 +67,17 @@ export const updateUserProfile = (newName) => async (dispatch) => {
     );
 
     dispatch(updateUserProfileSuccess(data.message || "Profile updated successfully"));
-    dispatch(getUserProfile()); // Refresh profile data
+    dispatch(getMitraPesawatProfile()); // Refresh profile data using the new thunk name
     return data;
   } catch (error) {
-    console.error("[ERROR] Updating user profile:", error);
+    console.error("[ERROR] Updating mitra pesawat profile:", error); // Updated log message
     dispatch(updateUserProfileFailure(error.response?.data?.message || error.message));
     throw error;
   }
 };
 
-// Action to upload profile picture
-export const uploadUserProfilePicture = (file) => async (dispatch) => {
+// Action to upload mitra pesawat profile picture
+export const uploadMitraPesawatProfilePicture = (file) => async (dispatch) => { // Renamed thunk
   try {
     dispatch(uploadProfilePictureRequest());
 
@@ -93,7 +90,7 @@ export const uploadUserProfilePicture = (file) => async (dispatch) => {
     if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
       throw new Error("Only JPG/JPEG/PNG files allowed");
     }
-    if (file.size > 2 * 1024 * 1024) { // Example: 2MB limit
+    if (file.size > 2 * 1024 * 1024) { // 2MB limit
       throw new Error("File size must be less than 2MB");
     }
 
@@ -101,7 +98,7 @@ export const uploadUserProfilePicture = (file) => async (dispatch) => {
     formData.append('file', file);
 
     const { data } = await axios.post(
-      `${api_url}/profile`,
+      `${api_url}/mitra-penerbangan/profile`, // Updated endpoint
       formData,
       {
         headers: {
@@ -112,16 +109,16 @@ export const uploadUserProfilePicture = (file) => async (dispatch) => {
     );
 
     dispatch(uploadProfilePictureSuccess(data.message || "Upload successful"));
-    dispatch(getUserProfile());
+    dispatch(getMitraPesawatProfile()); // Refresh profile data using the new thunk name
   } catch (error) {
-    console.error("[ERROR] Uploading profile picture:", error);
+    console.error("[ERROR] Uploading mitra pesawat profile picture:", error); // Updated log message
     dispatch(uploadProfilePictureFailure(error.response?.data?.message || error.message));
     throw error;
   }
 };
 
-// Action to delete profile picture
-export const deleteUserProfilePicture = () => async (dispatch) => {
+// Action to delete mitra pesawat profile picture
+export const deleteMitraPesawatProfilePicture = () => async (dispatch) => { // Renamed thunk
   try {
     dispatch(deleteProfilePictureRequest());
 
@@ -130,56 +127,17 @@ export const deleteUserProfilePicture = () => async (dispatch) => {
       throw new Error("Authentication token not found.");
     }
 
-    const { data } = await axios.delete(`${api_url}/profile`, {
+    const { data } = await axios.delete(`${api_url}/mitra-penerbangan/profile`, { // Updated endpoint
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
 
     dispatch(deleteProfilePictureSuccess(data.message || "Deleted successful"));
-    dispatch(getUserProfile());
+    dispatch(getMitraPesawatProfile()); // Refresh profile data using the new thunk name
   } catch (error) {
-    console.error("[ERROR] deleting profile picture:", error);
+    console.error("[ERROR] deleting mitra pesawat profile picture:", error); // Updated log message
     dispatch(deleteProfilePictureFailure(error.response?.data?.message || error.message));
     throw error;
-  }
-};
-
-// Action to get transaction history
-export const getTransactionHistory = () => async (dispatch) => {
-  try {
-    dispatch(getTransactionHistoryRequest());
-
-    const token = Cookies.get("token");
-    if (!token) {
-      throw new Error("Authentication token not found.");
-    }
-
-    const { data } = await axios.get(`${api_url}/transaction-history`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json' // Added for consistency, though GET typically doesn't need Content-Type for body
-      }
-    });
-
-    if (data && data.data) {
-      dispatch(getTransactionHistorySuccess(data.data));
-    } else if (data && data.message && Array.isArray(data.data)) { // Handle cases where data might be empty but valid
-        dispatch(getTransactionHistorySuccess(data.data));
-    }
-    else {
-      // If the API returns a message like "Transaction history retrieved successfully" but data is empty,
-      // it's still a success but with no transactions.
-      // The provided example shows data can be an empty array, so this should be handled.
-      throw new Error("Invalid data format from API for transaction history");
-    }
-  } catch (error) {
-    console.error("[ERROR] Fetching transaction history:", error);
-    // Check if the error is due to "Invalid data format" custom error or an API/network error
-    const errorMessage = error.response?.data?.message || error.message;
-    dispatch(getTransactionHistoryFailure(errorMessage));
-    // Optionally, rethrow if you want calling code to also handle it,
-    // but for Redux actions, usually dispatching failure is enough.
-    // throw error;
   }
 };

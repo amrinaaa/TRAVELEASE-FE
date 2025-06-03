@@ -1,49 +1,49 @@
 import React, { useState, useEffect } from "react";
-// import dataCustomerPlane from "../utils/dataCustomerPlane.json"; // Data dummy tidak lagi diimpor langsung
 
-// Komponen akan menerima passengersData dan passengerStats dari props (dari CustomerPesawat.jsx)
 const TableCustomerPlane = ({ searchQuery, passengersData = [], passengerStats = {} }) => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "default" });
-  // useNavigate tidak digunakan di versi ini karena tidak ada navigasi atau aksi delete
-  // const navigate = useNavigate();
 
-  // Menggunakan data penumpang dari props (yang berasal dari Redux)
   useEffect(() => {
     setData(passengersData);
   }, [passengersData]);
 
-  // Fungsi untuk sorting
+  // Helper function to get value from object, supports nested keys like 'seat.name'
+  const getNestedValue = (obj, path) => {
+    if (!path) return undefined;
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  };
+
   const handleSort = (key) => {
     setSortConfig((prev) => {
       if (prev.key === key) {
         if (prev.direction === "default") return { key, direction: "asc" };
         if (prev.direction === "asc") return { key, direction: "desc" };
-        return { key: null, direction: "default" }; // Reset ke urutan default
+        return { key: null, direction: "default" };
       }
-      return { key, direction: "asc" }; // Jika ganti kolom, mulai dari ascending
+      return { key, direction: "asc" };
     });
   };
 
-  // Mengurutkan data sesuai konfigurasi
   const sortedData = [...data].sort((a, b) => {
     if (sortConfig.direction === "default" || sortConfig.key === null) return 0;
-    // Pastikan properti ada sebelum diakses untuk sorting
-    const valA = a[sortConfig.key] || '';
-    const valB = b[sortConfig.key] || '';
-    if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-    if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+
+    const valA = getNestedValue(a, sortConfig.key) || '';
+    const valB = getNestedValue(b, sortConfig.key) || '';
+
+    // Handle numeric sorting for NIK if desired, otherwise treat as string
+    // For simplicity, all are treated as strings here. Add specific type checks if needed.
+    if (String(valA).toLowerCase() < String(valB).toLowerCase()) return sortConfig.direction === "asc" ? -1 : 1;
+    if (String(valA).toLowerCase() > String(valB).toLowerCase()) return sortConfig.direction === "asc" ? 1 : -1;
     return 0;
   });
 
-  // Filter data berdasarkan searchQuery
-  // Pastikan customerPlane.name ada dan merupakan string
-  const filteredData = sortedData.filter((customerPlane) =>
-    customerPlane && typeof customerPlane.name === 'string' &&
-    customerPlane.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredData = sortedData.filter((customerPlane) => {
+    // Filter berdasarkan passengerName
+    const name = customerPlane?.passengerName || '';
+    return name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
-  // Fungsi untuk menampilkan statistik penumpang (seperti sebelumnya)
   const renderStats = () => {
     if (!passengerStats || Object.keys(passengerStats).length === 0) return null;
     return (
@@ -57,18 +57,16 @@ const TableCustomerPlane = ({ searchQuery, passengersData = [], passengerStats =
     );
   };
 
-  // Kolom yang akan ditampilkan, sesuai dengan struktur asli dan data yang diharapkan
   const displayColumns = ["Name", "NIK", "Gender", "Age Category", "Class", "Seat"];
-  // Mapping ke kunci data (asumsi sama dengan nama kolom dalam huruf kecil)
+  // Mapping ke kunci data dari API
   const dataKeys = {
-    "Name": "name",
-    "NIK": "nik",
+    "Name": "passengerName",
+    "NIK": "passengerNIK",
     "Gender": "gender",
-    "Age Category": "ageCategory",
-    "Class": "class",
-    "Seat": "seat"
+    "Age Category": "type", // API menggunakan 'type' (e.g., 'ADULT')
+    "Class": "seat.category", // Properti bersarang
+    "Seat": "seat.name" // Properti bersarang
   };
-
 
   return (
     <div className="p-4">
@@ -81,7 +79,7 @@ const TableCustomerPlane = ({ searchQuery, passengersData = [], passengerStats =
                 <th
                   key={colName}
                   className="py-2 px-3 border cursor-pointer"
-                  onClick={() => handleSort(dataKeys[colName])} // Menggunakan dataKey untuk sorting
+                  onClick={() => handleSort(dataKeys[colName])}
                 >
                   {colName}{" "}
                   <i className={`ml-1 ri-arrow-up-down-line ${sortConfig.key === dataKeys[colName] ? (sortConfig.direction === 'asc' ? 'ri-sort-asc' : sortConfig.direction === 'desc' ? 'ri-sort-desc' : '') : ''}`}></i>
@@ -92,20 +90,20 @@ const TableCustomerPlane = ({ searchQuery, passengersData = [], passengerStats =
           <tbody className="text-gray-700">
             {filteredData.length > 0 ? (
               filteredData.map((customerPlane, index) => (
-                // Menggunakan ID unik dari customerPlane jika ada, jika tidak, gunakan index
-                <tr key={customerPlane.id || `passenger-${index}`} className="border-b hover:bg-gray-100">
-                  <td className="py-2 px-3 border text-center">{customerPlane.name}</td>
-                  <td className="py-2 px-3 border text-center">{customerPlane.nik}</td>
+                // Menggunakan ticketId sebagai key unik
+                <tr key={customerPlane.ticketId || `passenger-${index}`} className="border-b hover:bg-gray-100">
+                  <td className="py-2 px-3 border text-center">{customerPlane.passengerName}</td>
+                  <td className="py-2 px-3 border text-center">{customerPlane.passengerNIK}</td>
                   <td className="py-2 px-3 border text-center">{customerPlane.gender}</td>
-                  <td className="py-2 px-3 border text-center">{customerPlane.ageCategory}</td>
-                  <td className="py-2 px-3 border text-center">{customerPlane.class}</td>
-                  <td className="py-2 px-3 border text-center">{customerPlane.seat}</td>
+                  <td className="py-2 px-3 border text-center">{customerPlane.type}</td> {/* Sesuai dengan 'type' dari API */}
+                  <td className="py-2 px-3 border text-center">{customerPlane.seat?.category}</td> {/* Akses properti bersarang */}
+                  <td className="py-2 px-3 border text-center">{customerPlane.seat?.name}</td> {/* Akses properti bersarang */}
                 </tr>
               ))
             ) : (
               <tr>
                 <td colSpan={displayColumns.length} className="text-center py-4 text-gray-500">
-                  No results found.
+                  {searchQuery ? "No results found for your search." : "No passenger data available."}
                 </td>
               </tr>
             )}

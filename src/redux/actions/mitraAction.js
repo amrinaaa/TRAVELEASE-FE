@@ -547,6 +547,9 @@ import {
   deleteHotelRequest,
   deleteHotelSuccess,
   deleteHotelFailure,
+  deleteHotelImageRequest,
+  deleteHotelImageSuccess,
+  deleteHotelImageFailure,
   clearDeleteHotelErrorRequest,
   getLocationsRequest,
   getLocationsSuccess,
@@ -586,13 +589,22 @@ import {
 const api_url = import.meta.env.VITE_REACT_API_ADDRESS;
 
 // --- Airline Actions (Mitra) ---
-export const fetchMitraRequest = () => async (dispatch) => {
+export const fetchMitraRequest = (mitraId) => async (dispatch) => {
   dispatch(getMitraRequest());
   try {
     const token = Cookies.get("token");
-    const response = await axios.get(`${api_url}/airlines`, {
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    // Pastikan mitraId tersedia sebelum membuat request
+    const url = mitraId 
+      ? `${api_url}/airlines?mitraId=${mitraId}` 
+      : `${api_url}/airlines`;
+      
+    const response = await axios.get(url, {
+      headers: { 
+        Authorization: `Bearer ${token}`, 
+        "Content-Type": "application/json" 
+      },
     });
+    
     if (response.data?.data && Array.isArray(response.data.data)) {
       dispatch(getMitraSuccess(response.data.data));
     } else {
@@ -814,7 +826,8 @@ export const createFlight = (flightData) => async (dispatch) => {
       },
     });
     dispatch(createFlightSuccess(response.data.data));
-  } catch (error) {
+  } catch (error)
+ {
     const errorMessage = error.response?.data?.message || error.message || "Failed to create flight";
     dispatch(createFlightFailure(String(errorMessage)));
   }
@@ -843,13 +856,19 @@ export const fetchAirportsRequest = () => async (dispatch) => {
 };
 
 // --- Hotel Actions ---
-export const fetchHotels = () => async (dispatch) => {
+export const fetchHotels = (mitraId) => async (dispatch) => {
   dispatch(getHotelsRequest());
   try {
     const token = Cookies.get("token");
-    const response = await axios.get(`${api_url}/hotels`, {
+    // Pastikan mitraId tersedia sebelum membuat request
+    const url = mitraId 
+      ? `${api_url}/hotels?mitraId=${mitraId}` 
+      : `${api_url}/hotels`;
+      
+    const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    
     if (response.data?.data && Array.isArray(response.data.data)) {
       dispatch(getHotelsSuccess(response.data.data));
     } else if (response.data?.message === "Success" && response.data?.data === null) {
@@ -864,18 +883,27 @@ export const fetchHotels = () => async (dispatch) => {
 };
 
 export const fetchHotelById = (hotelId) => async (dispatch) => {
+  console.log(`[ACTION] fetchHotelById called with hotelId: ${hotelId}`);
   dispatch(getHotelByIdRequest());
   try {
     const token = Cookies.get("token");
     const response = await axios.get(`${api_url}/hotel/data/${hotelId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    console.log("[ACTION] fetchHotelById - API Response:", response);
+    // Tambahkan log untuk melihat apa isi response.data.data sebelum dispatch
+    console.log("[ACTION] fetchHotelById - API Response data.data:", response.data?.data);
+
     if (response.data?.message === "Success" && response.data?.data) {
       dispatch(getHotelByIdSuccess(response.data.data));
     } else {
-      throw new Error(response.data?.message || "Format data tidak valid dari API untuk detail hotel");
+      // Kondisi ini akan memicu error jika message bukan "Success" atau jika data.data kosong/null
+      // meskipun status HTTP mungkin 200 OK.
+      console.warn("[ACTION] fetchHotelById - Condition for success not met or data is null/empty. Response message:", response.data?.message);
+      throw new Error(response.data?.message || "Format data tidak valid dari API untuk detail hotel (atau data hotel tidak ditemukan)");
     }
   } catch (error) {
+    console.error("[ACTION] fetchHotelById - Error caught:", error);
     const errorMessage = error.response?.data?.message || error.message || "Gagal mengambil detail data hotel";
     dispatch(getHotelByIdFailure(String(errorMessage)));
   }
@@ -886,7 +914,7 @@ export const createHotel = (hotelFormData) => async (dispatch) => {
   try {
     const token = Cookies.get("token");
     const response = await axios.post(`${api_url}/hotel`, hotelFormData, {
-      headers: { Authorization: `Bearer ${token}` }, // Axios will automatically set Content-Type for FormData
+      headers: { Authorization: `Bearer ${token}` },
     });
     if (response.data?.data) {
       dispatch(createHotelSuccess(response.data.data));
@@ -904,7 +932,7 @@ export const updateHotel = (hotelFormData) => async (dispatch) => {
   try {
     const token = Cookies.get("token");
     const response = await axios.patch(`${api_url}/hotel`, hotelFormData, {
-      headers: { Authorization: `Bearer ${token}` }, // Axios will automatically set Content-Type for FormData
+      headers: { Authorization: `Bearer ${token}` },
     });
     if (response.data?.data) {
       dispatch(updateHotelSuccess(response.data.data));
@@ -938,6 +966,37 @@ export const deleteHotel = (hotelId) => async (dispatch) => {
 
 export const clearDeleteHotelError = () => (dispatch) => {
   dispatch(clearDeleteHotelErrorRequest());
+};
+
+// --- Hotel Image Actions ---
+export const deleteHotelImage = (imageId, hotelId) => async (dispatch) => {
+  console.log(`[ACTION] deleteHotelImage called with imageId: ${imageId}, hotelId: ${hotelId}`);
+  dispatch(deleteHotelImageRequest());
+  try {
+    const token = Cookies.get("token");
+    const response = await axios.delete(`${api_url}/hotelImage/${imageId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("[ACTION] deleteHotelImage - API Response:", response);
+    if (response.data?.message?.toLowerCase() === "deleted successful") {
+      dispatch(deleteHotelImageSuccess({ imageId, hotelId }));
+    } else {
+      console.warn("[ACTION] deleteHotelImage - Condition for success not met. Response message:", response.data?.message);
+      throw new Error(response.data?.message || "Failed to delete hotel image due to unexpected API response");
+    }
+  } catch (error) {
+    console.error("[ACTION] deleteHotelImage - Error caught:", error);
+    // Log detail error dari server jika ada
+    if (error.response) {
+      console.error("[ACTION] deleteHotelImage - Server Error Response Data:", error.response.data);
+      console.error("[ACTION] deleteHotelImage - Server Error Response Status:", error.response.status);
+    }
+    const errorMessage = error.response?.data?.message || error.message || "Failed to delete hotel image";
+    dispatch(deleteHotelImageFailure(String(errorMessage)));
+  }
 };
 
 // --- Location Actions ---
@@ -1013,19 +1072,27 @@ export const deleteRoom = (roomId) => async (dispatch) => {
   try {
     const token = Cookies.get("token");
     const payload = { roomId: roomId };
+
     const response = await axios.delete(`${api_url}/room`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       data: payload,
+      data: payload,
     });
+
     if (response.data?.message.toLowerCase() === "success") {
+      dispatch(deleteRoomSuccess(roomId));
       dispatch(deleteRoomSuccess(roomId));
     } else {
       throw new Error(response.data?.message || "Gagal menghapus kamar dari API");
     }
   } catch (error) {
+    console.error("Delete Room API Error:", error.response || error);
+    if (error.response) {
+      console.error("Delete Room API Error Response Data:", error.response.data);
+    }
     const errorMessage = error.response?.data?.message || error.message || "Gagal menghapus kamar";
     dispatch(deleteRoomFailure(String(errorMessage)));
   }

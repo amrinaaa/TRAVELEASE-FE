@@ -13,21 +13,17 @@ const initialState = {
   loadingDeletePicture: false,
   errorDeletePicture: null,
   deletePictureMessage: null,
-  transactionHistory: [], // Changed from null to [] for easier handling in components
-  loadingGetTransactionHistory: false,
-  errorGetTransactionHistory: null,
-  // getTransactionHistoryMessage: null, // Not needed if we store the data directly
 };
 
-const userAccountSlice = createSlice({
-  name: "userAccount",
+const adminAccountSlice = createSlice({
+  name: "adminAccount", // Updated slice name
   initialState,
   reducers: {
-    // Get User Profile
+    // Get Admin Profile
     getUserProfileRequest: (state) => {
       state.loadingGetProfile = true;
       state.errorGetProfile = null;
-      state.profile = null; // Reset profile on new request
+      state.profile = null;
     },
     getUserProfileSuccess: (state, action) => {
       state.loadingGetProfile = false;
@@ -40,7 +36,7 @@ const userAccountSlice = createSlice({
       state.profile = null;
     },
 
-    // Update User Profile
+    // Update Admin Profile
     updateUserProfileRequest: (state) => {
       state.loadingUpdateProfile = true;
       state.errorUpdateProfile = null;
@@ -48,7 +44,7 @@ const userAccountSlice = createSlice({
     },
     updateUserProfileSuccess: (state, action) => {
       state.loadingUpdateProfile = false;
-      state.updateProfileMessage = action.payload; // Success message
+      state.updateProfileMessage = action.payload;
       state.errorUpdateProfile = null;
     },
     updateUserProfileFailure: (state, action) => {
@@ -57,7 +53,7 @@ const userAccountSlice = createSlice({
       state.updateProfileMessage = null;
     },
 
-    // Upload Profile Picture
+    // Upload Admin Profile Picture
     uploadProfilePictureRequest: (state) => {
       state.loadingUploadPicture = true;
       state.errorUploadPicture = null;
@@ -65,7 +61,7 @@ const userAccountSlice = createSlice({
     },
     uploadProfilePictureSuccess: (state, action) => {
       state.loadingUploadPicture = false;
-      state.uploadPictureMessage = action.payload; // Success message
+      state.uploadPictureMessage = action.payload;
       state.errorUploadPicture = null;
     },
     uploadProfilePictureFailure: (state, action) => {
@@ -74,7 +70,7 @@ const userAccountSlice = createSlice({
       state.uploadPictureMessage = null;
     },
 
-    // Delete Profile Picture
+    // Delete Admin Profile Picture
     deleteProfilePictureRequest: (state) => {
       state.loadingDeletePicture = true;
       state.errorDeletePicture = null;
@@ -82,7 +78,7 @@ const userAccountSlice = createSlice({
     },
     deleteProfilePictureSuccess: (state, action) => {
       state.loadingDeletePicture = false;
-      state.deletePictureMessage = action.payload; // Success message
+      state.deletePictureMessage = action.payload;
       state.errorDeletePicture = null;
     },
     deleteProfilePictureFailure: (state, action) => {
@@ -91,25 +87,8 @@ const userAccountSlice = createSlice({
       state.deletePictureMessage = null;
     },
 
-    // Get Transaction History
-    getTransactionHistoryRequest: (state) => {
-      state.loadingGetTransactionHistory = true;
-      state.errorGetTransactionHistory = null;
-      state.transactionHistory = []; // Reset on new request
-    },
-    getTransactionHistorySuccess: (state, action) => {
-      state.loadingGetTransactionHistory = false;
-      state.transactionHistory = action.payload;
-      state.errorGetTransactionHistory = null;
-    },
-    getTransactionHistoryFailure: (state, action) => {
-      state.loadingGetTransactionHistory = false;
-      state.errorGetTransactionHistory = action.payload;
-      state.transactionHistory = [];
-    },
-
-    // Reset state if needed
-    resetUserAccountState: (state) => {
+    // Reset state
+    resetAdminAccountState: (state) => { // Renamed reset function
       Object.assign(state, initialState);
     },
   },
@@ -128,10 +107,7 @@ export const {
   deleteProfilePictureRequest,
   deleteProfilePictureSuccess,
   deleteProfilePictureFailure,
-  getTransactionHistoryRequest,
-  getTransactionHistorySuccess,
-  getTransactionHistoryFailure,
-  resetUserAccountState,
-} = userAccountSlice.actions;
+  resetAdminAccountState, // Export renamed reset function
+} = adminAccountSlice.actions;
 
-export default userAccountSlice.reducer;
+export default adminAccountSlice.reducer;

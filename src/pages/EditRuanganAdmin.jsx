@@ -7,7 +7,7 @@ import dataRuangan from "../utils/dataRuangan.json";
 // Placeholder: Ganti dengan path yang benar ke action Redux Anda
 // import { fetchRoomsByHotel, updateRoom } from "../redux/actions/roomAction"; // Example
 
-const EditRuangan = ({ isSidebarOpen }) => {
+const EditRuanganAdmin = ({ isSidebarOpen }) => {
   const { hotelId, roomId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -383,25 +383,35 @@ const EditRuangan = ({ isSidebarOpen }) => {
       <div className={`bg-ungu10 pt-20 h-full min-h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
-            <p className="text-xl">Hotel Management</p>
+            <p className="text-xl">Partner Management</p>
             <p className="text-xs pt-2 text-gray-600">Edit Room</p>
           </div>
           <div className="flex flex-row justify-end">
-            <Link to="/manajemen-hotel" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link to="/manajemen-mitra-hotel" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
             <Link
-              to={hotelId ? `/manajemen-ruangan/${hotelId}` : "/manajemen-hotel"}
+              to={hotelId ? `/mitra-hotel-admin/${hotelId}` : "/manajemen-hotel"}
+              className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1"
+            >
+              <p>/</p>
+              <p className="text-xs md:text-sm">Hotel List</p>
+            </Link>
+            <Link
+              to={hotelId ? `/manajemen-ruangan-admin/${hotelId}` : "/manajemen-hotel"}
               className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1"
             >
               <p>/</p>
               <p className="text-xs md:text-sm">Room List</p>
             </Link>
-            <span className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1">
+            <Link
+              to={roomId ? `/edit-ruangan-admin/${roomId}` : "/manajemen-hotel"}
+              className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1"
+            >
               <p>/</p>
               <p className="text-xs md:text-sm">Edit Room</p>
-            </span>
+            </Link>
           </div>
         </div>
 
@@ -658,7 +668,4 @@ const EditRuangan = ({ isSidebarOpen }) => {
   );
 };
 
-export default EditRuangan;
-
-
-
+export default EditRuanganAdmin

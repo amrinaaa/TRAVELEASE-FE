@@ -312,8 +312,8 @@ const initialState = {
   loadingCreate: false,
   errorCreate: null,
   createdMitra: null,
-  loadingDelete: false, // Untuk delete airline
-  errorDelete: null,    // Untuk delete airline
+  loadingDelete: false,
+  errorDelete: null,
   loadingUpdate: false,
   errorUpdate: null,
   updatedMitra: null,
@@ -357,7 +357,7 @@ const initialState = {
   hotelList: [],
   loadingHotels: false,
   errorHotels: null,
-  hotelDetail: null,
+  hotelDetail: null,        // Pastikan ini null secara default
   loadingHotelDetail: false,
   errorHotelDetail: null,
   loadingCreateHotel: false,
@@ -368,6 +368,8 @@ const initialState = {
   updatedHotelData: null,
   loadingDeleteHotel: false,
   errorDeleteHotel: null,
+  loadingDeleteHotelImage: false,
+  errorDeleteHotelImage: null,
 
   locationList: [],
   loadingLocations: false,
@@ -455,8 +457,15 @@ const mitraSlice = createSlice({
     createFlightSuccess: (state, action) => { state.loadingCreateFlight = false; state.createdFlight = action.payload; state.errorCreateFlight = null; },
     createFlightFailure: (state, action) => { state.loadingCreateFlight = false; state.errorCreateFlight = action.payload; state.createdFlight = null; },
     resetCreateFlightStatus: (state) => { state.loadingCreateFlight = false; state.errorCreateFlight = null; state.createdFlight = null; },
+    createFlightRequest: (state) => { state.loadingCreateFlight = true; state.errorCreateFlight = null; state.createdFlight = null; },
+    createFlightSuccess: (state, action) => { state.loadingCreateFlight = false; state.createdFlight = action.payload; state.errorCreateFlight = null; },
+    createFlightFailure: (state, action) => { state.loadingCreateFlight = false; state.errorCreateFlight = action.payload; state.createdFlight = null; },
+    resetCreateFlightStatus: (state) => { state.loadingCreateFlight = false; state.errorCreateFlight = null; state.createdFlight = null; },
 
     // --- Airport Reducers ---
+    getAirportsRequest: (state) => { state.loadingAirports = true; state.errorAirports = null; },
+    getAirportsSuccess: (state, action) => { state.loadingAirports = false; state.airportList = action.payload; state.errorAirports = null; },
+    getAirportsFailure: (state, action) => { state.loadingAirports = false; state.errorAirports = action.payload; state.airportList = []; },
     getAirportsRequest: (state) => { state.loadingAirports = true; state.errorAirports = null; },
     getAirportsSuccess: (state, action) => { state.loadingAirports = false; state.airportList = action.payload; state.errorAirports = null; },
     getAirportsFailure: (state, action) => { state.loadingAirports = false; state.errorAirports = action.payload; state.airportList = []; },
@@ -465,19 +474,52 @@ const mitraSlice = createSlice({
     getHotelsRequest: (state) => { state.loadingHotels = true; state.errorHotels = null; },
     getHotelsSuccess: (state, action) => { state.loadingHotels = false; state.hotelList = action.payload; state.errorHotels = null; },
     getHotelsFailure: (state, action) => { state.loadingHotels = false; state.errorHotels = action.payload; state.hotelList = []; },
-    getHotelByIdRequest: (state) => { state.loadingHotelDetail = true; state.errorHotelDetail = null; state.hotelDetail = null; },
-    getHotelByIdSuccess: (state, action) => { state.loadingHotelDetail = false; state.hotelDetail = action.payload; state.errorHotelDetail = null; },
-    getHotelByIdFailure: (state, action) => { state.loadingHotelDetail = false; state.errorHotelDetail = action.payload; state.hotelDetail = null; },
+    
+    getHotelByIdRequest: (state) => {
+      console.log("[REDUCER] getHotelByIdRequest");
+      state.loadingHotelDetail = true;
+      state.errorHotelDetail = null;
+      state.hotelDetail = null; // Set to null to indicate loading new detail
+    },
+    getHotelByIdSuccess: (state, action) => {
+      console.log("[REDUCER] getHotelByIdSuccess - payload:", action.payload);
+      state.loadingHotelDetail = false;
+      state.hotelDetail = action.payload; // Ini seharusnya mengisi state.hotelDetail
+      state.errorHotelDetail = null;
+      console.log("[REDUCER] getHotelByIdSuccess - new state.hotelDetail:", JSON.parse(JSON.stringify(state.hotelDetail))); // Log state baru
+    },
+    getHotelByIdFailure: (state, action) => {
+      console.log("[REDUCER] getHotelByIdFailure - error:", action.payload);
+      state.loadingHotelDetail = false;
+      state.errorHotelDetail = action.payload;
+      state.hotelDetail = null; // Pastikan hotelDetail null jika fetch gagal
+    },
+
     createHotelRequest: (state) => { state.loadingCreateHotel = true; state.errorCreateHotel = null; state.createdHotelData = null; },
     createHotelSuccess: (state, action) => { state.loadingCreateHotel = false; state.createdHotelData = action.payload; state.errorCreateHotel = null; state.hotelList.push(action.payload); },
     createHotelFailure: (state, action) => { state.loadingCreateHotel = false; state.errorCreateHotel = action.payload; state.createdHotelData = null; },
     updateHotelRequest: (state) => { state.loadingUpdateHotel = true; state.errorUpdateHotel = null; state.updatedHotelData = null; },
-    updateHotelSuccess: (state, action) => { state.loadingUpdateHotel = false; state.updatedHotelData = action.payload; state.errorUpdateHotel = null; const index = state.hotelList.findIndex( (hotel) => hotel.id === action.payload.id ); if (index !== -1) { state.hotelList[index] = action.payload; } },
+    updateHotelSuccess: (state, action) => { state.loadingUpdateHotel = false; state.updatedHotelData = action.payload; state.errorUpdateHotel = null; const index = state.hotelList.findIndex( (hotel) => hotel.id === action.payload.id ); if (index !== -1) { state.hotelList[index] = action.payload; } if (state.hotelDetail && state.hotelDetail.id === action.payload.id) { state.hotelDetail = action.payload;} },
     updateHotelFailure: (state, action) => { state.loadingUpdateHotel = false; state.errorUpdateHotel = action.payload; state.updatedHotelData = null; },
     deleteHotelRequest: (state) => { state.loadingDeleteHotel = true; state.errorDeleteHotel = null; },
-    deleteHotelSuccess: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = null; state.hotelList = state.hotelList.filter( (hotel) => hotel.id !== action.payload ); },
+    deleteHotelSuccess: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = null; state.hotelList = state.hotelList.filter( (hotel) => hotel.id !== action.payload ); if(state.hotelDetail && state.hotelDetail.id === action.payload) { state.hotelDetail = null;} },
     deleteHotelFailure: (state, action) => { state.loadingDeleteHotel = false; state.errorDeleteHotel = action.payload; },
     clearDeleteHotelErrorRequest: (state) => { state.errorDeleteHotel = null; },
+
+    // --- Hotel Image Reducers ---
+    deleteHotelImageRequest: (state) => { state.loadingDeleteHotelImage = true; state.errorDeleteHotelImage = null; },
+    deleteHotelImageSuccess: (state, action) => {
+      state.loadingDeleteHotelImage = false;
+      const { imageId, hotelId } = action.payload;
+      if (state.hotelDetail && state.hotelDetail.id === hotelId && state.hotelDetail.hotelImages) {
+        state.hotelDetail.hotelImages = state.hotelDetail.hotelImages.filter(image => image.id !== imageId);
+      }
+      const hotelIndex = state.hotelList.findIndex(hotel => hotel.id === hotelId);
+      if (hotelIndex !== -1 && state.hotelList[hotelIndex].hotelImages) {
+        state.hotelList[hotelIndex].hotelImages = state.hotelList[hotelIndex].hotelImages.filter(image => image.id !== imageId);
+      }
+    },
+    deleteHotelImageFailure: (state, action) => { state.loadingDeleteHotelImage = false; state.errorDeleteHotelImage = action.payload; },
 
     // --- Location Reducers ---
     getLocationsRequest: (state) => { state.loadingLocations = true; state.errorLocations = null; },
@@ -561,6 +603,7 @@ const mitraSlice = createSlice({
     },
 
     resetMitraState: (state) => {
+      console.log("[REDUCER] resetMitraState called"); // Tambahkan log jika ada reset state
       return initialState;
     },
   },
@@ -590,6 +633,7 @@ export const {
   updateHotelRequest, updateHotelSuccess, updateHotelFailure,
   deleteHotelRequest, deleteHotelSuccess, deleteHotelFailure,
   clearDeleteHotelErrorRequest,
+  deleteHotelImageRequest, deleteHotelImageSuccess, deleteHotelImageFailure,
   getLocationsRequest, getLocationsSuccess, getLocationsFailure,
   getRoomsRequest, getRoomsSuccess, getRoomsFailure,
   updateRoomStatusRequest, updateRoomStatusSuccess, updateRoomStatusFailure,

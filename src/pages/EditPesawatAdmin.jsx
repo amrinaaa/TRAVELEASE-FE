@@ -1,77 +1,119 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
 import Searchbar from "../components/Searchbar";
-import dataPesawat from "../utils/dataPesawat.json";
-import dataKursi from "../utils/dataKursi.json";
 import TableSeat from "../components/TableSeat";
-import SeatModal from "../components/SeatModal";
+import SeatModal from "../components/SeatModal"; // Diasumsikan komponen ini ada
+import { fetchSeatsRequest } from "../redux/actions/mitraAction";
+import { fetchPlanesRequest } from "../redux/actions/mitraAction"; // Untuk mendapatkan nama pesawat
 
-const EditPesawatAdmin = ({ isSidebarOpen }) => {
-  const [user, setUser] = useState({ id: '', name: '', description: '' });
+const EditPesawat = ({ isSidebarOpen }) => {
+  const { planeId } = useParams(); // Menggunakan planeId
+  const dispatch = useDispatch();
+
+  // --- Redux State ---
+  const {
+    seatList,
+    loadingSeats,
+    errorSeats,
+    planeList // Ambil planeList untuk mencari nama pesawat
+  } = useSelector((state) => state.mitra);
+
+  // --- Local State ---
+  const [planeName, setPlaneName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSeatModalOpen, setIsSeatModalOpen] = useState(false);
-  const [seatData, setSeatData] = useState([]);
-  const { userId } = useParams();
+  // data kursi akan diambil dari Redux (seatList), state lokal tidak diperlukan lagi
+  // const [seatData, setSeatData] = useState([]);
 
+  // --- Effects ---
+
+  // Fetch seats data based on planeId
   useEffect(() => {
-  const selectedPlane = dataPesawat.find((plane) => plane.id === userId);
-  if (selectedPlane) {
-    setUser({ id: selectedPlane.id, name: selectedPlane.name, description: selectedPlane.type });
-  }
+    if (planeId) {
+      dispatch(fetchSeatsRequest(planeId));
+      // Jika planeList belum ada, fetch. Jika sudah, cari nama pesawat.
+      // Anda mungkin perlu logika yang lebih baik jika planeList besar atau belum tentu ada.
+      // Atau, buat endpoint baru untuk get /plane/{id}
+      if (!planeList || planeList.length === 0) {
+          // Cari airlineId dari URL atau state lain jika diperlukan untuk fetchPlanesRequest
+          // Untuk saat ini, kita tidak bisa fetch planes tanpa airlineId, jadi kita coba cari.
+      }
+    }
+  }, [dispatch, planeId]);
 
-    setSeatData(dataKursi); // dummy seat data
-  }, [userId]);
+  // Find plane name once planeList is available
+  useEffect(() => {
+      const selectedPlane = planeList.find(plane => plane.id === planeId);
+      if (selectedPlane) {
+          setPlaneName(selectedPlane.name);
+      } else {
+          // Jika tidak ditemukan, setidaknya tampilkan ID
+          setPlaneName(`Plane ID: ${planeId}`);
+      }
+  }, [planeList, planeId]);
 
+
+  // Handler untuk menambah kursi (jika SeatModal digunakan)
   const handleAddSeats = (newSeats) => {
-    setSeatData((prev) => [...prev, ...newSeats]);
+    // TODO: Implementasi POST /seat (belum ada)
+    console.log("Menambah kursi baru:", newSeats);
+    // Untuk sementara, mungkin perlu refetch atau update state lokal (tidak ideal)
+    // dispatch(fetchSeatsRequest(planeId)); // Refetch setelah menambah
   };
 
   return (
     <div className="flex transition-all duration-300">
-      <div className={`bg-ungu10 pt-20 h-full transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
+      <div className={`bg-ungu10 pt-20 h-full min-h-screen transition-all duration-300 ${isSidebarOpen ? "ml-16 md:ml-64 w-[calc(100%-64px)] md:w-[calc(100%-256px)]" : "ml-0 w-full"}`}>
+        {/* Breadcrumbs */}
         <div className="grid grid-cols-2 px-4">
           <div className="flex flex-col md:flex-row text-left md:gap-1">
             <p className="text-xl">Airline Management</p>
             <p className="text-xs pt-2 text-gray-600">Seat List</p>
           </div>
           <div className="flex flex-row justify-end">
-            <Link to="/manajemen-maskapai" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
+            <Link to="/manajemen-mitra-pesawat" className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0">
               <i className="fa-solid fa-house-chimney text-xs"></i>
               <p className="text-xs md:text-sm">Home</p>
             </Link>
-            <Link to={`/manajemen-pesawat/${user.id}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+            {/* Navigasi kembali mungkin perlu airlineId, ini perlu penyesuaian */}
+            <Link to={`/mitra-pesawat-admin/${planeId}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
+              <p>/</p>
+              <p className="text-xs md:text-sm">Airline List</p>
+            </Link>
+            <Link to={`/manajemen-pesawat-admin/${planeId}`} className="flex items-center gap-1 text-gray-600 pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Plane List</p>
             </Link>
-            <Link to={`/edit-pesawat/${user.id}`} className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1">
+            <Link to={`/edit-pesawat-admin/${planeId}`} className="flex items-center gap-1 text-black pt-9 md:pt-0 ml-1">
               <p>/</p>
               <p className="text-xs md:text-sm">Seat List</p>
             </Link>
           </div>
         </div>
 
+        {/* Content */}
         <div className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="grid grid-cols-2 px-4 items-center">
             <div className="flex md:flex-row flex-col text-left md:items-center md:gap-2">
               <div className="md:text-2xl text-lg text-ungu7">
-                <p>{user.name}</p>
+                <p>{planeName}</p>
               </div>
               <div className="md:text-xl md:mt-1">
                 <p>Seat List</p>
               </div>
             </div>
 
-            <div className="flex gap-3 items-center">
-              <Searchbar forWhat="plane" onSearch={setSearchQuery} />
-              <button 
+            <div className="flex gap-3 items-center justify-end">
+              <Searchbar forWhat="seat" onSearch={setSearchQuery} />
+              <button
                 className="bg-ungu7 text-white rounded-xl px-2 py-1 hidden md:inline"
                 onClick={() => setIsSeatModalOpen(true)}
               >
                 <i className="ri-add-line mr-1"></i>
                 <span>Seat</span>
               </button>
-
-              <button 
+              <button
                 className="bg-ungu7 text-white rounded-3xl md:rounded-xl px-2 py-2 items-center md:hidden"
                 onClick={() => setIsSeatModalOpen(true)}
               >
@@ -82,19 +124,31 @@ const EditPesawatAdmin = ({ isSidebarOpen }) => {
             </div>
           </div>
 
-          <TableSeat searchQuery={searchQuery} data={seatData} setData={setSeatData} />
+          {/* Menampilkan TableSeat dengan data dari Redux */}
+          {loadingSeats && <p className="text-center p-4">Loading seats...</p>}
+          {errorSeats && <p className="text-center p-4 text-red-600">Error: {errorSeats}</p>}
+          {!loadingSeats && !errorSeats && (
+            <TableSeat
+              searchQuery={searchQuery}
+              seatCategories={seatList} // Mengirim seatList (kategori)
+              // setData tidak diperlukan lagi jika delete ditangani Redux
+            />
+          )}
         </div>
       </div>
 
+      {/* Modal Tambah Kursi */}
       {isSeatModalOpen && (
         <SeatModal
           onClose={() => setIsSeatModalOpen(false)}
-          existingSeats={seatData}
+          existingSeats={seatList} // Mengirim data yang ada ke modal
           onSave={handleAddSeats}
+          planeId={planeId} // Mengirim planeId jika diperlukan modal
+          categories={seatList} // Mengirim kategori ke modal
         />
       )}
     </div>
   );
 };
 
-export default EditPesawatAdmin
+export default EditPesawat;
