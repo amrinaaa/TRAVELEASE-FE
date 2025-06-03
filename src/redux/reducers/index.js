@@ -14,6 +14,7 @@ import userAccountReducer from "./userAccountReducer";
 import mitraPlaneScheduleReducer from "./mitraPlaneScheduleReducer";
 import userPlaneReducer from "./userPlaneReducer";
 import mitraPesawatAccountReducer from "./mitraPesawatAccountReducer"
+import mitraHotelAccountReducer from "./mitraHotelAccountReducer"
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   userAccount: userAccountReducer,
   userPlane: userPlaneReducer,
   mitraPesawatAccount: mitraPesawatAccountReducer,
+  mitraHotelAccount: mitraHotelAccountReducer,
 });
 
 export default rootReducer;

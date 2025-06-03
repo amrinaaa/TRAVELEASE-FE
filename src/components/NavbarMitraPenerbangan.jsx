@@ -84,7 +84,7 @@ const NavbarMitraPenerbangan = ({ toggleSidebar, isSidebarOpen }) => {
     // Jika ada state auth umum yang perlu direset, dispatch di sini juga
     // dispatch(logoutAuthAction()); 
     setShowDropdown(false);
-    window.location.href = "/login-mitra"; // Arahkan ke login mitra
+    window.location.href = "/login"; // Arahkan ke login mitra
   };
 
   return (
