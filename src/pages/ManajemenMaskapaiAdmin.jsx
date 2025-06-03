@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import Searchbar from "../components/Searchbar";
-import TableAirline from "../components/TableAirline";
+import TableAirlineAdmin from "../components/TableAirlineAdmin";
 
 const ManajemenMaskapaiAdmin = ({ isSidebarOpen }) => {
   const [searchQuery, setSearchQuery] = useState(""); // ⬅️ State untuk pencarian
@@ -35,7 +35,7 @@ const ManajemenMaskapaiAdmin = ({ isSidebarOpen }) => {
             </div>
           </div>
           <div>
-            <TableAirline searchQuery={searchQuery} />
+            <TableAirlineAdmin searchQuery={searchQuery} />
           </div>
         </div>
       </div>

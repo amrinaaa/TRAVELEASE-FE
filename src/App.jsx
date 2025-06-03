@@ -64,7 +64,7 @@ const App = () => {
   };
 
   // Show Navbar and Footer only on specific pages
-  const showNavbar = ['/', '/login', '/register', '/forgot-password', '/hotel', '/pesawat', '/pengaturan-akun', '/riwayat-pemesanan'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel') || location.pathname.startsWith('/detail-ruangan');
+  const showNavbar = ['/', '/hotel', '/pesawat', '/pengaturan-akun', '/riwayat-pemesanan'].includes(location.pathname) || location.pathname.startsWith('/detail-pesawat') || location.pathname.startsWith('/detail-hotel') || location.pathname.startsWith('/detail-ruangan');
   const showFooter = showNavbar;
 
   // Determine role based on the route path

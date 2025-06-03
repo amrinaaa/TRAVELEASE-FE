@@ -242,7 +242,7 @@ const TableSearchHotel = ({ onHotelFilter, onFlightSearch, activeTab: propActive
                 disabled={!validateHotelForm()}
               >
                 <i className="ri-search-line mr-2" />
-                Search Hotels
+                Search 
               </button>
             </div>
           </div>
@@ -346,7 +346,7 @@ const TableSearchHotel = ({ onHotelFilter, onFlightSearch, activeTab: propActive
                 disabled={!validateFlightForm()}
               >
                 <i className="ri-search-line mr-2" />
-                Search Flights
+                Search 
               </button>
             </div>
           </div>
