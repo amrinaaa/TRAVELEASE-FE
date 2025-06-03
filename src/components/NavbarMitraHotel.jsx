@@ -81,7 +81,7 @@ const NavbarMitraHotel = ({ toggleSidebar, isSidebarOpen }) => {
   };
 
   return (
-    <nav className='fixed flex top-0 left-0 w-full bg-white shadow-md px-4 py-4 transition-all duration-300 z-50'>
+    <nav className='fixed flex top-0 left-0 w-full bg-white shadow-md px-4 py-4 transition-all duration-300'>
       <div 
         className={`absolute top-4 transition-all duration-300 ${isSidebarOpen ? 'left-16 md:left-64 ml-4' : 'left-4'}`} //
       >

@@ -75,9 +75,9 @@ const App = () => {
   // Check if the current path matches the admin or mitra paths
   if (location.pathname.match(/^\/(admin|manajemen-pengguna|tambah-pengguna|edit-pengguna\/.+|edit-saldo-pengguna\/.+|manajemen-mitra-hotel|tambah-mitra-hotel|edit-mitra-hotel\/.+|edit-saldo-mitra-hotel\/.+|manajemen-mitra-pesawat|tambah-mitra-pesawat|edit-mitra-pesawat\/.+|edit-saldo-mitra-pesawat\/.+)$|\/pengaturan-akun-admin|\/mitra-pesawat-admin/)) {
     role = 'admin';
-  } else if (location.pathname.match(/^\/mitra-hotel|\/manajemen-hotel|\/tambah-hotel|\/edit-hotel|\/manajemen-ruangan|\/tambah-ruangan|\/edit-ruangan|\/list-pengguna-hotel|\/pengaturan-akun-mitra/)) {
+  } else if (location.pathname.match(/^\/mitra-hotel|\/manajemen-hotel|\/tambah-hotel|\/edit-hotel|\/manajemen-ruangan|\/tambah-ruangan|\/edit-ruangan|\/list-pengguna-hotel|\/pengaturan-akun-mitra-hotel/)) {
     role = 'mitra-hotel';
-  } else if (location.pathname.match(/^\/mitra-pesawat|\/manajemen-maskapai|\/tambah-maskapai|\/edit-maskapai|\/manajemen-pesawat|\/tambah-pesawat|\/edit-pesawat|\/tambah-penerbangan|\/jadwal-penerbangan|\/list-pengguna-pesawat|\/pengaturan-akun-mitra/)) {
+  } else if (location.pathname.match(/^\/mitra-pesawat|\/manajemen-maskapai|\/tambah-maskapai|\/edit-maskapai|\/manajemen-pesawat|\/tambah-pesawat|\/edit-pesawat|\/tambah-penerbangan|\/jadwal-penerbangan|\/list-pengguna-pesawat|\/pengaturan-akun-mitra-pesawat/)) {
     role = 'mitra-pesawat';
   }
 
