@@ -84,9 +84,6 @@ const ManajemenMaskapaiAdmin = ({ isSidebarOpen }) => {
         <div className="bg-white m-4 py-4 rounded-lg shadow-md">
           <div className="grid grid-cols-2 px-4 items-center">
             <div className="flex md:flex-row flex-col text-left md:items-center md:gap-2">
-              <div className="md:text-2xl text-lg text-ungu7">
-                <p>{selectedMitra ? selectedMitra.name : "Nama mitra"}</p>
-              </div>
               <div className="md:text-xl md:mt-1">
                 <p>Airline List</p>
               </div>

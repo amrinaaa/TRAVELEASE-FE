@@ -857,13 +857,19 @@ export const fetchAirportsRequest = () => async (dispatch) => {
 };
 
 // --- Hotel Actions ---
-export const fetchHotels = () => async (dispatch) => {
+export const fetchHotels = (mitraId) => async (dispatch) => {
   dispatch(getHotelsRequest());
   try {
     const token = Cookies.get("token");
-    const response = await axios.get(`${api_url}/hotels`, {
+    // Pastikan mitraId tersedia sebelum membuat request
+    const url = mitraId 
+      ? `${api_url}/hotels?mitraId=${mitraId}` 
+      : `${api_url}/hotels`;
+      
+    const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    
     if (response.data?.data && Array.isArray(response.data.data)) {
       dispatch(getHotelsSuccess(response.data.data));
     } else if (response.data?.message === "Success" && response.data?.data === null) {

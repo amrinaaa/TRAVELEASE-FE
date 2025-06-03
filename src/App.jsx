@@ -21,9 +21,15 @@ import ManajemenMitraPesawat from './pages/ManajemenMitraPesawat';
 import EditMitraPesawat from './pages/EditMitraPesawat';
 import EditSaldoMitraPesawat from './pages/EditSaldoMitraPesawat';
 import TambahMitraPesawat from './pages/TambahMitraPesawat';
+// 
 import ManajemenMaskapaiAdmin from './pages/ManajemenMaskapaiAdmin';
 import ManajemenPesawatAdmin from './pages/ManajemenPesawatAdmin';
 import EditPesawatAdmin from './pages/EditPesawatAdmin';
+//
+import ManajemenHotelAdmin from './pages/ManajemenHotelAdmin';
+import ManajemenRuanganAdmin from './pages/ManajemenRuanganAdmin';
+import EditRuanganAdmin from './pages/EditRuanganAdmin';
+//
 import DashboardMitraHotel from './pages/DashboardMitraHotel';
 import ManajemenHotel from './pages/ManajemenHotel';
 import DashboardMitraPesawat from './pages/DashboardMitraPesawat';
@@ -75,7 +81,7 @@ const App = () => {
   let role = null;
 
   // Check if the current path matches the admin or mitra paths
-  if (location.pathname.match(/^\/(admin|manajemen-pengguna|tambah-pengguna|edit-pengguna\/.+|edit-saldo-pengguna\/.+|manajemen-mitra-hotel|tambah-mitra-hotel|edit-mitra-hotel\/.+|edit-saldo-mitra-hotel\/.+|manajemen-mitra-pesawat|tambah-mitra-pesawat|edit-mitra-pesawat\/.+|edit-saldo-mitra-pesawat\/.+)$|\/pengaturan-akun-admin|\/mitra-pesawat-admin|\/manajemen-pesawat-admin|\/edit-pesawat-admin/)) {
+  if (location.pathname.match(/^\/(admin|manajemen-pengguna|tambah-pengguna|edit-pengguna\/.+|edit-saldo-pengguna\/.+|manajemen-mitra-hotel|tambah-mitra-hotel|edit-mitra-hotel\/.+|edit-saldo-mitra-hotel\/.+|manajemen-mitra-pesawat|tambah-mitra-pesawat|edit-mitra-pesawat\/.+|edit-saldo-mitra-pesawat\/.+)$|\/pengaturan-akun-admin|\/mitra-pesawat-admin|\/manajemen-pesawat-admin|\/edit-pesawat-admin|\/mitra-hotel-admin|\/manajemen-ruangan-admin|\/edit-ruangan-admin/)) {
     role = 'admin';
   } else if (location.pathname.match(/^\/mitra-hotel|\/manajemen-hotel|\/tambah-hotel|\/edit-hotel|\/manajemen-ruangan|\/tambah-ruangan|\/edit-ruangan|\/list-pengguna-hotel|\/pengaturan-akun-mitra-hotel/)) {
     role = 'mitra-hotel';
@@ -128,6 +134,9 @@ const App = () => {
         <Route path="/mitra-pesawat-admin/:mitraId" element={<ManajemenMaskapaiAdmin isSidebarOpen={isSidebarOpen} />} />
         <Route path="/manajemen-pesawat-admin/:airlineId" element={<ManajemenPesawatAdmin isSidebarOpen={isSidebarOpen} />} />
         <Route path="/edit-pesawat-admin/:planeId" element={<EditPesawatAdmin isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/mitra-hotel-admin/:mitraId" element={<ManajemenHotelAdmin isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/manajemen-ruangan-admin/:hotelId" element={<ManajemenRuanganAdmin isSidebarOpen={isSidebarOpen} />} />
+        <Route path="/edit-ruangan-admin/:hotelId/:roomId" element={<EditRuanganAdmin isSidebarOpen={isSidebarOpen} />} />
 
         {/* Mitra Routes */}
         <Route path="/mitra-hotel" element={<DashboardMitraHotel isSidebarOpen={isSidebarOpen} />} />
