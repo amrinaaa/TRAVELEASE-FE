@@ -1,34 +1,102 @@
-import React from 'react'
-import TableSearch from '../components/TableSearch'
-import { Ticket, Hotel } from 'lucide-react'
+import React, { useState, useEffect } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Ticket, Hotel, Plane } from 'lucide-react'
+import dataSwiper from "../utils/dataSwiper.json";
+
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import 'swiper/css/free-mode';
+import 'swiper/css/thumbs';
+
+import { Autoplay, Pagination, Navigation, FreeMode,  Thumbs } from 'swiper/modules';
 
 const Home = () => {
+  const [isMdScreen, setIsMdScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMdScreen(window.innerWidth >= 768);
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  const handleHotelBooking = () => {
+    window.location.href = '/hotel';
+  };
+
+  const handleFlightTicket = () => {
+    window.location.href = '/pesawat';
+  };
+
   return (
     <div>
       {/* Hero Section */}
-      <section
-        className="relative bg-cover bg-center pt-24 min-h-[90vh] flex flex-col justify-center"
-        style={{ backgroundImage: `url('src/assets/img/bgHome.png')` }}
-      >
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
-
-        {/* Content */}
-        <div className="relative z-10 text-center p-8">
-          <h1 className="text-white text-5xl md:text-6xl font-bold mb-4 animate-fadeIn">
-            TravelEase
-          </h1>
-          <p className="text-white text-lg md:text-xl">
-            Pesan Tiket & Hotel dengan
-          </p>
-          <p className="text-white text-lg md:text-xl font-medium">
-            Mudah, Cepat dan Praktis!
-          </p>
-        </div>
-
-        {/* TableSearch di bawah teks */}
-        <div className="relative z-10 mt-6 mx-4 md:mx-80 text-left pb-12">
-          <TableSearch />
+      <section>
+        <div className='w-full h-auto px-4 md:px-0 pt-24 md:pt-0 mb-4 md:mb-0'>
+          <Swiper
+            spaceBetween={30}
+            centeredSlides={true}
+            loop = {true}
+            pagination={{
+              clickable: true,
+            }}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            navigation={isMdScreen}
+            modules={[Autoplay, Pagination, Navigation]}
+            className="mySwiper w-full h-[200px] md:h-screen rounded-lg md:rounded-none"
+          >
+            {dataSwiper.map((data) => (
+              <SwiperSlide 
+              key={data.id}
+              className='w-full rounded-lg md:rounded-none relative bg-[#1B1B1B]' 
+                style={{backgroundImage: `url(${data.image})`, 
+                backgroundSize:"cover", 
+                backgroundPosition:"center", 
+                backgroundRepeat: "no-repeat"}}>
+                  <div className='w-full h-full flex items-center justify-center flex-col z-10 pl-2 pr-2'>
+                    <h5 className='lg:text-4xl md:text-3xl sm:text-xl text-sm text-white font-extrabold mb-1 md:mb-2 text-center text-shadow: none md:[text-shadow:_0_6px_0_rgb(0_0_0_/_100%)]'>
+                      {data.heading}
+                    </h5>
+                    <h1 className='lg:text-5xl md:text-4xl sm:text-2xl text-base font-extrabold text-white mb-2 md:mb-4 text-center text-shadow: none md:[text-shadow:_0_6px_0_rgb(0_0_0_/_100%)]'>
+                      {data.subheading}
+                    </h1>
+                    <p className='lg:text-lg md-text-base sm:text-base text-xs text-white font-extrabold text-center mb-4 md:mb-8 text-shadow: none md:[text-shadow:_0_4px_0_rgb(0_0_0_/_100%)]'>
+                      {data.description}
+                    </p>
+                    
+                    {/* Booking Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                      <button 
+                        onClick={handleHotelBooking}
+                        className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-xs md:text-base"
+                      >
+                        <Hotel size={16} className="md:w-5 md:h-5" />
+                        Booking Hotel
+                      </button>
+                      
+                      <button 
+                        onClick={handleFlightTicket}
+                        className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-xs md:text-base"
+                      >
+                        <Plane size={16} className="md:w-5 md:h-5" />
+                        Pesan Tiket Pesawat
+                      </button>
+                    </div>
+                  </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </section>
 
