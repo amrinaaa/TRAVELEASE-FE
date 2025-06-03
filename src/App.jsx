@@ -5,7 +5,8 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Sidebar from './components/Sidebar';
-import NavbarMitra from './components/NavbarMitra';
+import NavbarMitraPenerbangan from './components/NavbarMitraPenerbangan';
+import NavbarMitraHotel from './components/NavbarMitraHotel';
 import NavbarAdmin from './components/NavbarAdmin';
 import DashboardAdmin from './pages/DashboardAdmin';
 import ManajemenPengguna from './pages/ManajemenPengguna';
@@ -86,7 +87,8 @@ const App = () => {
       {/* Conditionally render Sidebar and Navbar based on the role */}
       {role && <Sidebar isOpen={isSidebarOpen} role={role} />}
       {role === 'admin' && <NavbarAdmin toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} user={user} />}
-      {(role === 'mitra-hotel' || role === 'mitra-pesawat') && <NavbarMitra toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} user={user} />}
+      {role === 'mitra-hotel' && <NavbarMitraHotel toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} user={user} />}
+      {role === 'mitra-pesawat' && <NavbarMitraPenerbangan toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} user={user} />}
 
       <Routes>
         {/* Auth Routes */}

@@ -6,7 +6,7 @@ import { Button } from "@heroui/react";
 import { jwtDecode } from 'jwt-decode';
 import Cookies from 'js-cookie';
 
-const NavbarMitra = ({ toggleSidebar, isSidebarOpen }) => {
+const NavbarMitraPenerbangan = ({ toggleSidebar, isSidebarOpen }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   
   const location = useLocation();
@@ -59,7 +59,7 @@ const NavbarMitra = ({ toggleSidebar, isSidebarOpen }) => {
                     onClick={() => setShowDropdown(false)}
                   >
                     <i className="ri-user-settings-line text-md mr-2"></i>
-                    Account Settings
+                    Account Settings penerbangan
                   </Link>
                 </li>
                 <li className='py-2 hover:text-blue-600 border-b border-gray-100'>
@@ -88,4 +88,4 @@ const NavbarMitra = ({ toggleSidebar, isSidebarOpen }) => {
   );
 };
 
-export default NavbarMitra
+export default NavbarMitraPenerbangan
